@@ -1,1 +1,195 @@
-\chapter{System Identification}
+\chapter{System Identification} 
+
+Identifying dynamical systems from noisy observation of their input-output
+behavior is of fundamental importance in systems and control theory. Often
+times models derived from physical first principles are not available to the
+control engineering, and computing a surrogate model from data is essential to
+the design of a control system. System identification from data is thus
+ubiquitous in problem domains ranging from process engineering, dynamic
+modeling of mechanical and aerospace systems, and systems biology. Though there
+are a myriad of approaches and excellent texts on the subject (see, for
+example~\cite{LjungBook}), there is still no universally agreed upon approach
+for this problem. One reason is that quantifying the interplay between system
+parameters, measurement noise, and model mismatch tends to be challenging.
+
+We draw novel connections between contemporary high-dimensional statistics,
+operator theory, and linear systems theory to prove consistent estimators of
+linear systems from small measurement sets. In particular, building on recent
+studies of \emph{atomic norms} in estimation
+theory~\cite{CRPW10,BhaskarAllerton11}, we propose a penalty function which
+encourages estimated models to have small McMillan degree.
+
+A related family of system identification techniques use finite sample Hankel
+matrices to estimate dynamical system models, using either singular value
+decompositions (e.g,~\cite{Verhaegen92,Overschee94}) or semidefinite
+programming~\cite{Fazel01,Liu08,Smith12,Fazel11}. In all of these techniques,
+no statistical guarantees were given about the quality of estimation with
+finite noisy data, and it was difficult to determine how sensitive these
+methods were to the hidden system parameters or measurement noise. Moreover,
+since these problems were dealing with finite, truncated Hankel matrices, it is
+never certain if the size of the Hankel matrix is sufficient to reveal the true
+McMillan degree. Moreover, the techniques based on semidefinite programming are
+challenging to scale to very large problems, as their complexity grows
+superlinearly with the number of measurements.
+
+In contrast, the atomic norm regularizer proposed in this chapter is not only
+equivalent to the sum of the Hankel singular values (the Hankel nuclear norm),
+but is also well approximated by a finite dimensional, $\ell_1$ minimization
+problem. We show that solving least-squares problems regularized by our atomic
+norm is consistent, and scales gracefully with the stability radius, the
+McMillan degree of the system to be identified, and the number of measurements.
+Our numerical experiments validate these theoretical underpinnings, and show
+that our method has great promise to provide concrete estimates on the hard
+limits of estimating linear systems.
+
+\subsection{Notation}\label{sec:notation}
+
+We adopt standard notation; $\D$ and $\bbS$ will denote respectively the open
+unit ball and the unit circle in the complex plane $\C$ . $\cH_2$ and
+$\cH_\infty$ will denote the Hardy spaces of functions analytic outside $\D$,
+with the norms
+
+\[\|f\|_{\cH_2} = \tfrac{1}{2\pi} \int_0^{2\pi} |f(e^{i\theta})|^2 d\theta~~~~~\mbox{and}~~~~~\|f\|_{\cH_\infty} = \sup_{z\in\bbS} |f(z)|\]
+respectively.  $\ell_2([a,b])$ will denote the set of square summable sequences on the integers in $[a, b]$.
+
+\section{Atomic Decompositions of Transfer Functions}\label{sec:atomic-def}
+We restrict our attention to SISO systems in this manuscript, as this will simplify the presentation.  However, we will describe in the discussion how to extend our techniques to MIMO systems.  Suppose we wish to estimate a SISO, LTI system with transfer function $G_\star(z)$ from a finite collection of measurements $y=\Phi(G_\star)$.  The set of all transfer functions is an infinite dimensional space, so reconstructing $G_\star$ from this data is ill-posed.  In order to make it well posed, a common regularization approach constructs a penalty function $\operatorname{pen}(\cdot)$ that encourages ``low-complexity'' models and solves the optimization problem
+\begin{equation}\label{eq:regularized}
+	\minimize_G~\|\Phi(G)-y\|_2^2 + \mu \operatorname{pen}(G) \,.
+\end{equation}
+This formulation uses the parameter $\mu$ to balance between model complexity and fidelity to the data.  The least-squares cost can be modified to other convex loss functions if knowledge about measurement noise is available (as in~\cite{Smith12,Paganini96}), though in general it is less clear how to design a good penalty function.
+
+In many applications, we know that the true model can be decomposed as a linear combination of very simple building blocks.  For instance, sparse vectors can be written as short linear combinations of vectors from some discrete dictionary and low-rank matrices can be written as a sum of a few rank-one factors.  In~\cite{CRPW10}, Chandraskearan et al. proposed a universal heuristic for constructing regularizers based on such prior information.  If we assumed that 
+\[
+	G_\star = \sum_{i=1}^r c_i a_i\,,~\mbox{for some}~a_i\in\cA,c_i\in \C\,,
+\]
+where $\cA$ is an origin-symmetric set of ``atoms'' normalized to have unit norm and $r$ is relatively small, then the appropriate penalty function is the guage function (or the Minkowski functional) induced by the atomic set $\cA$:
+\begin{equation}\label{eq:atomic-norm-def}
+\begin{split}
+	\|G\|_{\cA}: & = \inf\left\{ t \; : \; G \in t\text{ conv}(\cA)  \right\}  =\inf\left\{ \sum_{a\in \cA} |c_a|~:~G = \sum_{a\in \cA} c_a a\right\}\,.
+\end{split}
+\end{equation}
+In~\cite{CRPW10}, it is shown that minimizing the atomic norm subject to compressed measurements yielded the tightest known bounds for recovering many classes of models from linear measurements. Moreover, in~\cite{BhaskarAllerton11}, the atomic norm regularizer was studied in the context of denoising problems and was found to produce consistent estimates at nearly optimal estimation error rates for many classes of atoms.
+
+To apply these atomic norm techniques to system identification, we must first determine the appropriate set of atoms.  For discrete time LTI systems with small McMillan degree, we can always decompose any finite dimensional, strictly proper system $G(z)$ as:
+$$
+G(z)=\sum_{i=1}^{s} \frac{c_i}{z-a_i}\,.
+$$
+via a partial fraction expansion.  Hence, it makes sense that our set of atoms should be single-pole transfer functions.  We propose the following atomic set for linear systems
+\[
+\cA = \left\{ \varphi_{w}(z) = \frac{1-|w|^2}{z-w} ~:~w\in \D\right\}\,.
+\]
+The numerator is normalized so that the Hankel norm of each atom is $1$.  See the discussion in Section~\ref{sec:hankel} for precisely why this normalization is desirable.
+
+The atomic norm penalty function associated with these atoms is 
+\begin{equation}\label{eq:atomic-def}
+	\| G(z) \|_{\cA} = \inf \left\{ \sum_{w\in \D} |c_w| ~:~ G(z) = \sum_{w\in\D} \frac{c_w (1-|w|^2)}{z-w}\right\}\,,
+\end{equation}
+where the summation implies that only a countable number of terms have nonzero coefficients $c_w$.  This expression finds the decomposition of $G(z)$ into a linear combination of single pole systems such that the $\ell_1$ norm, weighted by the norms of the single poles, is as small as possible.
+
+With this penalty function in hand, we now turn to analyzing its utility.  In Section~\ref{sec:hankel}, we first show that for most systems of interest $\|G\|_{\cA}$ is a well-defined, bounded quantity.  Moreover, we will show that the atomic norm is equivalent to the nuclear norm of the Hankel operator associated with  $G$.  Hence, the models that are preferred by our penalty function will have low-rank Hankel operators, and thus low McMillan degrees.
+
+In Section~\ref{sec:computation}, we turn to computation, demonstrating practical algorithms for approximating atomic norm regularization problems for several classes of measurements.  We will show that with finite data, our atomic norm minimization problem is well-approximated by a finite-dimensional $\ell_1$ norm regularization problem.  In particular, using specialized algorithms adapted to the solution of the LASSO~\cite{Wright09}, we can solve atomic norm regularization problems in time competitive with respect to techniques that regularize with the nuclear norm and SVD-based subspace identification methods.
+
+Finally, we analyze the statistical performance of atomic norm minimization in Section~\ref{sec:statistics}.  We show that our algorithm is asymptotically consistent over several measurement ensembles of interest.  We focus on sampling the transfer function on the unit circle and present $\cH_2$ error bounds in terms of the stability radius, Hankel singular values, $\cH_{\infty}$ norm, and McMillan degree of the system to be estimated.
+
+\section{The Hankel Nuclear Norm and Atomic Norm Minimization}\label{sec:hankel}
+
+Let us first show that most LTI systems of interest do indeed have finite atomic norm, and, moreover, that the atomic norm is closely connected with the sum of the Hankel singular values.
+
+\subsection{Preliminaries: the Hankel operator}\label{sec:hankel-defs}
+Recall that the \emph{Hankel operator}, $\Gamma_G$, of the transfer function $G$ is defined as the mapping from the past to the future under the transfer function $G$.  Given a signal $u$ supported on $(-\infty,-1]$, the output under $G$ is given by $g * u$ where ``$*$'' denotes convolution and $g$ is the impulse response of $G$: 
+\[
+	G(z) = \sum_{k=1}^\infty g_k z^{-k}\,.
+\]
+$\Gamma_G$ is then simply the projection of $g*u$ onto $[0,\infty)$.  An introduction to Hankel operators in control theory can be found in~\cite[Chapter 4]{DullerudPaganiniBook} or~\cite[Chapter 7]{Zhou95}.
+
+The \emph{Hankel norm} of $G$ is the operator norm of $\Gamma_G$ considered as an operator mapping $\ell_2(-\infty,-1]$ to $\ell_2[0,\infty)$. The \emph{Hankel nuclear norm} of $G$ is the nuclear norm (aka the trace norm or Schatten $1$-norm) of $\Gamma_G$.  To be precise, an operator $T$ is in the \emph{trace class} $S_1$ if the trace of $(T^*T)^{1/2}$ is finite.  This implies first that $T$ is a compact operator and admits a singular value decomposition
+\begin{equation*}
+    T(f) = \sum_{i=1}^\infty \sigma_i \langle v_i, f \rangle u_i \,.
+\end{equation*}
+The sequence $\sigma_i$ are called the \emph{Hankel singular values} of $T$.  Moreover, the Schatten $1$-norm of $T$ is given by
+\begin{equation*}
+    \|T\|_1 = \trace\left((T^*T)^{1/2}\right) =
+    \sum_{i=1}^\infty \sigma_i\,.
+\end{equation*}
+
+\subsection{The atomic norm is equivalent to the Hankel nuclear norm}
+The rank of the Hankel operator determines the McMillan degree
+of the linear system defined by $G$.  Rank minimization is notoriously computationally challenging (see~\cite{Recht10} for a discussion), and we don't expect to be able to directly penalize the norm of the Hankel operator in implementations.  Thus, as is common, a reasonable heuristic for minimizing the rank of the Hankel operator would be to minimize the sum of the Hankel singular values, i.e., to minimize the Schatten $1$-norm of the Hankel operator.  For rational transfer functions, we can compute the Hankel nuclear norm via a balanced realization~\cite{Zhou95}.  On the other hand, while the maximal Hankel singular value can be written variationally as an LMI, we are not aware of any such semidefinite programming formulations for the Hankel nuclear norm.  
+
+The following theorem provides a path towards minimizing the Hankel nuclear norm, minimizing the atomic norm $\|G(z)\|_{\cA}$ as a proxy.  Indeed, from the view of Banach space theory, the atomic norm is~\emph{equivalent} to the Hankel nuclear norm.
+
+\begin{theorem}\label{thm:hankel-nuclearity}
+Let $G \in \cH_2$.  Then $\Gamma_G$ is trace class if and only if there exists a sequence $\{\lambda_k\} \in \ell_1$ and a
+    sequence $\{w_k\}$ with $w_k \in \D$ such that
+\begin{equation}\label{eq:kernel-form}
+    g(z) = \sum_{i=1}^\infty \lambda_k \frac{1-|w_k|^2}{z-w_k}\,.
+    \end{equation}
+Moreover, we have the following chain of inequalities
+\begin{equation}\label{eq:norm-ineq-chain}
+\tfrac{\pi}{8}\|G\|_{\cA} \leq  \|\Gamma_G\|_1 \leq
+\|G\|_{\cA} 
+\end{equation}
+where  $\|G\|_{\cA}$ is given by~\eq{atomic-norm-def}.
+\end{theorem}
+\emph{Proof Outline}  Theorem~\ref{thm:hankel-nuclearity} follows by carefully combining several different results from operator theory. Peller first showed that transfer functions with trace class Hankel operators formed a \emph{Besov space}~\cite{Peller79}. Peller's argument can be found in his book~\cite{PellerHankelBook}. The atomic decomposition of such operators is due to Coifman and Rochberg~\cite{Coifman80}. The norm bounds~\eq{norm-ineq-chain} were proven by Bonsall and Walsh~\cite{Bonsall86}. There they show that the $\tfrac{\pi}{8}$ is the best possible lower bound.  They also show that if $\|\Gamma_g\|_1\leq C\|g\|_{\cA}$ for all $g$, then $C$ must be at least $\tfrac{1}{2}$, so the chain of inequalities is nearly optimal. A concise presentation of the full argument can be found  in~\cite{PartingtonHankelBook}. A modern perspective using the theory of reproducing kernels can be found in~\cite{ZhuBook}. 
+\vspace{1mm}
+
+\noindent Theorem~\ref{thm:hankel-nuclearity} asserts that a transfer function has a finite atomic norm if and only if the sum of its Hankel singular values is finite.  In particular, this means that every rational transfer function has a finite atomic norm.  More importantly, the atomic norm is equivalent to the Hankel nuclear norm.  Thus if we can approximately solve atomic norm-minimization, we can approximately solve Hankel nuclear norm minimization and vice-versa.
+
+\section{Statistical Bounds}\label{sec:statistics}
+Let $\cL_i: \cH \mapsto \C $ be a linear functional that serves as a measurement operator for the system $H(z)$.  In this section, let us suppose that we obtain noisy measurements of the form
+$$
+y_i=\cL_i \left( H(z) \right) +\omega_i \qquad i=1, \ldots, n.
+$$
+where $\omega_i$ is a noise sequence consisting of independent, identically distributed random variables.  In this section, we will specialize our results to the case where $\cL$ returns samples from the frequency response at uniformly spaced frequencies:
+$$
+\cL_k(H(z))=H(z_k), \qquad z_k=e^{\frac{2 \pi i k}{m} }, \; k=1, \ldots, n.
+$$
+While the techniques here extend to other measurement ensembles, they will be explored in a longer version of the paper.
+%
+%
+%We only prove one theorem to illustrate the techniques required to analyze a general set of measurements.  The theorem will change with different grindings of the disk, measurements, and noise models.  We will study other examples in future work.
+
+Our goal in this section is to prove that solving the DAST optimization problem yields a good approximation to the transfer function we are probing. The following theorem provides a precise statistical guarantee on the performance of our algorithm.
+\begin{theorem}\label{thm:estimation}  Let $G_\star$ be a strictly proper transfer function with bounded Hankel nuclear norm. Suppose the noise sequence $\omega_i$ is i.i.d. Gaussian with mean zero and variance $\sigma^2$.  Choose $\delta \in (0,1)$ and set $\epsilon = \frac{\pi (1-\rho)\delta}{16 \rho}$.  Let $\D_\rho^{(\epsilon)}$ be as in Proposition~\ref{prop:grid} and let $\hat{c}$ be the optimal solution of~\eq{DAST} with 
+\[
+\mu=2\sigma \sqrt{ n \log \left(\frac{11 \rho^2}{\delta(1-\rho)} \right)}\,.
+\]
+Set $\hat{G}(z) = \sum_{w \in \D_{\rho}^{(\epsilon)}} \hat{c}_w \frac{1-|w|^2}{z-w}$.  Then if the set of vectors $\{\cL(\varphi_a)\in \R^n~:~a\in\D_{\rho}^{(\epsilon)}\}$ spans $\R^n$, we have 
+\[
+\begin{aligned}
+	&\|\hat{G}(z)-G_{\star}(z)\|_{\cH_2}^2 \leq  
+	186 \frac{1+\rho}{1-\rho} \left( \sqrt{\sigma^2 \log\left(\frac{11 \rho^2}{(1-\rho)\epsilon}\right)}\sqrt{\frac{\|\Gamma_{G_\star}\|_{1}^2}{n(1-\delta)^2} } + \frac{4\|\Gamma_{G_\star}\|_{1}^2}{\pi n(1-\delta)^2}   \right)
+	\end{aligned}
+\]
+with probability $1-e^{-o(n)}$.
+\end{theorem}
+\begin{corollary} \label{cor:1}
+There is a quantity $C$ depending on $\rho$ and $\sigma$ such that for sufficiently large $n$
+$$\|\hat{G}(z)-G_{\star}(z)\|_{\cH_2}^2\ \leq C \| \Gamma_{G_{\star}} \|_1 n^{-\frac{1}{2}}$$
+with probability exceeding $1-e^{-o(n)}$.
+\end{corollary}
+\noindent Before we describe how to prove this theorem and its corollary, let us first unpack the features.  First of all, the right hand side is a parameter of the number of samples, the Hankel nuclear norm of the true system, and the stability radius of the true system.  Also, if the McMillan degree of $G_\star(z)$ is $d$, then we can upper bound the Hankel nuclear norm by the product of the McMillan degree and the Hankel norm of $G_\star$: $\|\Gamma_{G_\star}\|_1 \leq d \|\Gamma_{G_\star}\|$.
+Second, note that as $n$ tends to infinity, the right hand side tends to zero.  In particular, this means that our discretized algorithm is consistent, and we can quantify the worst case convergence rate.  
+
+The proof of theorem~\ref{thm:estimation} is provided in the appendix.  We prove this theorem by first upper bounding the $\cH_2$ in terms of the mean square error on the observed samples.  We show that this empirical mean square error can be upper bounded in terms of the Hankel nuclear norm of $G_\star$ times the \emph{dual atomic norm} of the noise sequence $\omega$.  We estimate this norm, and in the process compute the optimal value of the regularization parameter.  Putting these pieces together yields our main result.
+
+\section{Conclusion}\label{sec:conclusion}
+
+By using the atomic norm framework of~\cite{CRPW10}, we were able to posit a reasonable regularizer for linear systems, understand the computational demands of such a regularizer, and analyze its statistical performance.  Since it is closely connected to the Hankel nuclear norm but is computationally more practical, we believe that our atomic norm will be useful in a variety of practical implementations and also in theoretical analysis.  However, there are still several outstanding questions to address before we fully understand the potential of this norm.  We list several of these open problems here.
+
+\paragraph{Other measurement ensembles} Our analysis in Section~\ref{sec:statistics} focused on the particular case of sampling the frequency response at regular intervals.  By focusing on this example, we were able illustrate the critical ingredients to computing convergence rates.  First, we needed to show that our measurement error provided a reasonable upper bound on the distance to the true transfer function.  Second, we used convex analysis to upper bound the measurement error in terms of the statistics of the noise process.  Third, we estimated the noise statistics using probabilistic techniques and appealing to the structure of the atomic set and its $\epsilon$-nets.  This methodology can be extended to the other sampling methods described in Section~\ref{sec:computation}, and may also be extendable to estimating transfer functions from pairs of input-output time series.
+
+\paragraph{Fast Rates and minimax optimality}  The rates provided by Theorem~\ref{thm:estimation} demonstrate that the DAST algorithm is asymptotically consistent.  However, we believe the upper bound we have derived is quite crude.  In particular, as discussed in~\cite{BhaskarAllerton11}, it may very well be possible to improve our upper bounds by leveraging more of the geometry of the set of single-pole transfer functions.  It would be interesting to find reasonable lower-bounds on the reconstruction error from limited measurements, and to see how close we can match these worst-case estimates via a new analysis.
+
+\paragraph{Interpolating with derivatives}  While gridding the space of poles enables us to quickly solve atomic norm problems, a main drawback is that we are then can never exactly localize the true poles of the system without an extremely fine grid.  One recent proposal to enable such a localization uses a linearization technique to simultaneously fit a model on the grid points and at the derivatives of the transfer functions at these grid points~\cite{Simoncelli11}.  It would be of interest to see if such an adjoining method could work in this setting, and future experiments will evaluate the improvements on system identification in theory and in practice.
+
+\paragraph{Extension to MIMO Systems}  While we focused on the single-input single-output (SISO) case in this paper, we expect that these techniques would extend to the multi-input multi-output (MIMO) case. One simple extension to note is that if the number of inputs and outputs in the system remain small, the SISO techniques presented herein could be applied to each input-output pair. Alternative approaches that avoid this pairwise identification would be important in large-scale systems with many inputs and outputs, this is an important direction for future research.
+
+To extend our methodology to MIMO systems, we need to find an appropriate set of atoms. One possibility is the set
+\[
+\cA = \left\{ \frac{(1-|w|^2) cb^* }{z-w} ~:~w\in \D, c\in\mathbb{S}^{r-1},\,\,b\in\mathbb{S}^{p-1} \right\}\,,
+\]
+where $p$ is the number of inputs and $r$ is the number of outputs.  Any discrete time, MIMO system with  McMillan degree $d$ can be written in terms of $d$ of these atoms.  The only difficulty remains computing or approximating the norm $\|u\|_{\cL(\cA)}$ for finite measurements as described in Section~\ref{sec:computation}.

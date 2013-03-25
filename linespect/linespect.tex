@@ -1,1 +1,500 @@
 \chapter{Line Spectrum Estimation}
+
+\section{Introduction}
+
+Extracting the frequencies and relative phases of a superposition of complex
+exponentials from a small number of noisy time samples is a foundational
+problem in statistical signal processing. These \emph{line spectral estimation}
+problems arise in a variety of applications, including the direction of arrival
+estimation in radar target identification~\cite{radar}, sensor array signal
+processing~\cite{arrays} and imaging systems~\cite{imaging} and also 
+underlies techniques in ultra wideband channel
+estimation~\cite{uwb}, spectroscopy~\cite{nmr}, molecular
+dynamics~\cite{andrade2012}, and power electronics~\cite{power}.
+
+While polynomial interpolation using Prony's technique can estimate the
+frequency content of a signal \emph{exactly} from as few as $2k$ samples if
+there are $k$ frequencies, Prony's method is inherently unstable due to
+sensitivity of polynomial root finding. Several methods have been proposed to
+provide more robust polynomial interpolation~\cite{music,esprit,hua02} (for an
+extensive bibliography on the subject, see ~\cite{stoica93}), and these
+techniques achieve excellent noise performance in moderate noise. However, the
+denoising performance is often sensitive to the model order estimated, and
+theoretical guarantees for these methods are all asymptotic with no finite
+sample error bounds. Motivated by recent work on atomic norms~\cite{crpw}, we
+propose a convex relaxation approach to denoise a mixture of complex
+exponentials, with theoretical guarantees of noise robustness and a better
+empirical performance than previous subspace based approaches.
+
+Specializing the denoising results of the previous chapter to the line spectral
+estimation, we provide mean-squared-error estimates for denoising line spectra
+with the atomic norm. The denoising algorithm amounts to soft thresholding the
+noise corrupted measurements in the atomic norm and we thus refer to the
+problem as \emph{Atomic norm Soft Thresholding} (AST). We show in Chapter~\ref{chap:algos}, via an appeal to the theory of positive polynomials, that AST for line spectrum estimation can be solved using semidefinite programming (SDP)~\cite{Megretski03}, and we provide a reasonably
+fast method for solving this SDP via the Alternating Direction Method of
+Multipliers (ADMM)~\cite{BertsekasParallelBook,admm2011}. Our ADMM
+implementation can solve instances with a thousand observations in a few
+minutes.
+
+While the SDP based AST algorithm can be thought of as solving an infinite
+dimensional Lasso problem, the computational complexity can be prohibitive for
+very large instances. To compensate, we show that solving the Lasso problem on
+an oversampled grid of frequencies approximates the solution of the atomic norm
+minimization problem to a resolution sufficiently high to guarantee excellent
+mean-squared error (MSE). The gridded problem reduces to the Lasso, and by
+leveraging the Fast Fourier Transform (FFT), can be rapidly solved with freely
+available software such as SpaRSA~\cite{wright09}. A Lasso problem with
+thousands of observations can be solved in under a second using Matlab on a
+laptop. The prediction error and the localization accuracy for line spectral
+estimation both increase as the oversampling factor increases, even if the
+actual set of frequencies in the line spectral signal are off the Lasso grid.
+
+We compare and contrast our algorithms, AST and Lasso, with classical line
+spectral algorithms including MUSIC~\cite{music},and Cadzow's ~\cite{cadzow02} 
+and  Matrix Pencil~\cite{hua02} methods . Our experiments
+indicate that both AST and the Lasso approximation outperform classical methods
+in low SNR even when we provide the exact model order to the classical
+approaches. Moreover, AST has the same complexity as Cadzow's method,
+alternating between a least-squares step and an eigenvalue thresholding step.
+The discretized Lasso-based algorithm has even lower computational complexity,
+consisting of iterations based upon the FFT and simple
+linear time soft-thresholding.
+
+\subsection{Outline and summary of results} 
+
+\paragraph*{Atomic norm denoising.} In Section \ref{sec:abstract-denoising}, we
+characterize the performance of the estimate $\hat{x}$ that solves
+
+\begin{equation}
+\label{AST}\mathop{\textrm{minimize}}_x \frac{1}{2} \vnorm{x - y}_2^2 + \tau \vnorm{x}_\A.
+\end{equation}
+where $\tau$ is an appropriately chosen regularization parameter. We provide an
+upper bound on the MSE when the noise statistics are known. Before we state the
+theorem, we note that the dual norm $\vnorm{\cdot}_\A^*$, corresponding to the
+atomic norm, is given by
+\[
+ \vnorm{z}_{\A}^* = \sup_{a \in \A}{\vabs{z}{a}},
+\]
+where $\vabs{x}{z} = \Re(z^*x)$ denotes the real inner product.  
+
+\begin{theorem}
+ \label{cor:expected-mse}
+
+Suppose we observe the signal $y = x^\star + w$ where $x^\star \in \C^n$ is a
+sparse nonnegative combination of points in $\A$. The estimate $\hat{x}$ of
+$x^\star$ given by the solution of the atomic soft thresholding problem
+\eqref{AST} with $\tau \geq \E \vnorm{w}_\A^*$ has the expected (per-element)
+MSE
+\[ 
+\frac{1}{n}\E \vnorm{\hat{x} - x^\star}_2^2 \leq \frac{\tau}{n}\vnorm{x^\star}_\A
+\]
+
+\end{theorem}
+
+This theorem implies that when $\E \vnorm{w}_\A^*$ is $o(n)$, the estimate
+$\hat{x}$ is consistent.
+ 
+\paragraph*{Choosing the regularization parameter.} Our lower bound on $\tau$ is in terms of the expected dual norm of the noise
+process $w$, equal to
+ \[
+ 	\E \vnorm{w}_\A^* = \mathbb{E}[\sup_{a\in \A} {\vabs{w}{a}}].
+ \]
+That is, the optimal $\tau$ and achievable MSE can be estimated
+by studying the extremal values of the stochastic process indexed by the atomic
+set $\A$.
+ 
+\paragraph*{Denoising line spectral signals.} We specialize the results of the
+abstract denoising problem in the previous chapter to line spectral estimation
+in Section~\ref{sec:denoise-trig-moments}. Consider the continuous time signal
+$x^\star(t), t\in \R$ with a line spectrum composed of $k$ unknown frequencies
+$\omega_1^\star, \ldots, \omega_k^\star$ bandlimited to $[-W,W]$. Then the
+Nyquist samples of the signal are given by
+
+\begin{equation}
+\label{eq:tru-moment}
+ x^\star_m := x^\star\left(\tfrac{m}{2W}\right) = \sum_{l=1}^k c_l^\star e^{i 2 \pi m f_l^\star}, m = 0, \ldots, n-1
+\end{equation}
+
+where $c_1^\star, \ldots, c_k^\star$ are unknown \emph{complex} coefficients
+and $f_l^\star = \tfrac{\omega_l^\star}{2W}$ for $l = 1, \ldots, k$ are the
+normalized frequencies. So, the vector $x^\star = [x^\star_0 ~ \cdots ~
+x^\star_{n-1}]^T \in \C^n$ can be written as a non-negative linear combination
+of $k$ points from the set of atoms
+
+{\small
+\[
+\A = \left\{e^{i 2\pi \phi}[1 ~ e^{i2\pi f} ~ \cdots ~ e^{i2\pi (n-1) f}]^T,\, f \in [0,1], \phi \in [0,1] \right\}.
+\]} 
+
+The set $\A$ can be viewed as an infinite dictionary indexed by the
+continuously varying parameters $f$ and $\phi$. When the number of
+observations, $n$, is much greater than $k$, $x^\star$ is $k$-sparse and thus
+line spectral estimation in the presence of noise can be thought of as a sparse
+approximation problem. The regularization parameter for the strongest guarantee
+in Theorem \ref{cor:expected-mse} is given in terms of the expected dual norm
+of the noise and can be explicitly computed for many noise models. For example,
+when the noise is Gaussian, we have the following theorem for the MSE:
+
+\begin{theorem}
+\label{thm:expmsels}
+
+Assume $x^\star \in \C^n$ is given by $x_m^\star = \sum_{l=1}^k{c_l^\star
+e^{i2\pi m f_l^\star}}$ for some unknown complex numbers $c_1^\star, \ldots,
+c_k^\star$, unknown normalized frequencies $f_1^\star, \ldots, f_k^\star \in
+[0,1]$ and $w \in \mathcal{N}(0,\sigma^2 I_n)$. Then the estimate $\hat{x}$ of
+$x^\star$ obtained from $y=x^\star+w$ given by the solution of atomic soft
+thresholding problem \eqref{AST} with $\tau = \sigma \sqrt{n \log(n)}$ has the
+asymptotic MSE
+\belowdisplayskip=-10pt
+\[
+\frac{1}{n} \E \vnorm{\hat{x} - x^\star}_2^2 \lesssim
+	\sigma\sqrt{\frac{\log(n)}{n}}\sum_{l=1}^k |c_l^\star|.
+\]
+ \end{theorem}
+ 
+It is instructive to compare this to the trivial estimator $\hat{x} = y$ which
+has a per-element MSE of $\sigma^2$. In contrast, Theorem 2 guarantees that AST
+produces a consistent estimate when $k = o(\sqrt{n/\log(n)})$.
+
+
+\paragraph*{Localizing the frequencies using the dual problem.} The atomic formulation not only offers a way to denoise the line spectral
+signal, but also provides an efficient frequency localization method. After we
+obtain the signal estimate $\hat{x}$ by solving \eqref{AST}, we also obtain
+the solution $\hat{z}$ to the dual problem as $\hat{z} = y - \hat{x}$. As we
+shall see in Corollary 1, the dual solution $\hat{z}$ both certifies the optimality of $\hat{x}$ and reveals the composing atoms of $\hat{x}$. For line spectral estimation, this provides an alternative to polynomial interpolation for localizing the constituent frequencies.
+
+Indeed, when there is no noise, Cand\'es and Fernandez-Granda showed the dual
+solution recovers these frequencies exactly under mild technical
+conditions~\cite{CandesGranda}. This frequency localization technique is later
+extended in ~\cite{offgrid2012} to the random undersampling case to yield a
+compressive sensing scheme that is robust to basis mismatch. When there is
+noise, numerical simulations show that the atomic norm minimization problem
+\eqref{AST} gives approximate frequency localization.
+
+\paragraph*{Experimental results.} A number of Prony-like techniques have been
+devised that are able to achieve excellent denoising and frequency localization
+even in the presence of noise. Our experiments in Section \ref{sec:experiments}
+demonstrate that our proposed estimation algorithms outperform Matrix Pencil,
+MUSIC and Cadzow's methods. Both AST and the discretized Lasso algorithms
+obtain lower MSE compared to previous approaches, and the discretized algorithm
+is much faster on large problems.
+
+\section{Application of AST to Line Spectral Estimation}
+
+Let us now return to the line spectral estimation problem, where we denoise a
+linear combination of complex sinusoids. The atomic set in this case consists
+of samples of individual sinusoids, $a_{f,\phi} \in \C^n$, given by
+
+\begin{equation}
+\label{eq:trig-atoms} a_{f,\phi} = e^{i2\pi \phi}\begin{bmatrix}1 ~ e^{i2\pi f} ~
+\cdots ~ e^{i2\pi(n-1)f} \end{bmatrix}^T\,.
+\end{equation}
+The  infinite set $\A = \{ a_{f,\phi}: f \in
+[0,1], \phi \in [0,1] \}$ forms an appropriate collection of atoms for
+$x^\star$, since $x^\star$ in \eq{tru-moment} can be written as a sparse
+nonnegative combination of atoms in $\A.$ In fact, $x^\star = \sum_{l = 1}^k
+c_l^\star a_{f_l^\star,0} = \sum_{l = 1}^k |c_l^\star| a_{f_l^\star,\phi_l},$
+where $c_l^\star = |c_l^\star|e^{i2\pi\phi_l}.$
+
+The corresponding dual norm takes an intuitive form:
+\begin{align}
+	\|v\|_{\A}^* &= \sup_{{f,\phi}} \langle v, a_{f,\phi} \rangle=\sup_{f\in [0,1]}  \sup_{\phi \in [0,1]}  e^{i 2\pi \phi} \sum_{l=0}^{n-1} v_l e^{-2\pi i l f} =\sup_{ |z|\leq 1 }  \left| \sum_{l=0}^{n-1} v_l z^l\right|.\label{eq:dual-norm-poly}
+\end{align}
+In other words, $\|v\|_{\A}^*$ is the maximum absolute value attained on the
+unit circle by the polynomial $\zeta \mapsto \sum_{l=0}^{n-1} v_l \zeta^l$.  Thus, in what follows, we will frequently refer to the \emph{dual polynomial} as the polynomial whose coefficients are given by the dual optimal solution of the AST problem.
+
+\section{Accelerated Rates for Well separated signals}
+
+We consider signals whose spectra consist of spike trains with unknown locations in a normalized interval $\mathbb{T} = [0, 1]$.  Consider $n=2m+1$ equispaced samples of a mixture of sinusoids given by
+\begin{equation}
+\label{signal}
+x^\star_j =  \sum_{l=1}^k c_l \exp(i 2\pi j f_l)
+\end{equation}
+where $j \in \{-m,\dots, m\}$.  We assume that the support $T = \{f_l\}_{l=1}^k \subset \mathbb{T}$ of the $k$ frequencies and the corresponding complex amplitudes $\{c_l\}_{l=1}^k$ are unknown. We observe noisy samples $y = x^\star + w$ where the noise components $w_i$ are i.i.d. centrally symmetric complex Gaussian variables with variance $\sigma^2$.  By swapping the roles of frequency and time or space, the signal model \eqref{signal} also serves as a proper model for superresolution imaging where we aim to localize temporal events or spatial targets from noisy, low-frequency measurements~\cite{cg_exact12,cg_noisy}.  Our first result characterizes the denoising error $\frac{1}{n}\vnorm{x^\star - \hat{x}}_2^2$ and is summarized in the following theorem.
+
+\begin{theorem}
+\label{main}
+Suppose the line spectral signal $x^\star$ is given by \eqref{signal}
+and we observe $n$ noisy consecutive samples $y_j = x^\star_j + w_j$ where $w_j$ is i.i.d. complex Gaussian with variance $\sigma^2$. If the frequencies  $\{f_l\}_{l=1}^k$ in $x^\star$ satisfy a minimum separation condition
+\begin{equation}
+\label{min-sep}
+\min_{p\neq q}d(f_p,f_q) > 4/n
+\end{equation}
+with $d(\cdot, \cdot)$ the distance metric on the torus, then we can determine an estimator $\hat{x}$ satisfying
+\begin{equation}
+\label{fast-rate}
+\frac{1}{n}\vnorm{\hat{x} - x^\star}_2^2 = O\left( \sigma^2 \frac{k \log(n)}{n}\right)  
+\end{equation}
+with high probability by solving a semidefinite programming problem.
+\end{theorem}
+
+Note that if we exactly knew the frequencies $f_j$, the best rate of estimation we could achieve would be $O(\sigma^2 k / n)$~\cite{oracle_lasso}.  Our upper bound is merely a logarithmic factor larger than this rate.  On the other hand, we will demonstrate via minimax theory that a logarithmic factor is unavoidable when the support is unknown.  Hence, our estimator is nearly minimax optimal. 
+
+It is instructive to compare our stability rate to the optimal rate achievable for estimating a sparse signal from a finite, discrete dictionary~\cite{cd_minimax}. In the case that there are $p$ incoherent  dictionary elements,  no method can estimate a $k$-sparse signal from $n$ measurements corrupted by Gaussian noise at a rate less than $O(\sigma^2 \frac{k\log(p/k)}{n})$.  In our problem, there are an infinite number of candidate dictionary elements and it is surprising that we can still achieve such a fast rate of convergence with our highly coherent dictionary.  We emphasize that none of the standard techniques from sparse approximation can be immediately generalized to our case.  Not only is our dictionary infinite, but also it does not satisfy the usual assumptions such as restricted eigenvalue conditions~\cite{rest_eig} or coherence conditions~\cite{coherence} that are used to derive stability results in sparse approximation.  Nonetheless, in terms of mean-square error performance, our results match those obtained when the frequencies are restricted to lie on a discrete grid.
+
+In the absence of noise, polynomial interpolation can exactly recover a line spectral signal of $k$ \emph{arbitrary} frequencies with as few as $2 k$ equispaced measurements.   In the light of our minimum frequency separation requirement~\eqref{min-sep}, why should one favor convex techniques for line spectral estimation? Our stability result coupled with minimax optimality establish that no method can perform better than convex methods when the frequencies are well-separated.  And, while polynomial interpolation and subspace methods do not impose any resolution limiting assumptions on the constituent frequencies, these methods are empirically highly sensitive to noise. To the best of our knowledge, there is no result similar to Theorem~\ref{main} that provides finite sample guarantees about the noise robustness of polynomial interpolation techniques.  
+
+Additionally, little is known about how well spectral lines can be localized from noisy observations.  The frequencies estimated by any method will never exactly coincide with the true frequencies in the signal in the presence of noise. However, we can characterize the localization performance of our convex programming approach, and summarize this performance in Theorem~\ref{support}.
+
+Before stating the theorem, we introduce a bit of notation. Define neighborhoods $N_j$ around each frequency $f_j$ in $x^\star$ by $N_j := \{ f \in \mathbb{T} : d(f,f_j) \leq 0.16/n\}$. Also define $F = \mathbb{T}\backslash \cup_{j=1}^k N_j$ as the set of frequencies in $\mathbb{T}$ which are not near any true frequency.  The letters $N$ and $F$ denote the regions that are \emph{near} to and \emph{far} from the true supporting frequencies.  The following theorem summarizes our localization guarantees.
+
+\begin{theorem}
+\label{support}
+Let $\hat{x}$ be the solution to the same semidefinite programming (SDP) problem as referenced in Theorem~\ref{main} and $n > 256$.  Let $\hat{c_l}$ and $\hat{f}_l$ form the  decomposition of $\hat{x}$ into coefficients and frequencies, as revealed by the SDP. Then, there exist fixed numerical constants $C_1,C_2$ and $C_3$ such that with high probability
+\begin{enumerate}[i.)]
+\item $\sum_{l : \hat{f}_l \in F} |\hat{c}_l| \leq  C_1 \sigma\sqrt{\frac{k^2 \log(n)}{n}}$
+\item $\sum_{l : \hat{f}_l \in N_j} |\hat{c}_l| \left\{ \min_{f_j \in T} d(f_j,\hat{f}_l) \right\}^2 \leq  C_2 \sigma\sqrt{\frac{k^2 \log(n)}{n}}$
+\item $\left| c_j - \sum_{l : \hat{f_l} \in N_j} \hat{c}_l \right| \leq C_3 \sigma\sqrt{\frac{k^2 \log(n)}{n}}$.
+\item If for any frequency $f_j$, the corresponding amplitude $|c_j| > C_1 \sigma \sqrt{\frac{ k^2 \log(n)}{n}}$, then with high probability there exists a corresponding frequency $\hat{f}_j$ in the recovered signal such that,
+\[
+\left| f_j - \hat{f}_j \right|  \leq \frac{\sqrt{C_2/C_1}}{n}\left(\frac{|c_j|}{C_1 \sigma \sqrt{\frac{ k^2 \log(n)}{n}}} - 1\right)^{-\tfrac{1}{2}}
+\]
+\end{enumerate}
+\end{theorem}
+  
+Part (i) of Theorem~\ref{support} shows that the estimated amplitudes corresponding to frequencies far from the support are small. In practice, we note that we rarely find any spurious frequencies in the far region, suggesting that  our bound (i) is conservative. Parts (ii) and (iii) of the theorem show that in a neighborhood of each true frequency, the recovered signal has amplitude close to the true signal. Part (iv) shows that the larger a particular coefficient is, the better our method is able to estimate the corresponding frequency.  In particular, note that if $|c_j| > 2 C_1 \sigma \sqrt{\frac{ k^2 \log(n)}{n}}$, then $\left| f_j - \hat{f}_j \right|  \leq  \frac{\sqrt{C_2/C_1} }{n}$. In all four parts, note that the localization error goes to zero as the number of samples grows.
+
+We proceed as follows.  In Section~\ref{sec:line-spec}, we begin by contextualizing our result in the canon of line spectral estimation.  We emphasize the advantages and shortcomings of prior art, and describe the methods on which our analysis is built upon.  We then in Section~\ref{sec:atomic-norms} describe the semidefinite programming approach to line spectral estimation, originally introduced in~\cite{btr12}, and explain how it relates to other recent spectrum estimation algorithms.  We present minimax lower-bounds for line spectral estimation in Section~\ref{sec:minimax}.  We then provide the proofs of our main results in Section~\ref{sec:proofs}. Finally, in Section~\ref{sec:experiments}, we empirically demonstrate that the semidefinite programming approach outperforms MUSIC~\cite{music} and Cadzow's technique~\cite{cadzow05} in terms of the localization metrics defined by parts (i), (ii) and (iii) of Theorem~\ref{support}.
+
+\section{What is the best rate we can expect?}\label{sec:minimax}
+Using results about minimax achievable rates for linear models~
+\cite{cd_minimax,rw_minimax}, we can deduce that the convergence rate stated in 
+\eqref{fast-rate} is near optimal. Define the set of $k$ well separated frequencies as
+\[
+\mathcal{S}_k = \left\{(f_1, \dots, f_k) \in \mathbb{T}^k ~\middle|~  d(f_p, f_q) \geq 4/n, p \neq q \right\}
+\]
+The expected minimax denoising error $M_k$ for a line spectral signal with frequencies from $\mathcal{S}_k$ is defined as the lowest expected denoising error rate for any estimate $\hat{x}(y)$ for the worst case signal $x^\star$ with  support $T(x^\star) \in \mathcal{S}_k$. Note that we can lower bound $M_k$ by restricting the set of candidate frequencies to smaller set.  To that end, suppose we restrict the signal $x^\star$ to have frequencies only drawn from an equispaced grid on the torus $T_n := \{ 4 j/n \}_{j=1}^{n/4}$. Note that any set of $k$ frequencies from $T_n$ are pairwise separated by at least $4/n$. If we denote by $F_n$ a $n \times (n/4)$ partial DFT matrix with (unnormalized) columns corresponding to frequencies from $T_n$,  we can write $x^\star = F_n c^\star$ for some $c^\star$ with $\vnorm{c^\star}_0 = k$. Thus,
+\begin{align*}
+M_k &:= \inf_{\hat{x}}
+ \sup_{
+	T(x^\star) \in \mathcal{S}_k}
+\frac{1}{n} \mathbb{E} \vnorm{\hat{x} - x^\star}_2^2
+	\\
+&\geq \inf_{\hat{x}} 
+ \sup_{
+	\vnorm{c^\star}_0 \leq k
+	} \frac{1}{n} \mathbb{E} \vnorm{\hat{x} - F_n c^\star}_2^2\\
+&\geq \inf_{\hat{c}}
+ \sup_{\vnorm{c^\star}_0 \leq k} \frac{1}{n} \mathbb{E} \vnorm{F_n(\hat{c} - c^\star)}_2^2\\
+&\geq  \frac{n}{4} \left\{ \inf_{\hat{c}}
+ \sup_{\vnorm{c^\star}_0 \leq k}\frac{4}{n} \mathbb{E} \vnorm{\hat{c} - c^\star}_2^2\right\}\,.
+\end{align*}
+Here, the first inequality is the restriction of $T(x^\star)$. The second inequality follows because we project out all components of $\hat{x}$ that do not lie in the span of $F_n$. Such projections can only reduce the Euclidean norm. The third inequality uses the fact that the minimum singular value of $F_n$ is $n$ since $F_n^*F_n = n I_{{n}/{4}}$. Now we may directly apply the lower bound for estimation error for linear models derived by Cand\'es and Davenport.  Namely, Theorem 1 of~\cite{cd_minimax} states that 
+\begin{align*}
+\inf_{\hat{c}}
+ \sup_{\vnorm{c^\star}_0 \leq k} \frac{4}{n} \mathbb{E} \vnorm{\hat{c} - c^\star}_2^2&\geq {C} \sigma^2 \frac{k \log\left(\frac{n}{4k}\right)}{\vnorm{F_n}_\mathrm{F}^2}\,.
+ \end{align*} With the preceding analysis and the fact that $\vnorm{F_n}_{\mathrm{F}}^2 = n^2/4$, we can thus deduce the following theorem:
+ \begin{theorem}
+\label{minimax}
+Let $x^\star$ be a line spectral signal as described by \eqref{signal} with the support $T(x^\star) = \{f_1, \dots, f_k\} \in \mathcal{S}_k$ and $y = x^\star + w$, where $w \in \C^n$ is circularly symmetric Gaussian noise with variance $\sigma^2 I_n$. Let $\hat{x}$ be any estimate of $x^\star$ using $y$. Then,
+\[
+M_k = \inf_{\hat{x}}
+ \sup_{
+	T(x^\star) \in \mathcal{S}_k}
+\frac{1}{n} \mathbb{E} \vnorm{\hat{x} - x^\star}_2^2
+\geq C\sigma^2 \frac{k \log\left(\frac{n}{4k}\right)}{n}
+\]
+for some constant $C$ that is independent of $k$, $n$, and $\sigma$.
+\end{theorem}
+
+This theorem and Theorem~\ref{main} certify that AST is nearly minimax optimal for spectral estimation of well separated frequencies. 
+
+
+
+\section{Proofs of Main Theorems}
+\label{sec:proofs}
+
+In this section, there are many numerical constants.  Unless otherwise specified, $C$ will denote a numerical constant whose value may change from equation to equation.  Specific constants will be highlighted by accents or subscripts.
+
+We describe the preliminaries and notations, and restate some recent results we used 
+before sketching the proof of Theorems \ref{main} and \ref{support}.
+
+\subsection{Preliminaries}
+The sample $x^\star_j$ may be regarded as the $j$th trigonometric moment of 
+the discrete measure $\mu$ given by \eqref{mu}:
+\begin{eqnarray*}
+  x_j^\star & = & \int_0^1 e^{i 2 \pi j f} \mu ( d f)
+\end{eqnarray*}
+for $-m \leq j \leq m$.
+Thus, the problem of extracting the frequencies and amplitudes from noisy 
+observations may be regarded as the inverse problem of estimating a measure 
+from noisy trigonometric moments.
+
+We can write the vector $x^\star$ of observations $[x_{-m}^\star, \ldots, x_m^\star]^T$ in terms of an \emph{atomic decomposition}
+\[
+x^\star = \sum_{l=1}^k c_l a(f_l)
+\]
+or equivalently in terms of a corresponding \emph{representing measure} $\mu$ given by \eqref{mu} satisfying
+\[
+x^\star = \int_0^1 a(f) \mu(df)
+\]
+There is a one-one correspondence between atomic decompositions and representing measures. Note that there are infinite atomic decompositions of $x^\star$ and also infinite corresponding representing measures. However, since every collection of $n$ atoms is linearly independent, $\A$ forms a full spark frame~\cite{spark} and therefore the problem of finding the sparsest decomposition of $x^\star$ is well-posed if there is a decomposition which is at least $n/2$ sparse.
+
+The atomic norm of a vector $z$ defined in \eqref{def-atnorm} is the minimum total variation norm~\cite{cs_otg,tvnorm} $\vnorm{\mu}_{\mathrm{TV}}$ of all representing measures $\mu$ of $z$. So, minimizing the total variation norm is the same as finding a decomposition that achieves the atomic norm.
+
+\subsection{Dual Certificate and Exact Recovery}
+
+Atomic norm minimization attempts to recover the sparsest  decomposition by finding a decomposition that achieves the atomic norm, i.e., find ${c_l,f_l}$ such that  $x^\star = \sum_l c_l a(f_l)$ and $
+\vnorm{x^\star}_\A = \sum_l |c_l| 
+$ or equivalently, finding a representing measure $\mu$ of the form \eqref{mu} that minimizes the total variation norm $
+\vnorm{\mu}_{\mathrm{TV}}$. The authors  of~\cite{cg_exact12} showed 
+that when $n > 256$, the  decomposition that achieves the atomic norm is the sparsest decomposition 
+by explicitly constructing a dual certificate~\cite{dualcert} of optimality, whenever the composing 
+frequencies $f_1, \ldots, f_k$ satisfy a minimum separation condition~\eqref{min-sep}. In the rest of the paper, we always make the technical assumption that $n > 256$.
+
+\begin{definition}[Dual Certificate]
+\label{dual-cert}
+A vector $q \in \C^n$ is called a dual certificate for $x^\star$ if for the corresponding trigonometric polynomial $Q(f) := \langle q, a(f) \rangle$, we have
+$$Q(f_l) = \operatorname{sign}(c_l), l = 1, \ldots, k$$  and $$|Q(f)| < 1$$ whenever $f\not\in \{ f_1, \ldots, f_k\}$.
+\end{definition}
+The authors of ~\cite{cg_exact12} not only explicitly constructed 
+such a certificate characterized by the dual polynomial $Q$, but also showed that their construction satisfies some stability conditions, which is crucial for showing that denoising using the atomic norm provides stable recovery in the presence of noise.
+
+\begin{theorem}[Dual Polynomial Stability, Lemma 2.4 and 2.5 in \cite{cg_noisy}]
+\label{dual-stab} For any $f_1, \ldots, f_k$ satisfying the separation condition \eqref{min-sep} and any sign vector $v \in \C^k$ with $|v_j|=1$, there exists a trigonometric polynomial $Q = \left<q, a(f)\right>$ for some $q \in \C^n$ with the following properties: 
+\begin{enumerate}
+\item For each $j = 1, \ldots, k$, $Q$ interpolates the sign vector $v$ so that $Q(f_j) = v_j$
+\item In each neighborhood $N_j$ corresponding to $f_j$ defined by
+$N_j = \left\{ f : d(f, f_j) < {0.16}/{n} \right\}$, 
+the polynomial $Q(f)$ behaves like a quadratic and there exist constants $C_a, C_a'$ so that
+\begin{align}
+\label{q1}|Q(f)| & \leq 1 - \frac{C_a}{2} n^2 (f-f_j)^2\\
+\label{q2}|Q(f) - v_j| & \leq \frac{C_a'}{2} n^2 (f - f_j)^2
+\end{align}
+\item When $f \in F = [0,1] \backslash \cup_{j=1}^k{N_j}$, there is a numerical constant $C_b>0$ such that
+\[
+|Q(f)| \leq 1 - C_b
+\]
+\end{enumerate}
+\end{theorem}
+
+We use results in~\cite{cg_noisy} and~\cite{btr12} (reproduced in Appendix D for convenience) and borrow several ideas from the proofs in~\cite{cg_noisy}, with nontrivial modifications to establish the error rate of atomic norm regularization.
+
+\subsection{Proof of Theorem~\ref{main}}
+Let $\hat{\mu}$ be the representing measure for the solution $\hat{x}$  of \eqref{atnorm-denoise} with minimum total variation norm, that is,
+\[
+\hat{x} = \int_0^1 a(f) \hat{\mu}(df)
+\]
+and $\vnorm{\hat{x}}_\A = \vnorm{\hat{\mu}}_{\mathrm{TV}}$. Denote the error vector by $e = x^\star - \hat{x}$. 
+Then, the difference measure $\nu = \mu - \hat{\mu}$ is a representing measure for $e$. We first express the denoising error $\vnorm{e}_2^2$ as the integral of the error function $E(f) = \langle e, a(f) \rangle,$ against the difference measure $\nu$:
+\begin{align*}
+\vnorm{e}_2^2 &= \langle e, e \rangle\\
+& = \left\langle e, \int_0^1 a(f) \nu(df) \right\rangle\\
+& =  \int_0^1  \left\langle e,a(f) \right\rangle \nu(df)\\
+& = \int_0^1 E(f) \nu(df).
+\end{align*}
+
+
+Using a Taylor series approximation in each of 
+the near regions $N_j$, we first show that the denoising error (or in general any 
+integral of a trigonometric polynomial against the difference measure) can be controlled in terms 
+of an integral in the far region $F$ and the zeroth, first, and second 
+moments of the difference measure in the near regions.  The precise result is presented in the following lemma, whose proof is given in Appendix \ref{apx:pf:taylor}.
+\begin{lemma}
+\label{part1}
+Define
+\begin{align*} 
+I_0^j &:= \left| \int_{N_j} \nu(df) \right|\\
+I_1^j &:= n \left| \int_{N_j} (f-f_j) \nu(df) \right|\\
+I_2^j &:= \frac{n^2}{2} \int_{N_j} (f-f_j)^2 |\nu|(df)\\
+I_l &:= \sum_{j=1}^k I_l^j,~~\mbox{for}~l = 0, 1, 2\,.
+\end{align*}
+Then for any $m$th order trigonometric polynomial $X$, we have
+\[
+\int_0^1{ X(f) \nu(df)}
+\leq \vnorm{X(f)}_\infty \left(\int_F{|\nu|(df)} + I_0 + I_1 + I_2\right)
+\]
+\end{lemma}
+
+Applying Lemma \ref{part1} to the error function, we get
+\begin{equation}
+\label{ebd}
+\vnorm{e}_2^2 \leq \vnorm{E(f)}_\infty 
+\left( \int_F{|\nu|(df)} + I_0 + I_1 + I_2\right)
+\end{equation}
+As a consequence of our choice of $\tau$ in \eqref{tau}, we can show that $\vnorm{E(f)}_\infty \leq (1+2\eta^{-1})\tau$ with high probability. In fact, we have
+\begin{align*}
+\vnorm{E(f)}_\infty &= \sup_{f \in [0,1]}\left|\langle e, a(f) \rangle\right|\\
+&= \sup_{f \in [0,1]} \left| \langle x^\star - \hat{x}, a(f) \rangle\right|\\
+&\leq \sup_{f \in [0,1]} \left| \langle w, a(f) \rangle \right| +  \sup_{f \in [0,1]} \left| \langle y - \hat{x}, a(f) \rangle \right|\\
+&\leq \sup_{f \in [0,1]} \left| \langle w, a(f) \rangle \right| +  \tau\\
+\label{errbd} \numberthis &\leq (1 +2\eta^{-1})\tau \leq 3 \tau, \text{with high probability.}
+\end{align*}
+The second inequality follows from the optimality conditions for \eqref{atnorm-denoise}. It is shown in Appendix C of ~\cite{btr12} that the penultimate inequality holds with high probability.
+
+Therefore, to complete the proof, it suffices to show that the other terms on the right hand side of \eqref{ebd} are $O(\frac{k\tau}{n})$.  While there is no exact frequency recovery in the presence of noise, we can hope to get the frequencies approximately right. Hence, we expect that the integral in the far region can be well controlled and the local integrals of the difference measure in the near regions are also small due to cancellations. Next, we utilize the properties of the dual polynomial in Theorems~\ref{dual-stab} and another polynomial given in Theorem~\ref{dual-lin}  in Appendix \ref{apx:collection} to show that the zeroth and first moments of $\nu$ may be controlled in terms of the other two quantities in \eqref{ebd} to upper bound the error rate. The following lemma is similar to Lemmas 2.2 and 2.3 in~\cite{cg_noisy}, but we have made several modifications to adapt it to our signal and noise model. For completeness, we provide the proof in Appendix \ref{apx:pf:I0I1}. 
+
+\begin{lemma}
+\label{part2}
+There exists numeric constants $C_0$ and $C_1$ such that
+\begin{align*}
+I_0 &\leq C_0 \left(\frac{k \tau}{n} + I_2 + \int_F{|\nu|(df)}\right) \\
+I_1 &\leq C_1 \left(\frac{k \tau}{n} + I_2 + \int_F{|\nu|(df)}\right).
+\end{align*}
+\end{lemma}
+
+All that remains to complete the proof is an upper bound on $I_2$ and $\int_F{|\nu|(df)}$.  The key idea in establishing such a bound is deriving upper and lower bounds on the
+difference $\| P_{T^c} ( \nu) \|_{{\mathrm{TV}}} - \| P_T ( \nu) \|_{{\mathrm{TV}}}$
+between the total variation norms of $\nu$ on and off the support. The upper bound can be derived using optimality conditions. We lower bound $\| P_{T^c} ( \nu)
+\|_{{\mathrm{TV}}} - \| P_{T} ( \nu) \|_{{\mathrm{TV}}}$ using the fact that a constructed dual
+certificate $Q$ has unit magnitude for every element in the support
+$T$ of $P_T ( \nu)$ whence we have $\| P_T ( \nu) \|_{{\mathrm{TV}}} = \int_{\mathbb{T}}
+Q ( f) \nu ( d f)$. A critical element in deriving both the lower and upper bounds is that the dual polynomial $Q$ has quadratic drop in each near regions $N_j$ and is bounded away from one in the far region $F$. Finally, by combing these bounds and carefully controlling the regularization parameter, we get the desired result summarized in the following lemma. The details of the proof are fairly technical and we leave them to Appendix \ref{apx:pf:I2far}.
+
+\begin{lemma}
+Let $\tau = \eta\sigma \sqrt{n\log(n)}$. If $\eta>1$ is large enough, then there exists a numerical constant $C$ such that, with high probability
+\label{part3}
+\[
+\int_F{|\nu|(df)} + I_2 \leq \frac{C k \tau}{n}.
+\]
+\end{lemma}
+
+Putting together Lemmas \ref{part1}, \ref{part2} and \ref{part3}, we finally prove our main theorem:
+\begin{align*}
+\frac{1}{n}\vnorm{e}_2^2 
+&\leq \frac{\vnorm{E(f)}_\infty}{n} \left(\int_F{|\nu|(df)} + I_0 + I_1 + I_2\right)\\
+&\leq \frac{\vnorm{E(f)}_\infty}{n} \left(\frac{C_1 k \tau}{n} + C_2 \int_F{|\nu|(df)} + C_3 I_2\right)\\
+&\leq  \frac{\vnorm{E(f)}_\infty}{n} \frac{C k \tau}{n} \\
+& \leq \frac{C k \tau^2}{n^2}\\
+&= O\left(\sigma^2\frac{k \log(n)}{n}\right).
+\end{align*}
+The first three inequalities come from successive applications of Lemmas 1, 2 and 3 respectively. The fourth inequality follows from \eqref{errbd} and the fifth by our choice of $\tau$ according to Eq. \eqref{tau}. This completes the proof of Theorem \ref{main}.
+
+
+
+\subsection{Proof of Theorem~\ref{support}}
+\label{sec:support}
+The first two statements in Theorem \ref{support} are direct consequences of Lemma~\ref{part3}. For (iii.), we follow~\cite{granda2} and  use the dual polynomial $Q_j^{\star} ( f) = \langle q_j^{\star}, a ( f)\rangle$ constructed in Lemma 2.2 of~\cite{granda2} which satisfies
+\begin{eqnarray*}
+  Q_j^{\star} ( f_j) & = & 1\\
+  | 1 - Q_j^{\star} ( f) | & \leq & n^2 C_1' ( f - f_j)^2, f \in N_j\\
+  | Q_j^{\star} ( f) | & \leq & n^2 C_1' ( f - f_{j'})^2, f \in N_{j'}, j' \neq
+  j\\
+  | Q_j^{\star} ( f) | & \leq & C_2', f \in F.
+\end{eqnarray*}
+We note that $c_j - \sum_{\hat{f}_l \in N_j} \hat{c}_l = \int_{N_j} \nu(df)$. Then, by applying triangle inequality several times,
+\begin{align*}
+\left| \int_{N_j}  \nu(df)\right|
+& \leq \left| \int_{N_j}  Q_j^\star (f) \nu(df)\right| + \left| \int_{N_j}  (1-Q_j^\star (f)) \nu(df)\right|\\
+& \leq \left| \int_0^1  Q_j^\star (f) \nu(df)\right| + \left| \int_{N_j^c}  Q_j^\star (f) \nu(df)\right| + \left| \int_{N_j}  (1-Q_j^\star (f)) \nu(df)\right|\\
+& \leq \left|\int_0^1  Q_j^\star (f) \nu(df)\right| + \left| \int_{F}  Q_j^\star (f) \nu(df)\right| \\
+&\qquad\qquad\qquad + \sum_{\substack{j' \neq j\\j'=1}}^k \int_{N_{j'}} \left| Q_j^\star (f)\right| |\nu|(df) +  \int_{N_j}  \left|1-Q_j^\star (f)\right| |\nu(df)|\,.
+\end{align*}
+
+We upper bound the first term using Lemma~\ref{l4} in Appendix \ref{apx:collection} which yields
+\[
+\left| \int^0_{1}  Q_j^\star (f) \nu(df)\right| \leq \frac{Ck \tau}{n}
+\]
+The other terms can be controlled using the properties of $Q_j^\star$:
+\begin{align*}
+\left| \int_{F}  Q_j^\star (f) \nu(df)\right| & \leq C_2' \int_{F} |\nu| (df)\\
+\sum_{\substack{j' \neq j\\j'=1}}^k \int_{N_{j'}} \left| Q_j^\star (f)\right| |\nu|(df) +  \int_{N_j}  \left|1-Q_j^\star (f)\right| |\nu|(df)
+& \leq
+ C_1'\sum_{j'=1}^k \int_{N_{j'}} n^2 (f-f_{j'})^2 |\nu|(df) = C_1 I_2
+\end{align*}
+Using Lemma~\ref{part3}, both of the above are upper bounded by $\frac{C k \tau}{n}$. Now, by combining these upper bounds, we finally have
+\[
+\left| c_j - \sum_{l : \hat{f}_l \in N_j} \hat{c}_l \right| \leq \frac{C_3 k \tau}{n}
+\]
+This shows part (iii) of the theorem. Part (iv) can be obtained by combining parts (ii) and (iii).
+

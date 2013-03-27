@@ -1,2 +1,273 @@
 \chapter{Algorithms}
 \label{chap:algos}
+
+As alluded to in Chapter 1, the problems of atomic norm decomposition and
+regularization have linear and quadratic objectives can be efficiently computed
+provided there is an efficient way to test membership in the constraint sets.
+The constraint sets of the primal and dual problems are the sublevel sets of
+the atomic and the dual atomic norm. Therefore, it is sufficient to develop
+efficient characterizations of the atomic norm ball to develop efficient
+algorithms for these problems.
+
+For the special case of Fourier measurements, the atomic norm ball has
+semidefinite characterizations which we derive in this chapter. The positive
+case is classical and comes from moment theory and the dual theory of positive
+polynomials. We will see how to derive the semidefinite characterization for
+the more general complex case. We will also review the results for the positive case which we will need, and provide the proofs for the positive case for completeness. 
+
+\section{Semidefinite Characterization}
+
+\subsection{Positive Trigonometric Moments}
+
+
+\subsection{General Trigonometric Moments}
+
+\subsection{SDP for Atomic Soft Thresholding}
+\label{sec:sdp-ast}
+
+In this section, we present a semidefinite characterization of the atomic norm
+associated with the line spectral atomic set $\mathcal{A} = \{a_{f,\phi} | f
+\in [0, 1], \phi \in [0, 1]\}$. This characterization allows us to rewrite
+ {\eqref{AST}} as an equivalent semidefinite programming problem.
+
+Recall from \eqref{eq:dual-norm-poly} that the dual atomic norm of a vector $v
+\in \mathbb{C}^n$ is the maximum absolute value of a complex trigonometric
+polynomial $V(f) = \sum_{l=0}^{n-1} v_l e^{-2\pi i l f}$. As a
+consequence, a constraint on the dual atomic norm is equivalent to
+a bound on the magnitude of $V(f)$:
+\begin{align*}
+\|v\|_\A^* \leq \tau \Leftrightarrow |V(f)|^2 \leq \tau^2, \forall f \in [0, 1].
+\end{align*}
+The function $q(f) = \tau^2-|V(f)|^2$ is a trigonometric polynomial (that is, a
+polynomial in the variables $z$ and $z^*$ with $|z|=1$). A necessary and
+sufficient condition for $q(f)$ to be nonnegative is that it can be written as
+a sum of squares of trigonometric polynomials~\cite{Megretski03}. 
+Testing if $q$ is a sum of squares can be achieved
+via semidefinite programming. To state the associated semidefinite program,
+define the map $T:\mathbb{C}^n \rightarrow \mathbb{C}^{n\times n}$ which
+creates a Hermitian Toeplitz matrix out of its input, that is
+\[
+T(x)= \left[
+\begin{array}{ccccc} x_1 & x_2 & \ldots & x_n\\ 
+x^*_2 & x_1  & \ldots & x_{n-1}\\
+ \vdots & \vdots & \ddots & \vdots\\
+ x^*_n & x^*_{n-1}  & \ldots & x_1
+ \end{array}\right]
+\]
+Let $T^*$ denote the adjoint of the map $T$. Then we have the following
+succinct characterization
+
+\begin{lemma}\cite[Theorem 4.24]{brl2007}\label{lm:brl} For any given causal trigonometric polynomial $V(f) = \sum_{l=0}^{n-1} v_l
+e^{-2\pi i l f}$, $|V(f)| \leq \tau $ if and only if there exists complex
+Hermitian matrix $Q$ such that
+\begin{align*}
+T^*(Q) = \tau^2 {e}_1~~\mbox{and}~~
+\begin{bmatrix}
+  Q & v \\
+  v^* & 1
+ \end{bmatrix} \succeq 0.
+\end{align*}
+Here, ${e}_1$ is the first canonical basis vector with a one at the first
+component and zeros elsewhere and $v^*$ denotes the Hermitian adjoint
+(conjugate transpose) of $v$.
+\end{lemma}
+
+
+Using Lemma \ref{lm:brl}, we rewrite the atomic norm $\|x\|_\A =
+\sup_{\|v\|_\A^*\leq 1} \left<x, v\right> $ as the following semidefinite
+program:
+\begin{equation}\label{eq:sdpprimal}
+ \begin{array}{ll}
+\operatorname*{maximize}_{v,\ Q} & \left<x, v\right>\\
+\text{subject  to}  &
+ \begin{bmatrix}
+  Q & v \\
+  v^* & 1
+ \end{bmatrix} \succeq 0, \qquad  T^*(Q) = {e}_1 .
+\end{array}
+\end{equation}
+The dual problem of \eq{sdpprimal} (after a trivial rescaling) is then equal to
+the atomic norm of $x$:
+\begin{align*}
+\begin{array}{lll} \|x\|_\A =&  \min_{t, u} & \tfrac{1}{2} (t + u_1)  \\
+&\operatorname{subject\ to}
+& \begin{bmatrix}
+  T(u) & x \\
+  x^* & t
+ \end{bmatrix} \succeq 0.\end{array}
+\end{align*}
+Therefore, the atomic denoising problem \eqref{AST} for the set of trigonometric atoms is equivalent to
+\begin{equation}\label{eq:sdpdenoising}
+\begin{array}{ll}
+\operatorname*{minimize}_{t, u, x} & \frac{1}{2} \|x - y\|_2^2 + \frac{\tau}{2}(t + u_1) \\
+\operatorname{subject\ to}
+& \begin{bmatrix}
+  T(u) &  x \\
+ x^* & t
+ \end{bmatrix} \succeq 0.\end{array} 
+\end{equation}
+
+The semidefinite program \eq{sdpdenoising} can be solved by off-the-shelf
+solvers such as SeDuMi~\cite{sedumi} and SDPT3~\cite{SDPT3}. However, these
+solvers tend to be slow for  large problems. For the interested reader, we provide a reasonably efficient algorithm based upon the Alternating Direction Method of Multipliers.
+
+\section{Alternating Direction Method of Multipliers}
+\label{sec:admm}
+
+\subsection{Decomposition}
+\subsection{Missing Samples}
+\subsection{Denoising}
+
+
+A thorough survey of the ADMM algorithm is given in~\cite{admm2011}. We only
+present the details essential to the implementation of atomic norm soft
+thresholding. To put our problem in an appropriate form for ADMM,
+rewrite~\eq{sdpdenoising} as
+\begin{equation*}
+\begin{array}{ll}
+\operatorname*{minimize}_{t, u, x,Z} & \frac{1}{2} \|x - y\|_2^2 + \frac{\tau}{2}(t + u_1) \\
+\operatorname{subject\ to}
+& Z=\begin{bmatrix}
+  T(u) & x \\
+  x^* & t
+ \end{bmatrix} \\
+& Z\succeq 0.\end{array} 
+\end{equation*}
+and dualize the equality constraint via an Augmented Lagrangian:
+\begin{align*}
+\mathcal{L}_\rho (t,u,x,Z, \Lambda)= \frac{1}{2} \|x - y\|_2^2 + \frac{\tau}{2}(t +  u_1) + \\
+\left\langle   \Lambda, Z-\begin{bmatrix}
+  T(u) & x \\
+  x^* & t
+ \end{bmatrix} \right\rangle +
+  \frac{\rho}{2} \left\| Z-\begin{bmatrix}
+  T(u) & x \\
+  x^* & t
+ \end{bmatrix} \right\|_F^2
+\end{align*}
+
+ADMM then consists of the update steps:
+\begin{align*}
+(t^{l+1},u^{l+1},x^{l+1})  \leftarrow \arg\min_{t,u,x} \mathcal{L}_\rho(t,u,x,Z^l, \Lambda^l) \\
+Z^{l+1}  \leftarrow \arg\min_{Z\succeq 0}  \mathcal{L}_\rho(t^{l+1},u^{l+1},x^{l+1}, Z, \Lambda^l ) \\
+\Lambda^{l+1}  \leftarrow \Lambda^l + \rho  \left( Z^{l+1}-\begin{bmatrix}
+  T(u^{l+1}) &  x^{l+1} \\
+  {x^{l+1}}^* & t^{l+1}
+ \end{bmatrix} \right).
+\end{align*}
+The updates with respect to $t$, $x$, and $u$ can be computed in closed form:
+\begin{align*}
+    t^{l+1} &= Z_{n+1,n+1}^l+\left(\Lambda_{n+1,n+1}^l-\frac{\tau}{2}\right)/\rho\\
+	 x^{l+1} &= \frac{1}{2\rho+1}(y  + 2\rho z_1^{l} + 2\lambda_1^l)\\
+    u^{l+1} &= W \left(T^*(Z_0^l+ \Lambda_0^l/\rho) - \frac{\tau }{2\rho} {e}_1\right)
+\end{align*}
+Here $W$ is the diagonal matrix with entries
+\[
+	W_{ii} = \begin{cases} 
+		\frac{1}{n} & i=1\\
+		\frac{1}{2(n-i+1)} & i>1
+	\end{cases}
+\]
+and we introduced the partitions:
+\[
+	Z^l = \begin{bmatrix} Z_0^l & z_1^l \\ {z_1^l}^* & Z^l_{n+1,n+1} \end{bmatrix} ~~~\mbox{and}~~~
+	\Lambda^l = \begin{bmatrix} \Lambda_0^l & \lambda_1^l \\ {\lambda_1^l}^* & \Lambda^l_{n+1,n+1} \end{bmatrix}\,.
+\]
+The $Z$ update is simply the projection onto the positive definite cone
+\begin{equation}\label{eq:z-step}
+\hspace{-.3cm}Z^{l+1}:=	 \arg\min_{Z\succeq 0} \left\|Z-\begin{bmatrix}
+  T(u^{l+1}) &  x^{l+1} \\
+   {x^{l+1}}^* & t^{l+1}
+ \end{bmatrix}+\Lambda^{l}/\rho\right\|_F^2\,.
+\end{equation}
+Projecting a matrix $Q$ onto the positive definite cone is accomplished by
+forming an eigenvalue decomposition of $Q$ and setting all negative eigenvalues
+to zero.
+
+To summarize, the update for $(t,u,x)$ requires averaging the diagonals of a
+matrix (which is equivalent to projecting a matrix onto the space of Toeplitz
+matrices), and hence operations that are $O(n)$. The update for $Z$ requires
+projecting onto the positive definite cone and requires $O(n^3)$ operations. The update for $\Lambda$ is simply
+addition of symmetric matrices.  
+
+Note that the dual solution $\hat{z}$ can be obtained as $\hat{z} = y - \hat{x}$ from the
+primal solution $\hat{x}$ obtained from ADMM by using
+Lemma~\ref{lem:dual-problem}.
+
+\section{DAST}
+\subsection{Line Spectral Signals}
+\subsection{Discretization and Lasso}
+\label{sec:comp-method}
+When the number of samples is larger than a few hundred, the running time of
+our ADMM method is dominated by the cost of computing eigenvalues and is
+usually expensive~\cite{12BhaskarArxiv}. For very large problems, we now propose using Lasso as an
+alternative to the semidefinite program~\eq{sdpdenoising}. To proceed, pick a
+uniform grid of $N$ frequencies and form $\A_N = \left\{ a_{m/N,\phi}
+~\middle|~ 0 \leq m \leq N-1 \right\} \subset \A $ and solve \eqref{AST} on
+this grid. i.e., we solve the problem
+\begin{equation}
+	\label{epsprimal} \text{minimize }\frac{1}{2} \vnorm{x - y}_2^2 + \tau \vnorm{x}_{\A_N}. 
+\end{equation}
+
+To see why this is to our advantage, define $\Phi$ be the $n \times N$ Fourier
+matrix with $m$th column $a_{m/N,0}$. Then for any $x \in \C^n$ we have $\vnorm{x}_{\A_N} = \min\left\{ \vnorm{c}_1: x = \Phi c \right\}$.
+So, we solve
+\begin{equation}
+	\label{sparsa} \text{minimize }\frac{1}{2} \vnorm{\Phi c- y}_2^2 + \tau \vnorm{c}_1. 
+\end{equation}
+for the optimal point $\hat{c}$ and set $\hat{x}_N = \Phi \hat{c}$ or the first
+$n$ terms of the $N$ term discrete Fourier transform (DFT) of $\hat{c}$.
+Furthermore, $\Phi^* z$ is simply the $N$ term inverse DFT of $z \in \C^n$.
+This observation coupled with Fast Fourier Transform (FFT) algorithm for
+efficiently computing DFTs gives a fast method to solve \eqref{epsprimal},
+using standard compressed sensing software for $\ell_2-\ell_1$ minimization,
+for example, SparSA~\cite{wright09}.
+
+Because of the relatively simple structure of the atomic set, the optimal
+solution $\hat{x}$ for \eqref{epsprimal} can be made arbitrarily close to
+\eqref{eq:sdpdenoising} by picking $N$ a constant factor larger than $n$. In
+fact, we show that the atomic norms on $\A$ and $\A_N$ are equivalent (See
+Appendix \ref{proof:dual-norm-approximation}):
+\begin{equation}
+ \left(1-\frac{2\pi n}{N}\right) \vnorm{x}_{\A_N} \leq  \vnorm{x}_\A \leq \vnorm{x}_{\A_N}, \forall x \in \C^n
+\end{equation}
+Using Proposition
+\ref{prop:grid-approx-mse} and \eq{tau}, we conclude
+{\small
+\begin{align*}
+\frac{1}{n} \E \vnorm{\hat{x}_N - x^\star}_2^2 
+&\leq
+\frac{\sigma\left(\frac{\log(n)+1}{\log(n)}\right)\vnorm{x^\star}_\A
+\sqrt{ n \log(n) + 
+    n\log(4\pi\log(n))
+}}{n\left(1 - \frac{2\pi n}{N}\right)} =
+O\left(
+\sigma \sqrt{\frac{\log(n)}{n}} \frac{ \vnorm{x^\star}_\A}{\left(1 - \frac{2\pi n}{N}\right)}
+\right)
+\end{align*}
+}
+
+Due to the efficiency of the FFT, the discretized approach
+has a much lower algorithmic complexity than either Cadzow's alternating
+projections method or the ADMM method described in  the extended technical report~\cite{12BhaskarArxiv},
+which each require computing an eigenvalue decomposition at
+each iteration. Indeed, fast solvers for~\eqref{sparsa} converge to an
+$\epsilon$ optimal solution in no more than $1/\sqrt{\epsilon}$ iterations.
+Each iteration requires a multiplication by $\Phi$ and a simple ``shrinkage''
+step. Multiplication by $\Phi$ or $\Phi^*$ requires $O(N\log N)$ time and the
+shrinkage operation can be performed in time $O(N)$.
+
+As we discuss below, this fast form of basis pursuit has been proposed by
+several authors. However, analyzing this method with tools from compressed
+sensing has proven daunting because the matrix $\Phi$ is nowhere near a
+restricted isometry. Indeed, as $N$ tends to infinity, the columns become more
+and more coherent. However, common sense says that a larger grid should give
+better performance, for both denoising and frequency localization! Indeed, by appealing to the atomic norm framework, we are
+able to show exactly this point: the larger one makes $N$, the closer one
+approximates the desired atomic norm soft thresholding problem. Moreover, we do
+not have to choose $N$ to be too large in order to achieve nearly the same
+performance as the AST.
+
+
+
+\section{System ID Algorithms}

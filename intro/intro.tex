@@ -1,3 +1,53 @@
 \chapter{Introduction}
 
+\begin{itemize}
+  \item Structured High Dimensional Data are ubiquitous. The concept of simple models unifies them.
+  \item Model Selection is NP-HARD. Convex Relaxations help.
+  \item Atomic Norm is the natural convex relaxation.
+  \item Interested in exact recovery and stable recovery.
+\end{itemize}
 
+We live in a world of data abundance. Due to advancements in data collection,
+and massive storage capabilities, we now have a dizzying amount of high
+dimensional data to analyze. The task of the data scientist is to infer a
+simple model to describe the data. Fortunately, many naturally occurring
+phenomena often have a simple structure. This allows us to efficiently
+represent them using a few atoms or features, even if they are observed in a
+high ambient dimension. The challenge is to exploit the simplicity of these
+objects and recover them robustly from a few linear measurements. This can be a
+formidable task even for simple instances of the problem.
+%This can be thought of as a model selection or a feature selection problem.
+% Problems involving estimation of high dimensional parameters under corrupted and limited linear measurements are ubiquitous.
+
+
+For instance, imagine a data series that can be described by a linear model, in
+terms of a large number of potential predictor variables. A simple description
+of the data series expresses it in terms of a sparse combination of predictor
+variables. Our task of choosing the ``right'' model for the data can be cast as
+a combinatorial optimization problem with the objective of finding the smallest
+subset of predictor variables that describe the data well. There does not
+appear to be an efficient algorithm for this as there are an exponential number
+of subsets to choose from. In fact, this selection problem is provably
+\textsc{NP-Hard}\footnote{Informally, this means that it is at least as hard as
+a large number of well known problems in complexity theory, widely believed to
+have no algorithm that can solve them in a time proportional to any polynomial
+function of the number of observations.}~\cite{Natarajan95}. This does not
+however preclude the possibility of designing efficient algorithms that work on
+\emph{most} instances. In fact, there is now a large body of literature on the
+theoretical understanding of the surprising success of convex relaxation
+methods in efficiently solving the sparse recovery problem most of the time.
+
+The idea of treating simple objects as a sparse combination of atoms from a
+possibly infinite dictionary unifies several related problems in sparse
+recovery and approximation. Simple objects may be expressed as a sparse linear
+combination of a few basic atoms drawn from a possibly infinite dictionary of
+atoms. For instance, a sparse vector in high dimension is a combination of a
+few canonical unit vectors. A low rank matrix is a combination of a few rank-1
+matrices. A signal with a finite discrete spectrum is a combination of a few
+frequencies.  In \cite{crpw}, the authors propose using ``atomic norm'' as a
+convex heuristic to recover simple models from linear measurements. The atomic
+norm may be thought of as a convex proxy to the combinatorial objective
+function that arises naturally in sparse recovery problems.
+
+
+Contributions and Organization of the Thesis.

@@ -193,3 +193,185 @@ To extend our methodology to MIMO systems, we need to find an appropriate set of
 \cA = \left\{ \frac{(1-|w|^2) cb^* }{z-w} ~:~w\in \D, c\in\mathbb{S}^{r-1},\,\,b\in\mathbb{S}^{p-1} \right\}\,,
 \]
 where $p$ is the number of inputs and $r$ is the number of outputs.  Any discrete time, MIMO system with  McMillan degree $d$ can be written in terms of $d$ of these atoms.  The only difficulty remains computing or approximating the norm $\|u\|_{\cL(\cA)}$ for finite measurements as described in Section~\ref{sec:computation}.
+
+
+\todo{Unsorted Appendices}
+
+\section{Useful Lemmas} Before we proceed with the proofs of our main results, let us record a few useful lemmas.  Recall that our atomic functions are defined as
+\[
+	\varphi_a(z) = \frac{1-|a|^2}{z-a}
+\]
+
+\begin{lemma}\label{lemma:atom-hinf}
+For any $a \in D$, 	$\|\varphi_a(z)\|_{\cH_\infty} \leq 2$.
+\end{lemma}
+\begin{proof}
+For $z = \exp(i\theta)$,	$|\frac{1-|a|^2}{z-a}|  \leq |\frac{1-|a|^2}{1-|a|}|  \leq 1+|a| \leq 2$.
+\end{proof}
+
+\begin{lemma}  \label{lemma:atom-lipschitz}
+For any $a \in \D_\rho$ and $z_k=\exp(i\theta_k)$ we have 
+\begin{align}
+\label{eq:vary-freqs} |\varphi_a(z_1) - \varphi_a(z_2)| &\leq \frac{1+\rho}{1-\rho} |\theta_1-\theta_2|
+\end{align}
+\end{lemma}
+
+\begin{proof}
+\begin{align*}
+|\varphi_a(z_1) - \varphi_a(z_2)|
+& =   \left|\frac{1-|a|^2}{z_1-a}-\frac{1-|a|^2}{z_2-a}\right|\\
+&\leq (1-|a|^2) \left|\frac{z_1-z_2}{(z_1-a)(z_2-a)} \right|\\
+&\leq \frac{(1-|a|^2)}{(1-|a|)^2} |z_1-z_2| \leq \frac{1+\rho}{1-\rho} |\theta_1-\theta_2|\,.
+\end{align*}
+\end{proof}
+
+\begin{lemma} For any $a,b \in \D_\rho$,
+\begin{equation}\label{eq:hankel-op-bound}
+	\|\Gamma_{\varphi_a}-\Gamma_{\varphi_b}\|_1 \leq \frac{2\rho}{1-\rho} |a-b|\,.
+\end{equation}
+\end{lemma}
+\begin{proof}
+	The Hankel operator for $\varphi_a(z)$ is given by the semi-infinite, rank one matrix
+	\[
+		(1-|a|^2)\left[\begin{array}{ccccc}
+			1 & a & a^2 & a^3 & \cdots\\
+			a & a^2 & a^3 & a^4 & \cdots\\
+			a^2 & a^3 & a^4 & a^5 & \cdots\\
+			\vdots & \ddots
+		\end{array}\right] = (1-|a|^2) \left[\begin{array}{c} 1 \\ a\\ a^2\\a^3 \\ \vdots \end{array}\right]
+		\left[\begin{array}{c} 1 \\ a\\ a^2\\a^3 \\ \vdots \end{array}\right]^T\,.
+	\]
+Let $\zeta_a = \sqrt{1-|a|^2} \left[\begin{array}{cccccc} 1 & a & a^2 & a^3 & \cdots \end{array}\right]^T$.  Note that $\zeta_a \in \ell_2$ with norm equal to $1$.  Also note that we have
+\begin{equation}\label{eq:zeta-dot}
+	\langle \zeta_a, \zeta_b \rangle =  \frac{\sqrt{1-|a|^2}\sqrt{1-|b|^2}}{1-\bar{a}b}\,.
+\end{equation}
+Then we have
+\begin{subequations}
+\begin{align}
+\nonumber	\|\Gamma_{\varphi_a}-\Gamma_{\varphi_b}\|_1 &= \| \zeta_a \zeta_a^T - \zeta_b \zeta_b^T\|_1\\
+	& =  \| \zeta_a (\zeta_a-\zeta_b)^T +  (\zeta_a-\zeta_b) \zeta_b^T\|_1\\
+	\label{eq:tri-ineq} &\leq \| \zeta_a (\zeta_a-\zeta_b)^T \|_1 + \| (\zeta_a-\zeta_b) \zeta_b^T\|_1\\
+	\label{eq:nuc-2-l2} &= 2 \| \zeta_a-\zeta_b\|_{\ell_2}\\
+\label{eq:l2-dist-formula}	&=2 \sqrt{2}\sqrt{1 - \mathfrak{Re} \frac{\sqrt{1-|a|^2}\sqrt{1-|b|^2}}{1-\bar{a}b}}\\
+	\nonumber&\leq \frac{2 \rho}{1-\rho} |a-b|
+\end{align}
+\end{subequations}
+Here,~\eq{tri-ineq}  is the triangle inequality.~\eq{nuc-2-l2} follows because the nuclear norm of a rank one operator is equal to the product of the $\ell_2$ norm of the factors.~\eq{l2-dist-formula} follows from~\eq{zeta-dot}.  The final inequality follows from analyzing the taylor series of the preceding expression.
+\end{proof}
+
+\section{Dual norms}
+We record here a few basic properties about dual atomic norms that we need for our proofs (see~\cite{CRPW10,BhaskarAllerton11} for more details).  For an atomic set $\cA$, the dual norm is given by
+\[
+	\| z \|_{\cA}^* = \sup_{a \in \cA} \langle a, z \rangle\,.
+\] 
+Note that for this norm, we have the generalization of H\"{o}lder's inequality $\langle x,z\rangle \leq \|x\|_{\cA}\|z\|_{\cA}^*$.  Moreover, note that we have the chain of inequalities
+\[
+	 \alpha \|x\|_{\cA'} \leq \|x\|_{\cA} \leq \beta\|x\|_{\cA'}
+\]
+for some $\alpha\leq 1$ and $\beta\geq 1$ for all $x$ if and only if
+\[
+	 \beta^{-1} \|z\|_{\cA'}^* \leq \|z\|_{\cA}^* \leq \alpha^{-1}\|z\|_{\cA'}^*
+\]
+for all $z$.  
+
+\section{Proof of Proposition~\ref{prop:grid}} First note that for any atomic sets $\cA \subset \cA'$, $\|x\|_{\cA'} \leq \|x\|_{\cA}$.  The harder part of this proposition is the lower bound.  To proceed, we use the dual norm. 
+
+Let $\D_\rho^{(\tau)}$ be a subset of $\D_\rho$ such that for every $a \in \D_\rho$, there exists an $\hat{a}\in \D_\rho^{(\tau)}$ satisfying $|a-\hat{a}|\leq \tau$.  For each $a \in \D_\rho$, we will actually denote $\hat{a}$ as the closest point in $\D_\rho^{(\tau)}$ to $a$.
+
+Now observe that 
+\begin{align*}
+	  \| \cL(\varphi_{\hat{a}}-\varphi_a)\|_{\cL(\cA)} \leq  \| \varphi_{\hat{a}}-\varphi_a\|_{\cA}
+	  \leq \frac{8}{\pi} \|\Gamma_{\varphi_{\hat{a}}}- \Gamma_{\varphi_a}\|_1 \leq \frac{16 \rho \tau}{\pi (1-\rho)}\,.
+\end{align*}
+Here, the first inequality follows from our reasoning in Section~\ref{sec:computation}.  The second inequality is Theorem~\ref{thm:hankel-nuclearity}, and the final inequality is by~\eq{hankel-op-bound}.
+
+We then can compute
+\begin{align*}
+\|z\|_{\cL(\cA)}^* &= \sup_{a \in \D_\rho} \langle \cL(\varphi_a),z \rangle\\
+&= \sup_{a \in \D_\rho} \langle \cL(\varphi_{\hat{a}}), z \rangle + \langle \cL(\varphi_{a}-\varphi_{\hat{a}}), z\rangle \\
+&\leq\sup_{a \in \D_\rho^{(\tau)}} \langle \cL(\varphi_{\hat{a}}), z \rangle +\sup_{a \in \D_\rho}\langle \cL(\varphi_a-\varphi_{\hat{a}}), z\rangle \\
+&= \|z\|_{\cL(\cA_\tau)}^*+ \sup_{a \in \D_\rho}\langle \cL(\varphi_a-\varphi_{\hat{a}}), z\rangle \\
+&\leq \|z\|_{\cL(\cA_\tau)}^*+ \sup_{a \in \D_\rho}  \| \cL(\varphi_{\hat{a}}-\varphi_a)\|_{\cL(\cA)} \|z\|_{\cL(\cA)}^*\\
+&\leq \|z\|_{\cL(\cA_\tau)}^*+ \frac{16\rho\tau}{\pi(1-\rho)} \|z\|_{\cL(\cA)}^*\,.
+\end{align*}
+Rearranging both sides of this inequality gives
+\[
+	\|z\|_{\cL(\cA)}^* \leq C_\tau^{-1} \|z\|_{\cL(\cA_\tau)}^*
+\]
+with $C_\tau =  1-\tfrac{16\rho\tau}{\pi(1-\rho)}$, completing the proof.
+
+\section{Optimality conditions for DAST}
+The following two important inequalities were proven in~\cite[Section 2]{BhaskarAllerton11}:
+\begin{theorem}\label{thm:badri}
+Let $\mathcal{Q}\subset \R^n$ be an arbitrary set of atoms.  Suppose that we observe $y = x_\star+\omega$ where $\omega\sim \mathcal{N}(0,\sigma^2 I)$.  Let $\hat{x}$ denote the optimal solution of
+\[
+	\minimize_x \tfrac{1}{2}\|x-y\|_2^2 + \mu \|x\|_\mathcal{Q}
+\]
+with  $\mu \geq\|\omega\|_{\mathcal{Q}}^*$.  Then we have
+\begin{align}
+	 \|\hat{x}-x_\star\|_2^2 &\leq 2 \mu \|x_\star\|_{\mathcal{Q}}\\
+	 \|\hat{x}\|_{\mathcal{Q}} &\leq \|x_\star\|_{\mathcal{Q}} + \mu^{-1} \langle \omega, \hat{x}-x_\star\rangle\,.
+\end{align}
+\end{theorem}
+We will use these inequalities in the following proof
+
+\section{Proof of Theorem~\ref{thm:estimation}} 
+To upper bound the $\cH_2$ norm, let us use some properties of functions which admit atomic decompositions.  Note that for any function, $H(z) = \sum_{w \in \D} c_w \varphi_w(z)$ with $\|H\|_{\cA}=\sum_{w\in\D} |c_w|$, we have, for any $z_1,z_2\in\bbS$,
+\begin{subequations}
+\begin{align}
+\nonumber	|H(z_1)|^2-|H(z_2)|^2 &= 
+	(|H(z_1)|-|H(z_2)|)(|H(z_1)|+|H(z_2)|) \\
+\nonumber	&\leq 2 |H(z_1)-H(z_2)| \|H\|_{\cH_{\infty}} \\
+\label{eq:tri-ineq2}	&\leq 2 \left( \sum_{w \in \D} |c_w| |\varphi_w(z_1)-\varphi_w(z_2)|\right) \left(\sum_{w\in \D} |c_w| \|\varphi_w\|_{\cH{\infty}}\right)\\
+\label{eq:applylemmas}	&\leq 4 \frac{1+\rho}{1-\rho}  \left( \sum_{w \in \D} |c_w|\right)^2 |\theta_1-\theta_2|\\
+\nonumber	 &= 4 \frac{1+\rho}{1-\rho}  \|H\|_{\cA}^2 |\theta_1-\theta_2|\,.
+\end{align}
+\end{subequations}
+Here,~\eq{tri-ineq2} is the triangle inequality and~\eq{applylemmas} uses Lemmas~\ref{lemma:atom-hinf} and~\ref{lemma:atom-lipschitz}.
+
+Let $\Delta = G_\star-\hat{G}$ and $\theta_k= \frac{2 \pi k}{n}$.  Then we can bound the norm of $\Delta$ as
+\begin{align*}
+\|\Delta\|_{\cH_2}^2 &= \frac{1}{2\pi} \int_0^{2\pi} |\Delta(e^{i\theta})|^2 d\theta\\
+&= \frac{1}{2\pi} \sum_{k=0}^{n-1} \int_{\theta_k}^{\theta_{k+1}} |\Delta(e^{i\theta})|^2 d\theta\\
+&\leq \frac{1}{2\pi} \sum_{k=0}^{n-1} \int_{\theta_k}^{\theta_{k+1}} \left(|\Delta(e^{i\theta_k})|^2 + 4 \frac{1+\rho}{1-\rho} \|\Delta\|_{\cA}^2 |\theta-\theta_k| \right)d\theta\\
+&= \frac{1}{n}\sum_{k=0}^{n-1} |\Delta(e^{i\theta_k})|^2 + \frac{4\pi}{n} \frac{1+\rho}{1-\rho} \|\Delta\|_{\cA}^2\,.
+\end{align*}
+The inequality here follows from our preceding argument. 
+
+Now, in this expression, we need to both upper bound the size of $\Delta$ on the measured frequencies and its atomic norm.  We will bound the latter in terms of the former:
+\begin{subequations}
+\begin{align}
+\label{eq:tri-ineq3}	\|\Delta\|_{\cA} &\leq \| G_\star\|_{\cA}+\|\hat{G}\|_{\cA}\\
+\label{eq:Ghat-def}	& = \|G_\star\|_{\cA} + \|\cL(\hat{G})\|_{\cL(\cA_\epsilon)}\\
+\label{eq:apply-dast-cond}	& \leq \|G_\star\|_{\cA} + \|\cL(G_\star)\|_{\cL(\cA_\epsilon)} + \mu^{-1} \langle \omega, \cL(\hat{G}-G_{\star})\rangle \\
+\label{eq:apply-grid-prop}	& \leq \|G_\star\|_{\cA} + (1-\delta)^{-1}\| \cL(G_\star)\|_{\cL(\cA)} + \mu^{-1} \langle \omega, \cL(\hat{G}-G_{\star})\rangle \\
+\label{eq:inf-domination}		& \leq \frac{2-\delta}{1-\delta} \|G_\star\|_{\cA}  + \mu^{-1} \langle \omega, \cL(\hat{G}-G_{\star})\rangle \\
+\label{eq:holder-mf}		& \leq \frac{2-\delta}{1-\delta} \|G_\star\|_{\cA}  + \mu^{-1} \| \omega\|_2 \left(\sum_{k=1}^{n-1} |\Delta(e^{i\theta_k})|^2\right)^{1/2} \,.
+\end{align}
+\end{subequations}
+\eq{tri-ineq3} is the triangle inequality. \eq{Ghat-def} follows from how we defined $\hat{G}$.  \eq{apply-dast-cond} follows from Theorem~\ref{thm:badri}.  \eq{apply-grid-prop} follows from Proposition~\ref{prop:grid}.  \eq{inf-domination} follows because $\|\cL(H)\|_{\cL(\cA)} \leq \|H\|_{\cA}$ for all linear maps $\cL$ and transfer functions $H$.  \eq{holder-mf} is H\"{older}'s inequality.  Note that the quantity $\|\cL(G_\star)\|_{\cL(\cA_\epsilon)}$ could be infinite if the set $\{\cL(\phi_a)~:~a\in \D_{\rho}^{(\epsilon)}\}$ does not span $\R^n$.  This is precisely what leads to us including this assumption in the theorem statement.
+
+To bound the size of $\Delta$ on the frequency grid, we use Theorem~\ref{thm:badri}:
+\begin{align*}
+	\frac{1}{n}\sum_{k=1}^{n-1} |\Delta(e^{i\theta_k})|^2  &\leq \frac{2\mu}{n} \|\cL(G_\star)\|_{\cL(\cA_\epsilon)}
+	\leq \frac{2\mu}{n} (1-\delta)^{-1}\|G_\star\|_{\cA}	\,.
+\end{align*}
+
+
+Let $\omega \sim \mathcal{N}(0,\sigma^2 I_n)$. Using the well known upper bound for maximum of Gaussian variables (see, for example \cite{lr76}), we have
+\begin{align*}
+\E[\|\omega\|_{\cL(\cA_\epsilon)}^*] &=	\E\left[ \sup_{a\in\D_\rho^{(\epsilon)}} \langle \cL(\varphi_a), \omega \rangle\right] \leq \sigma \left(\sup_{a\in \D_\rho}\|\cL(\varphi_a)\|_2\right) \sqrt{2 \log |\D_\rho^{(\epsilon)}|}\,.
+\end{align*}
+Now, $\|\cL(\varphi_a)\|_2 \leq \sqrt{n} \|\varphi_a\|_{\cH_\infty}\leq 2 \sqrt{n}$.  Moreover, by a simple volume argument, $|\D_\rho^{(\epsilon)}| \leq \frac{1024 \rho^4}{\pi^2(1-\rho)^2\delta^2}$.  To see this, suppose $\mathcal{S}$ is a maximal set of points on $\D_\rho$ which are separated by at least $\tau$.  The maximal size of such a set is at most  $\frac{4\rho^2}{\tau^2}$. Moreover, $|\mathcal{S}|\geq |\D_\rho^{(\delta)}|$.  Now set $\tau = \epsilon=\tfrac{\pi (1-\rho) \delta}{16\rho}$.  In particular, note that we have $\E[\|\omega\|^*_{\cL(\cA_\epsilon)}] =\tfrac{1}{2} \mu$.
+
+Now we can put all of the ingredients together.
+\begin{align*}
+\|\Delta\|_{\cH_2}^2  &\leq \left(1+\frac{8\pi \|\omega\|_2^2}{\mu^2}\frac{1+\rho}{1-\rho} \right)\frac{1}{n}\sum_{k=1}^{n-1} |\Delta(e^{i\theta_k})|^2\\
+&\qquad + \frac{16\pi}{n(1-\delta)^2} \frac{1+\rho}{1-\rho}  \|G_\star\|_{\cA}^2\\
+&  \leq \left(1+2\pi \frac{1+\rho}{1-\rho} \right) \frac{8\sigma}{1-\delta} \sqrt{\frac{2\log(\frac{1024 \rho^4}{\pi^2(1-\rho)^2\delta^2})}{n}}\|G_\star\|_{\cA} \\
+&\qquad+ \frac{16\pi}{n(1-\delta)^2} \frac{1+\rho}{1-\rho}  \|G_\star\|_{\cA}^2\\
+&  \leq  59 \frac{1+\rho}{1-\rho} \left( \sqrt{4\sigma^2 \log\left(\frac{11 \rho^2}{(1-\rho)\delta}\right)}\sqrt{\frac{\|G_\star\|_{\cA}^2}{n(1-\delta)^2} } + \frac{\|G_\star\|_{\cA}^2}{n(1-\delta)^2}   \right)
+\end{align*}
+as desired.
+
+Applying the inequality $\|G_\star\|_{\cA}\leq \tfrac{8}{\pi}\|\Gamma_{G_\star}\|_1$ completes the proof.

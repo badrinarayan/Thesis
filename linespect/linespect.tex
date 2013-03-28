@@ -3,14 +3,14 @@
 \section{Introduction}
 
 Extracting the frequencies and relative phases of a superposition of complex
-exponentials from a small number of noisy time samples is a foundational
-problem in statistical signal processing. These \emph{line spectral estimation}
-problems arise in a variety of applications, including the direction of arrival
+exponentials from a small number of noisy time samples is a foundational problem
+in statistical signal processing. These \emph{line spectral estimation} problems
+arise in a variety of applications, including the direction of arrival
 estimation in radar target identification~\cite{radar}, sensor array signal
-processing~\cite{arrays} and imaging systems~\cite{imaging} and also 
-underlies techniques in ultra wideband channel
-estimation~\cite{uwb}, spectroscopy~\cite{nmr}, molecular
-dynamics~\cite{andrade2012}, and power electronics~\cite{power}.
+processing~\cite{arrays} and imaging systems~\cite{imaging} and also underlies
+techniques in ultra wideband channel estimation~\cite{uwb},
+spectroscopy~\cite{nmr}, molecular dynamics~\cite{andrade2012}, and power
+electronics~\cite{power}.
 
 While polynomial interpolation using Prony's technique can estimate the
 frequency content of a signal \emph{exactly} from as few as $2k$ samples if
@@ -52,15 +52,14 @@ estimation both increase as the oversampling factor increases, even if the
 actual set of frequencies in the line spectral signal are off the Lasso grid.
 
 We compare and contrast our algorithms, AST and Lasso, with classical line
-spectral algorithms including MUSIC~\cite{music},and Cadzow's ~\cite{cadzow02} 
-and  Matrix Pencil~\cite{hua02} methods . Our experiments
-indicate that both AST and the Lasso approximation outperform classical methods
-in low SNR even when we provide the exact model order to the classical
-approaches. Moreover, AST has the same complexity as Cadzow's method,
-alternating between a least-squares step and an eigenvalue thresholding step.
-The discretized Lasso-based algorithm has even lower computational complexity,
-consisting of iterations based upon the FFT and simple
-linear time soft-thresholding.
+spectral algorithms including MUSIC~\cite{music},and Cadzow's ~\cite{cadzow02}
+and Matrix Pencil~\cite{hua02} methods . Our experiments indicate that both AST
+and the Lasso approximation outperform classical methods in low SNR even when we
+provide the exact model order to the classical approaches. Moreover, AST has the
+same complexity as Cadzow's method, alternating between a least-squares step and
+an eigenvalue thresholding step. The discretized Lasso-based algorithm has even
+lower computational complexity, consisting of iterations based upon the FFT and
+simple linear time soft-thresholding.
 
 \subsection{Outline and summary of results} 
 
@@ -77,8 +76,8 @@ bandlimited to $[-W,W]$. Then the Nyquist samples of the signal are given by
  x^\star_m := x^\star\left(\tfrac{m}{2W}\right) = \sum_{l=1}^k c_l^\star e^{i 2 \pi m f_l^\star}, m = 0, \ldots, n-1
 \end{equation}
 
-where $c_1^\star, \ldots, c_k^\star$ are unknown \emph{complex} coefficients
-and $f_l^\star = \tfrac{\omega_l^\star}{2W}$ for $l = 1, \ldots, k$ are the
+where $c_1^\star, \ldots, c_k^\star$ are unknown \emph{complex} coefficients and
+$f_l^\star = \tfrac{\omega_l^\star}{2W}$ for $l = 1, \ldots, k$ are the
 normalized frequencies. So, the vector $x^\star = [x^\star_0 ~ \cdots ~
 x^\star_{n-1}]^T \in \C^n$ can be written as a non-negative linear combination
 of $k$ points from the set of atoms
@@ -88,14 +87,14 @@ of $k$ points from the set of atoms
 \A = \left\{e^{i 2\pi \phi}[1 ~ e^{i2\pi f} ~ \cdots ~ e^{i2\pi (n-1) f}]^T,\, f \in [0,1], \phi \in [0,1] \right\}.
 \]} 
 
-The set $\A$ can be viewed as an infinite dictionary indexed by the
-continuously varying parameters $f$ and $\phi$. When the number of
-observations, $n$, is much greater than $k$, $x^\star$ is $k$-sparse and thus
-line spectral estimation in the presence of noise can be thought of as a sparse
-approximation problem. The regularization parameter for the strongest guarantee
-in Theorem \ref{cor:expected-mse} is given in terms of the expected dual norm
-of the noise and can be explicitly computed for many noise models. For example,
-when the noise is Gaussian, we have the following theorem for the MSE:
+The set $\A$ can be viewed as an infinite dictionary indexed by the continuously
+varying parameters $f$ and $\phi$. When the number of observations, $n$, is much
+greater than $k$, $x^\star$ is $k$-sparse and thus line spectral estimation in
+the presence of noise can be thought of as a sparse approximation problem. The
+regularization parameter for the strongest guarantee in Theorem
+\ref{cor:expected-mse} is given in terms of the expected dual norm of the noise
+and can be explicitly computed for many noise models. For example, when the
+noise is Gaussian, we have the following theorem for the MSE:
 
 \begin{theorem}
 \label{thm:expmsels}
@@ -307,7 +306,7 @@ in Theorem \ref{thm:expmsels}.
 \label{sec:frequency-localize}
 \begin{figure}[htp]
 \centering
-\missingfigure{figures dual poly inset2}
+\includegraphics[width=4in]{figures/dual_poly_inset.pdf}
 % \includegraphics[width=2.3in]{figures/dual_poly_inset2}
 \caption{ \textbf{Frequency Localization using Dual Polynomial}: The
 actual location of the frequencies in the line spectral signal $x^\star \in
@@ -1096,13 +1095,12 @@ Lasso based algorithm are provided the true value of $k$, and the noise
 variance $\sigma^2$ required in the regularization parameter is estimated from $y$.
 
 \begin{figure*}[htbp]
-  \begin{tabular}{ccc}
-	\missingfigure{MSE SNR} & \missingfigure{MSE SNR} & \missingfigure{MSE SNR}
-% \includegraphics[width=0.3\textwidth]{figures/mse_snr_128_8_randamp} &
-% \includegraphics[width=0.3\textwidth]{figures/mse_snr_128_16_randamp} &
-% \includegraphics[width=0.3\textwidth]{figures/mse_snr_128_32_randamp}
+  \begin{tabular}{c}
+	\includegraphics[width=0.5\textwidth]{figures/mse_snr_128_8_randamp}
+	\includegraphics[width=0.5\textwidth]{figures/mse_snr_128_16_randamp} \\
+	\includegraphics[width=0.5\textwidth]{figures/mse_snr_128_32_randamp}
 \end{tabular}
-\caption{ {\bfseries MSE vs SNR plots:} This graph compares MSE vs SNR for a subset of experiments with $n=128$ samples. From left to right, the plots are for combinations of $8$, $16$, and $32$ sinusoids with amplitudes and frequencies sampled at random.}
+\caption{ {\bfseries MSE vs SNR plots:} This graph compares MSE vs SNR for a subset of experiments with $n=128$ samples. From top left, clockwise, the plots are for combinations of $8$, $16$, and $32$ sinusoids with amplitudes and frequencies sampled at random.}
 \label{fig:mse-snr}
 \end{figure*}
 
@@ -1119,49 +1117,49 @@ algorithms in almost every regime.
 
 \begin{figure}[htbp]
   \begin{tabular}{cc}
-	\missingfigure{m} & \missingfigure{m lasso}\\
- % \includegraphics[trim=10mm 0mm 5mm 3mm,clip,width=0.37\linewidth]{figures/mse_snr_256_64_lasso_randamp} &
- %  \includegraphics[trim=15mm 0mm 20mm 3mm,clip,width=0.45\linewidth]{figures/gridding.eps} \\
+	\includegraphics[trim=10mm 0mm 5mm 3mm,clip,width=0.37\linewidth]{figures/mse_snr_256_64_lasso_randamp} &
+	\includegraphics[trim=15mm 0mm 20mm 3mm,clip,width=0.45\linewidth]{figures/gridding} \\
 (a)  & (b)
 \end{tabular}
-% \caption{ 
-% (a) Plot of MSE vs SNR for Lasso at different grid sizes for a subset of experiments with $n=128, k = 16$\\}
-% (b) Lasso Frequency localization with $n=32, k = 4,$ SNR = $10$ dB. Blue represents the true frequencies, while red are given by Lasso. For better visualization, we threshold the Lasso solution by $10^{-6}$.}
+\caption{ 
+(a) Plot of MSE vs SNR for Lasso at different grid sizes for a subset of experiments with $n=128, k = 16$\newline
+(b) Lasso Frequency localization with $n=32, k = 4,$
+SNR = $10$ dB. Blue represents the true frequencies, while red are given by Lasso. For better visualization, we threshold the Lasso solution by $10^{-6}$.}
 \label{fig:lasso-compare}
 \end{figure}
-\todo{Fix caption}
 
-We note that the denoising performance of Lasso improves with increased
-grid size as shown in the MSE vs SNR plot in Figure~\ref{fig:lasso-compare}(a).  The 
-figure  shows that the  performance improvement for larger grid sizes is greater at high SNRs. 
-This is because when the noise is small, the discretization error is more dominant and
-finer gridding helps to reduce this error. Figures~\ref{fig:lasso-compare}(a) and (b)
-also indicate that the benefits of increasing discretization levels are diminishing with the
-grid sizes, at a higher rate in the low SNR regime, suggesting a tradeoff among
-grid size, accuracy,  and computational complexity.
+We note that the denoising performance of Lasso improves with increased grid
+size as shown in the MSE vs SNR plot in Figure~\ref{fig:lasso-compare}(a). The
+figure shows that the performance improvement for larger grid sizes is greater
+at high SNRs. This is because when the noise is small, the discretization error
+is more dominant and finer gridding helps to reduce this error.
+Figures~\ref{fig:lasso-compare}(a) and (b) also indicate that the benefits of
+increasing discretization levels are diminishing with the grid sizes, at a
+higher rate in the low SNR regime, suggesting a tradeoff among grid size,
+accuracy, and computational complexity.
 
-Finally, in Figure \ref{fig:lasso-compare}(b), we provide numerical evidence supporting the
-assertion that frequency localization improves with increasing grid size.  Lasso identifies more
-frequencies than the true ones due to basis mismatch. However, these
-frequencies cluster around the true ones, and more importantly, finer
-discretization improves clustering, suggesting over-discretization coupled with
-clustering and peak detection as a means for frequency localization for Lasso.
-This observation does not contradict  the results of
-\cite{cpsc} where
-the authors look at the full Fourier basis ($N=n$) and the noise-free
-case.  This is the situation where discretization effect is most prominent.  We
-instead look at the scenario where $N \gg n$.
+Finally, in Figure \ref{fig:lasso-compare}(b), we provide numerical evidence
+supporting the assertion that frequency localization improves with increasing
+grid size. Lasso identifies more frequencies than the true ones due to basis
+mismatch. However, these frequencies cluster around the true ones, and more
+importantly, finer discretization improves clustering, suggesting
+over-discretization coupled with clustering and peak detection as a means for
+frequency localization for Lasso. This observation does not contradict the
+results of \cite{cpsc} where the authors look at the full Fourier basis ($N=n$)
+and the noise-free case. This is the situation where discretization effect is
+most prominent. We instead look at the scenario where $N \gg n$.
 
 
-We use \emph{performance profiles} to summarize the behavior of the various algorithms
-across all of the parameter settings.  Performance profiles provide a good visual indicator
-of the relative performance of many algorithms under a variety of experimental
-conditions\cite{dolanmore02}. Let $\mathcal{P}$ be the set of experiments and
-let $\mathrm{MSE}_s(p)$ be the MSE of experiment $p \in
+We use \emph{performance profiles} to summarize the behavior of the various
+algorithms across all of the parameter settings. Performance profiles provide a
+good visual indicator of the relative performance of many algorithms under a
+variety of experimental conditions\cite{dolanmore02}. Let $\mathcal{P}$ be the
+set of experiments and let $\mathrm{MSE}_s(p)$ be the MSE of experiment $p \in
 \mathcal{P}$ using the algorithm $s$. Then the ordinate $P_s(\beta)$ of the
 graph at $\beta$ specifies the fraction of experiments where the ratio of the
 MSE of the algorithm $s$ to the minimum MSE across all algorithms for the given
 experiment is less than $\beta$, i.e.,
+
 \begin{equation*}
 P_s(\beta) = \frac{\mathop{\#}\left\{p \in \mathcal{P} ~:~ \mathrm{MSE}_s(p) \leq \beta \min_s \mathrm{MSE}_s(p)\right\}}{\mathop{\#}(\mathcal{P})}
 \end{equation*}
@@ -1169,9 +1167,8 @@ P_s(\beta) = \frac{\mathop{\#}\left\{p \in \mathcal{P} ~:~ \mathrm{MSE}_s(p) \le
 \begin{figure}[htp]
 \centering
 \begin{tabular}{cc}
-	\missingfigure{pp} & \missingfigure{pp lasso}\\
-% \includegraphics[height=33mm]{figures/performance_profile_randamp_color} &
-% \includegraphics[trim=0mm 0mm 2mm 5mm,clip,height=35mm]{figures/performance_profile_lasso_randamp_color}\\
+	\includegraphics[height=40mm]{figures/performance_profile_randamp_color} &
+	\includegraphics[trim=0mm 0mm 2mm 5mm,clip,height=40mm]{figures/performance_profile_lasso_randamp_color}\\
 (a) & (b)
 \end{tabular}
 \caption{ (a) Performance Profile  comparing various algorithms and AST. (b) Performance profiles for Lasso with different grid sizes.}
@@ -1186,59 +1183,6 @@ number of sinusoids. When Cadzow is fed an incorrect $k$, even off by $1$, the
 performance degrades drastically, and never provides adequate mean-squared
 error. Figure~\ref{fig:pp}(b) shows that the denoising performance
 improves  with grid size.
-
-% (a) \label{fig:lasso-compare-pp}
-% (b) \label{fig:lasso-compare-mse}
-% (c) \label{fig:gridding}
-
-%We benchmarked all these algorithms on the same Dell R510 server (2x Intel Xeon
-%X54650 cores, 128 GB of RAM). The results of our benchmarking appear in
-%Table~\ref{table:benchmark}. AST is the slowest algorithm, and future work will
-%be devoted to improving its convergence rate. The dominant computation cost is
-%the eigenvalue computation. However, AST consistently returns the lowest
-%MSE. Lasso is the fastest algorithm. In these experiments, we
-%chose the number of grid points $N$ to be the smallest power of $2$ that
-%exceeded $5n$, where $n$ was the number of samples. With this setting, we were
-%able to achieve considerably lower error than Cadzow's method in a fraction of
-%the time.
-
-%\begin{figure}
-%\tiny
-%\centering
-%\begin{tabular}{|c|c|cc|cc|cc|}
-%
-%\hline
-%&  	 & \multicolumn{2}{|c|}{AST} &\multicolumn{2}{|c|}{Lasso} & \multicolumn{2}{|c|}{Cadzow}\\
-%&$n$	  & MSE & time (s) & MSE & time (s) & MSE & time (s) \\
-%\hline
-%\multirow{4}{*}{Equispaced} 
-%& 200 & 0.76 & 2.78 & 0.71 & 0.01 & 1.90 & 0.16\\
-%& 400 & 0.47 & 16.26 & 0.64 & 0.02 & 0.95 & 0.44\\
-%& 800 & 0.28 & 112.57 & 0.30 & 0.05 & 0.39 & 1.50\\
-%& 1600 & - & - & 0.25 & 0.12 & 0.28 & 6.44\\
-%& 3200 & - & - & 0.08 & 0.34 & 0.15 & 48.6\\
-%\hline
-%\multirow{4}{*}{Random} 
-%& 200 & 1.13 & 2.87 & 1.32 & 0.01 & 1.83 & 0.22\\
-%& 400 & 0.78 & 12.32 & 0.57 & 0.03 & 1.53 & 0.88\\
-%& 800 & 0.32 & 112.67 & 0.41 & 0.07 & 0.51 & 1.76\\
-%& 1600 & - & - & 0.16 & 0.11 & 0.29 & 6.31\\
-%& 3200 & - & - & 0.09 & 0.25 & 0.14 & 48.1\\
-%\hline
-%	\end{tabular}
-%	
-%    \caption{{\bf Benchmark comparisons of the different algorithms.} In all
-%    experiments, a signal with $15$ sinusoids waves with random phase and unit
-%    amplitude were added together and then Gaussian noise with variance $10$
-%    was added to each time sample. This table gives the mean-square-error and
-%    timing performance for AST, Lasso, and Cadzow. Lasso is run with $N$ being
-%    the smallest power of $2$ that is greater than $5n$. AST always returns the
-%    lowest MSE, but it the most computationally intensive. Lasso
-%    always returns better MSE than Cadzow, and is much faster.
-%    }\label{table:benchmark}
-%
-%\end{figure}
-
 
 \section{Conclusion and Future Work}\label{sec:conclusions}
 

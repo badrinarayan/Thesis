@@ -1,7 +1,7 @@
 dissertation.pdf
-.tmproj
-.fls
-.p
+*.tmproj
+*.fls
+*.p
 .DS_Store
 *.acn
 *.acr

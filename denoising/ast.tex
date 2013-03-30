@@ -25,16 +25,11 @@ sufficient to bound estimation rates with these penalty functions. Our
 approach is essentially a generalization of the
 Lasso~\cite{tibshirani96,chen01} to infinite dictionaries.
 
-\todo{Modify phrasing for DAST} We show that solving the Lasso problem on an
-oversampled grid of frequencies approximates the solution of the atomic norm
-minimization problem to a resolution sufficiently high to guarantee excellent
-mean-squared error (MSE). The gridded problem reduces to the Lasso, and by
-leveraging the Fast Fourier Transform (FFT), can be rapidly solved with freely
-available software such as SpaRSA~\cite{wright09}. A Lasso problem with
-thousands of observations can be solved in under a second using Matlab on a
-laptop. The prediction error and the localization accuracy for line spectral
-estimation both increase as the oversampling factor increases, even if the
-actual set of frequencies in the line spectral signal are off the Lasso grid.
+We show that solving the Lasso problem on an oversampled grid of frequencies
+approximates the solution of the atomic norm minimization problem to a
+resolution sufficiently high to guarantee excellent mean-squared error (MSE).
+The gridded problem reduces to the Lasso, and can be rapidly solved with freely
+available software such as SpaRSA~\cite{wright09}.
 
 \subsection{Outline and Summary of Results}
 
@@ -519,8 +514,8 @@ the minimax optimal MSE
 \frac{1}{n^2}\vnorm{X-\hat{X}}_F^2 = O\left( \frac{\sigma^2 r}{n} \right).
 \end{align*}
 
-\subsection{Discretization}
-\todo{Say stuff about Gaussian width here.}
+\section{Discretization}
+\todo{Semi-infinite Programming and LP Perturbations}
 \subsection{Expected MSE for Approximated Atomic Norms}
 \label{proof:expected-mse-approx}
 
@@ -581,3 +576,4 @@ Theorem \ref{cor:expected-mse}, and using \eqref{pni}, we get
 
 \todo{More Stuff}
 \section{Dual Atomic Norm Bounds}
+\todo{Say stuff about Gaussian width here.}

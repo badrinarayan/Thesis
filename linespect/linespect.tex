@@ -10,7 +10,17 @@ estimation in radar target identification~\cite{radar}, sensor array signal
 processing~\cite{arrays} and imaging systems~\cite{imaging} and also underlies
 techniques in ultra wideband channel estimation~\cite{uwb},
 spectroscopy~\cite{nmr}, molecular dynamics~\cite{andrade2012}, and power
-electronics~\cite{power}.
+electronics~\cite{power}
+
+
+Despite of hundreds of years of research on the fundamental problem of line
+spectrum estimation, there still remain several open questions in this area.
+This chapter addresses a central one of these problems: how well can we
+determine the locations and magnitudes of spectral lines from noisy temporal
+samples? We establish lower bounds on how well we can recover such signals and
+demonstrate that these worst case bounds can be nearly saturated by solving a
+convex programming problem. Moreover, we prove that the estimator approximately
+localizes the frequencies of the true spectral lines.
 
 While polynomial interpolation using Prony's technique can estimate the
 frequency content of a signal \emph{exactly} from as few as $2k$ samples if
@@ -30,13 +40,15 @@ Specializing the denoising results of the previous chapter to the line spectral
 estimation, we provide mean-squared-error estimates for denoising line spectra
 with the atomic norm. The denoising algorithm amounts to soft thresholding the
 noise corrupted measurements in the atomic norm and we thus refer to the problem
-as \emph{Atomic norm Soft Thresholding} (AST). We show in
-Chapter~\ref{chap:algos}, via an appeal to the theory of positive polynomials,
-that AST for line spectrum estimation can be solved using semidefinite
-programming (SDP)~\cite{Megretski03}, and we provide a reasonably fast method
-for solving this SDP via the Alternating Direction Method of Multipliers
-(ADMM)~\cite{BertsekasParallelBook,admm2011}. Our ADMM implementation can solve
-instances with a thousand observations in a few minutes.
+as \emph{Atomic norm Soft Thresholding} (AST). 
+
+We show in Chapter~\ref{chap:algos}, via an appeal to the theory of positive
+polynomials, that AST for line spectrum estimation can be solved using
+semidefinite programming (SDP)~\cite{Megretski03}, and we provide a reasonably
+fast method for solving this SDP via the Alternating Direction Method of
+Multipliers (ADMM)~\cite{BertsekasParallelBook,admm2011}. Our ADMM
+implementation can solve instances with a thousand observations in a few
+minutes.
 
 While the SDP based AST algorithm can be thought of as solving an infinite
 dimensional Lasso problem, the computational complexity can be prohibitive for
@@ -67,20 +79,21 @@ simple linear time soft-thresholding.
 
 We specialize the results of the abstract denoising problem in the previous
 chapter to line spectral estimation in Section~\ref{sec:denoise-trig-moments}.
-Consider the continuous time signal $x^\star(t), t\in \R$ with a line spectrum
-composed of $k$ unknown frequencies $\omega_1^\star, \ldots, \omega_k^\star$
-bandlimited to $[-W,W]$. Then the Nyquist samples of the signal are given by
+Consider the continuous time signal $x^\star(t), t\in \R$ with a line spectrum composed of $k$ unknown frequencies $\omega_1^\star, \ldots, \omega_k^\star$ bandlimited to $[-W,W]$. Then the Nyquist samples of the signal are given by
 
 \begin{equation}
-\label{eq:tru-moment}
+\label{eq:signal}
  x^\star_m := x^\star\left(\tfrac{m}{2W}\right) = \sum_{l=1}^k c_l^\star e^{i 2 \pi m f_l^\star}, m = 0, \ldots, n-1
 \end{equation}
 
 where $c_1^\star, \ldots, c_k^\star$ are unknown \emph{complex} coefficients and
 $f_l^\star = \tfrac{\omega_l^\star}{2W}$ for $l = 1, \ldots, k$ are the
-normalized frequencies. So, the vector $x^\star = [x^\star_0 ~ \cdots ~
-x^\star_{n-1}]^T \in \C^n$ can be written as a non-negative linear combination
-of $k$ points from the set of atoms
+normalized frequencies. By swapping the roles of frequency and time or space,
+the signal model \eqref{eq:signal} also serves as a proper model for
+superresolution imaging where we aim to localize temporal events or spatial
+targets from noisy, low-frequency measurements~\cite{cg_exact12,cg_noisy}.So,
+the vector $x^\star = [x^\star_0 ~ \cdots ~ x^\star_{n-1}]^T \in \C^n$ can be
+written as a non-negative linear combination of $k$ points from the set of atoms
 
 {\small
 \[
@@ -90,10 +103,9 @@ of $k$ points from the set of atoms
 The set $\A$ can be viewed as an infinite dictionary indexed by the continuously
 varying parameters $f$ and $\phi$. When the number of observations, $n$, is much
 greater than $k$, $x^\star$ is $k$-sparse and thus line spectral estimation in
-the presence of noise can be thought of as a sparse approximation problem. The
-regularization parameter for the strongest guarantee in Theorem
-\ref{cor:expected-mse} is given in terms of the expected dual norm of the noise
-and can be explicitly computed for many noise models. For example, when the
+the presence of noise can be thought of as a sparse approximation problem. 
+
+Our first result is a global error rate that holds for line spectral signals by specializing the results in the previous chapter. In particular, we can apply AST and choose the regularization parameter for the strongest guarantee in Theorem~\ref{cor:expected-mse} in terms of the expected dual norm of the noise. This can be explicitly computed for many noise models. For example, when the
 noise is Gaussian, we have the following theorem for the MSE:
 
 \begin{theorem}
@@ -105,18 +117,37 @@ c_k^\star$, unknown normalized frequencies $f_1^\star, \ldots, f_k^\star \in
 [0,1]$ and $w \in \mathcal{N}(0,\sigma^2 I_n)$. Then the estimate $\hat{x}$ of
 $x^\star$ obtained from $y=x^\star+w$ given by the solution of atomic soft
 thresholding problem \eqref{AST} with $\tau = \sigma \sqrt{n \log(n)}$ has the
-asymptotic MSE
-\belowdisplayskip=-10pt
-\[
-\frac{1}{n} \E \vnorm{\hat{x} - x^\star}_2^2 \lesssim
-	\sigma\sqrt{\frac{\log(n)}{n}}\sum_{l=1}^k |c_l^\star|.
-\]
- \end{theorem}
- 
-It is instructive to compare this to the trivial estimator $\hat{x} = y$ which
-has a per-element MSE of $\sigma^2$. In contrast, Theorem 2 guarantees that AST
-produces a consistent estimate when $k = o(\sqrt{n/\log(n)})$.
+asymptotic MSE \belowdisplayskip=-10pt \[ \frac{1}{n} \E \vnorm{\hat{x} -
+x^\star}_2^2 \lesssim \sigma\sqrt{\frac{\log(n)}{n}}\sum_{l=1}^k |c_l^\star|. \]
+\end{theorem}
 
+It is instructive to compare this to the trivial estimator $\hat{x} = y$ which
+has a per-element MSE of $\sigma^2$. In contrast, Theorem~\ref{thm:expmsels}
+guarantees that AST produces a consistent estimate when $k =
+o(\sqrt{n/\log(n)})$. While this rate holds for any line spectral signal, AST
+can perform considerably better when the frequencies are well separated.
+
+\begin{theorem}
+\label{main}
+Suppose the line spectral signal $x^\star$ is given by \eqref{eq:signal}
+and we observe $n$ noisy consecutive samples $y_j = x^\star_j + w_j$ where $w_j$ is i.i.d. complex Gaussian with variance $\sigma^2$. If the frequencies  $\{f_l\}_{l=1}^k$ in $x^\star$ satisfy a minimum separation condition
+\begin{equation}
+\label{min-sep}
+\min_{p\neq q}d(f_p,f_q) > 4/n
+\end{equation}
+with $d(\cdot, \cdot)$ the distance metric on the torus, then we can determine an estimator $\hat{x}$ satisfying
+\begin{equation}
+\label{fast-rate}
+\frac{1}{n}\vnorm{\hat{x} - x^\star}_2^2 = O\left( \sigma^2 \frac{k \log(n)}{n}\right)  
+\end{equation}
+with high probability by solving a semidefinite programming problem.
+\end{theorem}
+
+Note that if we exactly knew the frequencies $f_j$, the best rate of estimation we could achieve would be $O(\sigma^2 k / n)$~\cite{oracle_lasso}.  Our upper bound is merely a logarithmic factor larger than this rate.  On the other hand, we will demonstrate via minimax theory that a logarithmic factor is unavoidable when the support is unknown.  Hence, our estimator is nearly minimax optimal. 
+
+It is instructive to compare our stability rate to the optimal rate achievable for estimating a sparse signal from a finite, discrete dictionary~\cite{cd_minimax}. In the case that there are $p$ incoherent  dictionary elements,  no method can estimate a $k$-sparse signal from $n$ measurements corrupted by Gaussian noise at a rate less than $O(\sigma^2 \frac{k\log(p/k)}{n})$.  In our problem, there are an infinite number of candidate dictionary elements and it is surprising that we can still achieve such a fast rate of convergence with our highly coherent dictionary.  We emphasize that none of the standard techniques from sparse approximation can be immediately generalized to our case.  Not only is our dictionary infinite, but also it does not satisfy the usual assumptions such as restricted eigenvalue conditions~\cite{rest_eig} or coherence conditions~\cite{coherence} that are used to derive stability results in sparse approximation.  Nonetheless, in terms of mean-square error performance, our results match those obtained when the frequencies are restricted to lie on a discrete grid.
+
+In the absence of noise, polynomial interpolation can exactly recover a line spectral signal of $k$ \emph{arbitrary} frequencies with as few as $2 k$ equispaced measurements.   In the light of our minimum frequency separation requirement~\eqref{min-sep}, why should one favor convex techniques for line spectral estimation? Our stability result coupled with minimax optimality establish that no method can perform better than convex methods when the frequencies are well-separated.  And, while polynomial interpolation and subspace methods do not impose any resolution limiting assumptions on the constituent frequencies, these methods are empirically highly sensitive to noise. To the best of our knowledge, there is no result similar to Theorem~\ref{main} that provides finite sample guarantees about the noise robustness of polynomial interpolation techniques.  
 
 
 \subsubsection{Localizing the frequencies using the Dual} 
@@ -138,6 +169,39 @@ compressive sensing scheme that is robust to basis mismatch. When there is
 noise, numerical simulations show that the atomic norm minimization problem
 \eqref{AST} gives approximate frequency localization.
 
+We also theoretically characterize how well spectral lines can be localized from noisy observations.  The frequencies estimated by any method will never exactly coincide with the true frequencies in the signal in the presence of noise. However, we can characterize the localization performance of our convex programming approach, and summarize this performance in Theorem~\ref{support}.
+
+Before stating the theorem, we introduce a bit of notation. Define neighborhoods $N_j$ around each frequency $f_j$ in $x^\star$ by $N_j := \{ f \in \mathbb{T} : d(f,f_j) \leq 0.16/n\}$. Also define $F = \mathbb{T}\backslash \cup_{j=1}^k N_j$ as the set of frequencies in $\mathbb{T}$ which are not near any true frequency.  The letters $N$ and $F$ denote the regions that are \emph{near} to and \emph{far} from the true supporting frequencies.  The following theorem summarizes our localization guarantees.
+
+\begin{theorem} \label{support} Let $\hat{x}$ be the solution to the same
+semidefinite programming (SDP) problem as referenced in Theorem~\ref{main} and
+$n > 256$. Let $\hat{c_l}$ and $\hat{f}_l$ form the decomposition of $\hat{x}$
+into coefficients and frequencies, as revealed by the SDP. Then, there exist
+fixed numerical constants $C_1,C_2$ and $C_3$ such that with high probability
+\begin{enumerate}[i.)] \item $\sum_{l : \hat{f}_l \in F} |\hat{c}_l| \leq C_1
+\sigma\sqrt{\frac{k^2 \log(n)}{n}}$ \item $\sum_{l : \hat{f}_l \in N_j}
+|\hat{c}_l| \left\{ \min_{f_j \in T} d(f_j,\hat{f}_l) \right\}^2 \leq C_2
+\sigma\sqrt{\frac{k^2 \log(n)}{n}}$ \item $\left| c_j - \sum_{l : \hat{f_l} \in
+N_j} \hat{c}_l \right| \leq C_3 \sigma\sqrt{\frac{k^2 \log(n)}{n}}$. \item If
+for any frequency $f_j$, the corresponding amplitude $|c_j| > C_1 \sigma
+\sqrt{\frac{ k^2 \log(n)}{n}}$, then with high probability there exists a
+corresponding frequency $\hat{f}_j$ in the recovered signal such that, \[ \left|
+f_j - \hat{f}_j \right| \leq \frac{\sqrt{C_2/C_1}}{n}\left(\frac{|c_j|}{C_1
+\sigma \sqrt{\frac{ k^2 \log(n)}{n}}} - 1\right)^{-\tfrac{1}{2}} \]
+\end{enumerate} \end{theorem}
+
+Part (i) of Theorem~\ref{support} shows that the estimated amplitudes
+corresponding to frequencies far from the support are small. In practice, we
+note that we rarely find any spurious frequencies in the far region, suggesting
+that our bound (i) is conservative. Parts (ii) and (iii) of the theorem show
+that in a neighborhood of each true frequency, the recovered signal has
+amplitude close to the true signal. Part (iv) shows that the larger a particular
+coefficient is, the better our method is able to estimate the corresponding
+frequency. In particular, note that if $|c_j| > 2 C_1 \sigma \sqrt{\frac{ k^2
+\log(n)}{n}}$, then $\left| f_j - \hat{f}_j \right| \leq \frac{\sqrt{C_2/C_1}
+}{n}$. In all four parts, note that the localization error goes to zero as the
+number of samples grows.
+
 \subsubsection{Experimental results} 
 
 A number of Prony-like techniques have been devised that are able to achieve
@@ -147,12 +211,54 @@ estimation algorithms outperform Matrix Pencil, MUSIC and Cadzow's methods. Both
 AST and the discretized Lasso algorithms obtain lower MSE compared to previous
 approaches, and the discretized algorithm is much faster on large problems.
 
+\subsubsection{Organization of this chapter}
+\todo{Change this organization}
+We proceed as follows. In Section~\ref{sec:prony-method}, we begin by
+contextualizing our result in the canon of line spectral estimation. We
+emphasize the advantages and shortcomings of prior art, and describe the methods
+on which our analysis is built upon. We then in Section~\ref{sec:atomic-norms}
+describe the semidefinite programming approach to line spectral estimation,
+originally introduced in~\cite{btr12}, and explain how it relates to other
+recent spectrum estimation algorithms. We present minimax lower-bounds for line
+spectral estimation in Section~\ref{sec:minimax}. We then provide the proofs of
+our main results in Section~\ref{sec:proofs}. Finally, in
+Section~\ref{sec:experiments}, we empirically demonstrate that the semidefinite
+programming approach outperforms MUSIC~\cite{music} and Cadzow's
+technique~\cite{cadzow05} in terms of the localization metrics defined by parts
+(i), (ii) and (iii) of Theorem~\ref{support}.
+
 \section{Application of AST to Line Spectral Estimation}
 \label{sec:denoise-trig-moments} 
 
-We analyze the line spectral estimation problem, where we denoise a
-linear combination of complex sinusoids. The atomic set in this case consists
-of samples of individual sinusoids, $a_{f,\phi} \in \C^n$, given by
+We describe more precisely our signal model in this section. Suppose we wish to
+estimate the amplitudes and frequencies of a signal $x(t), t \in \R$ given as a
+mixture of $k$ complex sinusoids:
+\begin{equation*}
+  x ( t) =  \sum_{l = 1}^k c_l \exp ( i 2 \pi f_l t)
+\end{equation*}
+where $\{ c_l \}_{l = 1}^k$ are unknown complex amplitudes corresponding to
+the $k$ unknown frequencies $\{ f_l \}_{l = 1}^k$ assumed to be in the torus
+$\mathbb{T} = [0, 1]$. Such a signal may be thought of as a normalized band
+limited signal and has a Fourier transform given by a line spectrum:
+\begin{equation}
+\label{mu}
+\mu(f) = \sum_{l=1}^k c_l\delta(f - f_l)
+\end{equation}
+Denote by $x^\star$ the $n = 2m+1$ dimensional vector composed of equispaced 
+Nyquist samples $\{x(j)\}_{j=-m}^m$   for $j=-m,\ldots,m$.
+
+The goal of line spectral estimation is to estimate the frequencies and 
+amplitudes of the signal $x(t)$ from the finite, noisy samples $y \in \C^n$ 
+given by
+\[
+  y_j  =  x_j^\star + w_j\\
+\]
+for $-m \leq j \leq m$, where $w_j \sim \mathcal{C}\mathcal{N}(0,\sigma^2)$ is 
+i.i.d. circularly symmetric complex Gaussian noise. 
+
+We can model the line spectral observations $x^\star = [x_{-m}^\star,
+\ldots,x_{m}^\star]^T \in \C^n$ as a sparse combination of ``atoms'' $a(f)$ 
+which correspond to observations due to single frequencies. The atomic set in this case consists of samples of individual sinusoids, $a_{f,\phi} \in \C^n$, given by
 
 \begin{equation}
 \label{eq:trig-atoms} a_{f,\phi} = e^{i2\pi \phi}\begin{bmatrix}1 ~ e^{i2\pi f} ~
@@ -160,7 +266,7 @@ of samples of individual sinusoids, $a_{f,\phi} \in \C^n$, given by
 \end{equation}
 The  infinite set $\A = \{ a_{f,\phi}: f \in
 [0,1], \phi \in [0,1] \}$ forms an appropriate collection of atoms for
-$x^\star$, since $x^\star$ in \eq{tru-moment} can be written as a sparse
+$x^\star$, since $x^\star$ in \eqref{eq:signal} can be written as a sparse
 nonnegative combination of atoms in $\A.$ In fact, $x^\star = \sum_{l = 1}^k
 c_l^\star a_{f_l^\star,0} = \sum_{l = 1}^k |c_l^\star| a_{f_l^\star,\phi_l},$
 where $c_l^\star = |c_l^\star|e^{i2\pi\phi_l}.$
@@ -326,7 +432,6 @@ only if
 That is, $f$ is in the support of $\hat{x}$ if and only if it is a point of maximum modulus for the dual polynomial. Thus, the support
 may be determined by finding frequencies $f$ where the dual polynomial attains magnitude $\tau$. 
 
-\todo{Put Figure Here}
 Figure~\ref{fig:dual_poly_localize} shows the dual
 polynomial for $\eqref{AST}$ with $n = 64$ samples and $k = 6$
  randomly chosen frequencies. The regularization
@@ -337,8 +442,6 @@ that in the noiseless case, the frequencies localized by the dual polynomial
 are exact provided the minimum separation between the frequencies is at least
 $4/n$ where $n$ is the number of samples in the line spectral signal. Under similar separation condition, numerical simulations suggest that \eqref{AST} achieves approximate frequency location in the noisy case. 
 
-\section{Related Work}
-\todo{Merge with Related Work for Minimax}
 \section{Related Work}
 \label{sec:prony-method}
 
@@ -408,69 +511,98 @@ large grid. Since the original submission of this manuscript,
 Cand\`es and Fernandez-Granda~\cite{CandesGranda} showed that our SDP
 formulation exactly recovers the correct frequencies in the noiseless case.
 
+To date, line spectral analysis may be broadly classified into two camps.
+\emph{Subspace methods}~\cite{music,esprit,cadzow05,ssa} build upon polynomial
+interpolation~\cite{prony1795} and exploit certain low rank structure in the
+spectrum estimation problem for denoising. Research on subspace approaches has
+yielded several standard algorithms that are widely deployed and shown to
+achieve Cram\'{e}r-Rao bound asymptotically~\cite{fri,cramer-subspace}.
+However, the sensitivity to noise and model order is not well understood, and
+there are few guarantees of how these algorithms perform given a limited number
+of noisy measurements. For a review of many of these classical approaches, see
+for example~\cite{StoicaMoses}.
 
+More recently, approaches based on convex optimization have gained favor and
+have been demonstrated to perform well on a variety of spectrum estimation
+tasks~\cite{malioutov05,bourguignon2007irregular,baraniuk2010model,zweig2003irre
+gular}. These convex programming methods restrict the frequencies to lie on a
+finite grid of points and view line spectral signals as a sparse combination of
+single frequencies. While these methods are reported to have significantly
+better localization properties than subspace methods (see for
+example,~\cite{malioutov05}) and admit fast and robust algorithms, they have
+two significant drawbacks. First, while finer gridding may lead to better
+performance, very fine grids are often numerically unstable. Furthermore,
+traditional compressed sensing theory does not adequately characterize the
+performance of fine gridding in these algorithms as the dictionary becomes
+highly coherent.
 
-\section{Accelerated Rates for Well separated signals}
+Some very recent work~\cite{btr12,cg_exact12,cg_noisy} bridges the gap between
+the performant discretized algorithms and continuous subspace approaches by
+developing a new theory of convex relaxations for infinite continuous
+dictionary of frequencies. Our work in~\cite{btr12} applies the atomic norm
+framework proposed by Chandrasekaran et al~\cite{crpw} to the line spectral
+estimation problem. There, we established stability results on the denoising
+error and demonstrated empirically that our algorithm compared favorably with
+both the classical and recent convex approaches which assume the frequencies
+are on an oversampled DFT grid. Our prior results made no assumption about the
+separation between frequencies. When the frequencies are well separated, the
+current work demonstrates that much faster convergence rates are achieved.
 
-We consider signals whose spectra consist of spike trains with unknown locations in a normalized interval $\mathbb{T} = [0, 1]$.  Consider $n=2m+1$ equispaced samples of a mixture of sinusoids given by
-\begin{equation}
-\label{signal}
-x^\star_j =  \sum_{l=1}^k c_l \exp(i 2\pi j f_l)
-\end{equation}
-where $j \in \{-m,\dots, m\}$.  We assume that the support $T = \{f_l\}_{l=1}^k \subset \mathbb{T}$ of the $k$ frequencies and the corresponding complex amplitudes $\{c_l\}_{l=1}^k$ are unknown. We observe noisy samples $y = x^\star + w$ where the noise components $w_i$ are i.i.d. centrally symmetric complex Gaussian variables with variance $\sigma^2$.  By swapping the roles of frequency and time or space, the signal model \eqref{signal} also serves as a proper model for superresolution imaging where we aim to localize temporal events or spatial targets from noisy, low-frequency measurements~\cite{cg_exact12,cg_noisy}.  Our first result characterizes the denoising error $\frac{1}{n}\vnorm{x^\star - \hat{x}}_2^2$ and is summarized in the following theorem.
+Our work is closely related to recent results established by Cand\`es and
+Fernandez-Granda~\cite{cg_exact12} on exact recovery using convex methods and
+their recent work~\cite{cg_noisy} on exploiting the robustness of their dual
+polynomial construction to show super-resolution properties of convex methods.
+The total variation norm formulation used in~\cite{cg_noisy} is equivalent to
+the atomic norm specialized to the line spectral estimation problem.
 
-\begin{theorem}
-\label{main}
-Suppose the line spectral signal $x^\star$ is given by \eqref{signal}
-and we observe $n$ noisy consecutive samples $y_j = x^\star_j + w_j$ where $w_j$ is i.i.d. complex Gaussian with variance $\sigma^2$. If the frequencies  $\{f_l\}_{l=1}^k$ in $x^\star$ satisfy a minimum separation condition
-\begin{equation}
-\label{min-sep}
-\min_{p\neq q}d(f_p,f_q) > 4/n
-\end{equation}
-with $d(\cdot, \cdot)$ the distance metric on the torus, then we can determine an estimator $\hat{x}$ satisfying
-\begin{equation}
-\label{fast-rate}
-\frac{1}{n}\vnorm{\hat{x} - x^\star}_2^2 = O\left( \sigma^2 \frac{k \log(n)}{n}\right)  
-\end{equation}
-with high probability by solving a semidefinite programming problem.
-\end{theorem}
+Robustness bounds were established in both our earlier work~\cite{btr12} and in
+the work of Cand\`es and Fernandez-Granda~\cite{cg_noisy}. In~\cite{btr12}, a
+slow convergence rate was established with no assumptions about the separation
+of frequencies in the true signal. In~\cite{cg_noisy}, the authors provide
+guarantees on the $L_1$ energy of error in the frequency domain in the case
+that the frequencies are well separated. The noise is assumed to be adversarial
+with a small $L_1$ spectral energy. In contrast, our paper shows near minimax
+denoising error under Gaussian noise. It is also not clear that there is a
+computable formulation for the optimization problem analyzed
+in~\cite{cg_noisy}. While the guarantees the authors derive in~\cite{cg_noisy}
+are not comparable with our results, several of their mathematical
+constructions are used in our proofs here.
 
-Note that if we exactly knew the frequencies $f_j$, the best rate of estimation we could achieve would be $O(\sigma^2 k / n)$~\cite{oracle_lasso}.  Our upper bound is merely a logarithmic factor larger than this rate.  On the other hand, we will demonstrate via minimax theory that a logarithmic factor is unavoidable when the support is unknown.  Hence, our estimator is nearly minimax optimal. 
-
-It is instructive to compare our stability rate to the optimal rate achievable for estimating a sparse signal from a finite, discrete dictionary~\cite{cd_minimax}. In the case that there are $p$ incoherent  dictionary elements,  no method can estimate a $k$-sparse signal from $n$ measurements corrupted by Gaussian noise at a rate less than $O(\sigma^2 \frac{k\log(p/k)}{n})$.  In our problem, there are an infinite number of candidate dictionary elements and it is surprising that we can still achieve such a fast rate of convergence with our highly coherent dictionary.  We emphasize that none of the standard techniques from sparse approximation can be immediately generalized to our case.  Not only is our dictionary infinite, but also it does not satisfy the usual assumptions such as restricted eigenvalue conditions~\cite{rest_eig} or coherence conditions~\cite{coherence} that are used to derive stability results in sparse approximation.  Nonetheless, in terms of mean-square error performance, our results match those obtained when the frequencies are restricted to lie on a discrete grid.
-
-In the absence of noise, polynomial interpolation can exactly recover a line spectral signal of $k$ \emph{arbitrary} frequencies with as few as $2 k$ equispaced measurements.   In the light of our minimum frequency separation requirement~\eqref{min-sep}, why should one favor convex techniques for line spectral estimation? Our stability result coupled with minimax optimality establish that no method can perform better than convex methods when the frequencies are well-separated.  And, while polynomial interpolation and subspace methods do not impose any resolution limiting assumptions on the constituent frequencies, these methods are empirically highly sensitive to noise. To the best of our knowledge, there is no result similar to Theorem~\ref{main} that provides finite sample guarantees about the noise robustness of polynomial interpolation techniques.  
-
-Additionally, little is known about how well spectral lines can be localized from noisy observations.  The frequencies estimated by any method will never exactly coincide with the true frequencies in the signal in the presence of noise. However, we can characterize the localization performance of our convex programming approach, and summarize this performance in Theorem~\ref{support}.
-
-Before stating the theorem, we introduce a bit of notation. Define neighborhoods $N_j$ around each frequency $f_j$ in $x^\star$ by $N_j := \{ f \in \mathbb{T} : d(f,f_j) \leq 0.16/n\}$. Also define $F = \mathbb{T}\backslash \cup_{j=1}^k N_j$ as the set of frequencies in $\mathbb{T}$ which are not near any true frequency.  The letters $N$ and $F$ denote the regions that are \emph{near} to and \emph{far} from the true supporting frequencies.  The following theorem summarizes our localization guarantees.
-
-\begin{theorem}
-\label{support}
-Let $\hat{x}$ be the solution to the same semidefinite programming (SDP) problem as referenced in Theorem~\ref{main} and $n > 256$.  Let $\hat{c_l}$ and $\hat{f}_l$ form the  decomposition of $\hat{x}$ into coefficients and frequencies, as revealed by the SDP. Then, there exist fixed numerical constants $C_1,C_2$ and $C_3$ such that with high probability
-\begin{enumerate}[i.)]
-\item $\sum_{l : \hat{f}_l \in F} |\hat{c}_l| \leq  C_1 \sigma\sqrt{\frac{k^2 \log(n)}{n}}$
-\item $\sum_{l : \hat{f}_l \in N_j} |\hat{c}_l| \left\{ \min_{f_j \in T} d(f_j,\hat{f}_l) \right\}^2 \leq  C_2 \sigma\sqrt{\frac{k^2 \log(n)}{n}}$
-\item $\left| c_j - \sum_{l : \hat{f_l} \in N_j} \hat{c}_l \right| \leq C_3 \sigma\sqrt{\frac{k^2 \log(n)}{n}}$.
-\item If for any frequency $f_j$, the corresponding amplitude $|c_j| > C_1 \sigma \sqrt{\frac{ k^2 \log(n)}{n}}$, then with high probability there exists a corresponding frequency $\hat{f}_j$ in the recovered signal such that,
-\[
-\left| f_j - \hat{f}_j \right|  \leq \frac{\sqrt{C_2/C_1}}{n}\left(\frac{|c_j|}{C_1 \sigma \sqrt{\frac{ k^2 \log(n)}{n}}} - 1\right)^{-\tfrac{1}{2}}
-\]
-\end{enumerate}
-\end{theorem}
-  
-Part (i) of Theorem~\ref{support} shows that the estimated amplitudes corresponding to frequencies far from the support are small. In practice, we note that we rarely find any spurious frequencies in the far region, suggesting that  our bound (i) is conservative. Parts (ii) and (iii) of the theorem show that in a neighborhood of each true frequency, the recovered signal has amplitude close to the true signal. Part (iv) shows that the larger a particular coefficient is, the better our method is able to estimate the corresponding frequency.  In particular, note that if $|c_j| > 2 C_1 \sigma \sqrt{\frac{ k^2 \log(n)}{n}}$, then $\left| f_j - \hat{f}_j \right|  \leq  \frac{\sqrt{C_2/C_1} }{n}$. In all four parts, note that the localization error goes to zero as the number of samples grows.
-
-We proceed as follows.  In Section~\ref{sec:line-spec}, we begin by contextualizing our result in the canon of line spectral estimation.  We emphasize the advantages and shortcomings of prior art, and describe the methods on which our analysis is built upon.  We then in Section~\ref{sec:atomic-norms} describe the semidefinite programming approach to line spectral estimation, originally introduced in~\cite{btr12}, and explain how it relates to other recent spectrum estimation algorithms.  We present minimax lower-bounds for line spectral estimation in Section~\ref{sec:minimax}.  We then provide the proofs of our main results in Section~\ref{sec:proofs}. Finally, in Section~\ref{sec:experiments}, we empirically demonstrate that the semidefinite programming approach outperforms MUSIC~\cite{music} and Cadzow's technique~\cite{cadzow05} in terms of the localization metrics defined by parts (i), (ii) and (iii) of Theorem~\ref{support}.
-
+Additional recent work derives conditions for approximate support recovery
+under the Gaussian noise model using the Beurling-Lasso ~\cite{azais}. There,
+the authors show that there is a true frequency in the neighborhood of every
+estimated frequency with large enough amplitude. We note that the
+Beurling-Lasso is equivalent to the atomic norm algorithm that we analyze in
+this paper. A more recent paper by Fernandez-Granda{\cite{granda2}} improves
+this result by giving conditions on recoverability in terms of the true signal
+instead of the estimated signal and prove a theorem similar to
+Theorem~\ref{support}, but use a worst case $L_2$ bound on the noise samples.
+Here, we improve these recent results in our proof of Theorem~\ref{support},
+providing tighter guarantees under the Gaussian noise model.
+ 
 \section{What is the best rate we can expect?}\label{sec:minimax}
+
 Using results about minimax achievable rates for linear models~
-\cite{cd_minimax,rw_minimax}, we can deduce that the convergence rate stated in 
-\eqref{fast-rate} is near optimal. Define the set of $k$ well separated frequencies as
+\cite{cd_minimax,rw_minimax}, we can deduce that the convergence rate stated in
+\eqref{fast-rate} is near optimal. Define the set of $k$ well separated
+frequencies as
+
 \[
 \mathcal{S}_k = \left\{(f_1, \dots, f_k) \in \mathbb{T}^k ~\middle|~  d(f_p, f_q) \geq 4/n, p \neq q \right\}
 \]
-The expected minimax denoising error $M_k$ for a line spectral signal with frequencies from $\mathcal{S}_k$ is defined as the lowest expected denoising error rate for any estimate $\hat{x}(y)$ for the worst case signal $x^\star$ with  support $T(x^\star) \in \mathcal{S}_k$. Note that we can lower bound $M_k$ by restricting the set of candidate frequencies to smaller set.  To that end, suppose we restrict the signal $x^\star$ to have frequencies only drawn from an equispaced grid on the torus $T_n := \{ 4 j/n \}_{j=1}^{n/4}$. Note that any set of $k$ frequencies from $T_n$ are pairwise separated by at least $4/n$. If we denote by $F_n$ a $n \times (n/4)$ partial DFT matrix with (unnormalized) columns corresponding to frequencies from $T_n$,  we can write $x^\star = F_n c^\star$ for some $c^\star$ with $\vnorm{c^\star}_0 = k$. Thus,
+
+The expected minimax denoising error $M_k$ for a line spectral signal with
+frequencies from $\mathcal{S}_k$ is defined as the lowest expected denoising
+error rate for any estimate $\hat{x}(y)$ for the worst case signal $x^\star$
+with support $T(x^\star) \in \mathcal{S}_k$. Note that we can lower bound $M_k$
+by restricting the set of candidate frequencies to smaller set. To that end,
+suppose we restrict the signal $x^\star$ to have frequencies only drawn from an
+equispaced grid on the torus $T_n := \{ 4 j/n \}_{j=1}^{n/4}$. Note that any set
+of $k$ frequencies from $T_n$ are pairwise separated by at least $4/n$. If we
+denote by $F_n$ a $n \times (n/4)$ partial DFT matrix with (unnormalized)
+columns corresponding to frequencies from $T_n$, we can write $x^\star = F_n
+c^\star$ for some $c^\star$ with $\vnorm{c^\star}_0 = k$. Thus,
+
 \begin{align*}
 M_k &:= \inf_{\hat{x}}
  \sup_{
@@ -486,14 +618,22 @@ M_k &:= \inf_{\hat{x}}
 &\geq  \frac{n}{4} \left\{ \inf_{\hat{c}}
  \sup_{\vnorm{c^\star}_0 \leq k}\frac{4}{n} \mathbb{E} \vnorm{\hat{c} - c^\star}_2^2\right\}\,.
 \end{align*}
-Here, the first inequality is the restriction of $T(x^\star)$. The second inequality follows because we project out all components of $\hat{x}$ that do not lie in the span of $F_n$. Such projections can only reduce the Euclidean norm. The third inequality uses the fact that the minimum singular value of $F_n$ is $n$ since $F_n^*F_n = n I_{{n}/{4}}$. Now we may directly apply the lower bound for estimation error for linear models derived by Cand\'es and Davenport.  Namely, Theorem 1 of~\cite{cd_minimax} states that 
+
+Here, the first inequality is the restriction of $T(x^\star)$. The second
+inequality follows because we project out all components of $\hat{x}$ that do
+not lie in the span of $F_n$. Such projections can only reduce the Euclidean
+norm. The third inequality uses the fact that the minimum singular value of
+$F_n$ is $n$ since $F_n^*F_n = n I_{{n}/{4}}$. Now we may directly apply the
+lower bound for estimation error for linear models derived by Cand\'es and
+Davenport. Namely, Theorem 1 of~\cite{cd_minimax} states that
+
 \begin{align*}
 \inf_{\hat{c}}
  \sup_{\vnorm{c^\star}_0 \leq k} \frac{4}{n} \mathbb{E} \vnorm{\hat{c} - c^\star}_2^2&\geq {C} \sigma^2 \frac{k \log\left(\frac{n}{4k}\right)}{\vnorm{F_n}_\mathrm{F}^2}\,.
  \end{align*} With the preceding analysis and the fact that $\vnorm{F_n}_{\mathrm{F}}^2 = n^2/4$, we can thus deduce the following theorem:
  \begin{theorem}
 \label{minimax}
-Let $x^\star$ be a line spectral signal as described by \eqref{signal} with the support $T(x^\star) = \{f_1, \dots, f_k\} \in \mathcal{S}_k$ and $y = x^\star + w$, where $w \in \C^n$ is circularly symmetric Gaussian noise with variance $\sigma^2 I_n$. Let $\hat{x}$ be any estimate of $x^\star$ using $y$. Then,
+Let $x^\star$ be a line spectral signal as described by \eqref{eq:signal} with the support $T(x^\star) = \{f_1, \dots, f_k\} \in \mathcal{S}_k$ and $y = x^\star + w$, where $w \in \C^n$ is circularly symmetric Gaussian noise with variance $\sigma^2 I_n$. Let $\hat{x}$ be any estimate of $x^\star$ using $y$. Then,
 \[
 M_k = \inf_{\hat{x}}
  \sup_{
@@ -705,9 +845,8 @@ Using Lemma~\ref{part3}, both of the above are upper bounded by $\frac{C k \tau}
 \]
 This shows part (iii) of the theorem. Part (iv) can be obtained by combining parts (ii) and (iii).
 
-\todo{Unsorted Appendices}
-
-\section{Proof of Lemma \ref{part1}}\label{apx:pf:taylor}
+\section{Unsorted Appendices}
+\subsection{Proof of Lemma \ref{part1}}\label{apx:pf:taylor}
 We first split the domain of integration into the near and far regions.
 \begin{align}
 \left |\int_0^1 X(f) \nu(df)\right | 
@@ -739,7 +878,7 @@ As a consequence, we have
 \end{align*}
 Substituting back into \eqref{Xfbd} yields the desired result.
 
-\section{Some useful lemmas}
+\subsection{Some useful lemmas}
 \label{apx:collection}
 In addition to Theorem~\ref{dual-stab}, we recall another result in~\cite{cg_noisy} where the authors show the existence of a 
 trigonometric polynomial $Q_1$ that is linear in each $N_j$ which is also an essential ingredient in our proof.
@@ -895,7 +1034,7 @@ We also need the following consequence of the optimality condition of AST from~\
 \end{align}
 \end{prop}
 
-\section{Proof of Lemma \ref{part2}}\label{apx:pf:I0I1}
+\subsection{Proof of Lemma \ref{part2}}\label{apx:pf:I0I1}
 Consider the polar form
 \[
   \int_{N_j} \nu ( df)  =  \left| \int_{N_j} \nu ( df) \right| e^{i \theta_j} .
@@ -943,7 +1082,7 @@ Summing over $j=1,\ldots,k$ yields
 For the first inequality, we have used \eqref{ca1} and triangle inequality, and for the last inequality, we have used \eqref{q1v} and \eqref{cb1}. Equations \eqref{i0} and \eqref{i1} complete the proof.
 
 
-\section{Proof of Lemma \ref{part3}}
+\subsection{Proof of Lemma \ref{part3}}
 \label{apx:pf:I2far}
 Denote by $P_T(\nu)$ the projection of the difference measure $\nu$ on the support set $T = \{f_1, \ldots, f_k\}$ of $x^\star$ so that $P_T(\nu)$ is supported on $T$. Then, setting $Q(f)$ the polynomial in Theorem \ref{dual-stab} that interpolates the sign of $P_T( \nu)$, we have
 {
@@ -1027,42 +1166,44 @@ whence the result follows for large enough $\eta.$
 
 \todo{Add in Experiments from Minimax Paper}
 
-We compared the MSE performance of AST, the discretized Lasso approximation, 
-the Matrix Pencil, MUSIC and Cadzow's method. For our experiments, we
-generated $k$ normalized frequencies $f_1^\star, \ldots, f_k^\star$ uniformly
-randomly chosen from $\left[0,1\right]$ such that every pair of frequencies are
-separated by at least $1/2n$. The
-signal $x^\star \in \C^n$ is generated according to \eq{tru-moment} with
-$k$ random amplitudes independently chosen from $\chi^2(1)$ distribution (squared Gaussian).
-All of our sinusoids were then assigned a random phase (equivalent to 
-multiplying $c_k^\star$ by a random unit norm complex number). Then, the observation
- $y$ is produced by adding complex white gaussian noise $w$ such that the
-input signal to noise ratio (SNR) is $-10,-5,0,5,10,15$ or $20$ dB. We compare
-the average MSE of the various algorithms in 10 trials for various values of number
-of observations $(n = 64,128,256)$, and number of frequencies $ (k = n/4,n/8,n/16)$.
+We compared the performance of AST, the discretized Lasso approximation, the
+Matrix Pencil, MUSIC and Cadzow's method, both in terms of the mean squared
+estimation error as in Theorem~\ref{main} and frequency localization. For our
+experiments, we generated $k$ normalized frequencies $f_1^\star, \ldots,
+f_k^\star$ uniformly randomly chosen from $\left[0,1\right]$ such that every
+pair of frequencies are separated by at least $1/2n$. The signal $x^\star \in
+\C^n$ is generated according to \eqref{eq:signal} with $k$ random amplitudes
+independently chosen from $\chi^2(1)$ distribution (squared Gaussian). All of
+our sinusoids were then assigned a random phase (equivalent to multiplying
+$c_k^\star$ by a random unit norm complex number). Then, the observation $y$ is
+produced by adding complex white gaussian noise $w$ such that the input signal
+to noise ratio (SNR) is $-10,-5,0,5,10,15$ or $20$ dB. We compare the average
+MSE of the various algorithms in 20 trials for various values of number of
+observations $(n = 64,128,256)$, and number of frequencies $ (k =
+n/4,n/8,n/16)$.
 
 
-AST needs an estimate of the noise variance $\sigma^2$ to pick the regularization
-parameter according to \eq{tau}. In many situations, this variance is not known to us
-\emph{a priori}. However, we can construct a reasonable estimate for $\sigma$
-when the phases are uniformly random. It is known that the autocorrelation
-matrix of a line spectral signal (see, for example Chapter 4 in
-\cite{StoicaMoses}) can be written as a sum of a low rank matrix and $\sigma^2
-I$ if we assume that the phases are uniformly random. Since the empirical
-autocorrelation matrix concentrates around the true expectation, we can
-estimate the noise variance by  averaging a few
-smallest eigenvalues of the empirical autocorrelation matrix. In the following experiments, we form the empirical
-autocorrelation matrix using the MATLAB routine \texttt{corrmtx} using a
-prediction order $m=n/3$ and averaging the lower $25\%$ of the eigenvalues. We
+AST needs an estimate of the noise variance $\sigma^2$ to pick the
+regularization parameter according to \eq{tau}. In many situations, this
+variance is not known to us \emph{a priori}. However, we can construct a
+reasonable estimate for $\sigma$ when the phases are uniformly random. It is
+known that the autocorrelation matrix of a line spectral signal (see, for
+example Chapter 4 in \cite{StoicaMoses}) can be written as a sum of a low rank
+matrix and $\sigma^2 I$ if we assume that the phases are uniformly random. Since
+the empirical autocorrelation matrix concentrates around the true expectation,
+we can estimate the noise variance by averaging a few smallest eigenvalues of
+the empirical autocorrelation matrix. In the following experiments, we form the
+empirical autocorrelation matrix using the MATLAB routine \texttt{corrmtx} using
+a prediction order $m=n/3$ and averaging the lower $25\%$ of the eigenvalues. We
 used this estimate in equation~\eq{tau} to determine the regularization
 parameter for both our AST and Lasso experiments.
 
-First, we implemented AST using the ADMM method described in detail
-in the Appendix. We used the stopping criteria described
-in~\cite{admm2011} and set $\rho=2$ for all experiments. We use the dual
-solution $\hat{z}$ to determine the support of the optimal solution $\hat{x}$
-using the procedure described in Section~\ref{sec:frequency-localize}. Once the
-frequencies $\hat{f}_l$ are extracted, we ran the least squares problem
+First, we implemented AST using the ADMM method described in detail in
+Chapter~\ref{algos}. We used the stopping criteria described in~\cite{admm2011}
+and set $\rho=2$ for all experiments. We use the dual solution $\hat{z}$ to
+determine the support of the optimal solution $\hat{x}$ using the procedure
+described in Section~\ref{sec:frequency-localize}. Once the frequencies
+$\hat{f}_l$ are extracted, we ran the least squares problem
 $\mbox{minimize}_\alpha \|U \alpha - y\|^2$ where $U_{jl} = \exp(i 2\pi j
 \hat{f}_l)$ to obtain a \emph{debiased} solution. After computing the optimal
 solution $\alpha_{\mathrm{opt}}$, we returned the prediction $\hat{x} =
@@ -1094,6 +1235,17 @@ solvers}. This provides a huge advantage to these algorithms. Neither AST or the
 Lasso based algorithm are provided the true value of $k$, and the noise 
 variance $\sigma^2$ required in the regularization parameter is estimated from $y$.
 
+Let $\{\hat{c}_l\}$ and $\{\hat{f}_l\}$ denote the amplitudes and frequencies
+estimated by any of the algorithms - AST, MUSIC or Cadzow. We use the following
+error metrics to characterize the frequency localization of various algorithms:
+\begin{enumerate} \item[(i)] Sum of the absolute value of amplitudes in the far
+region $F$, $m_1 = \sum_{l : \hat{f}_l \in F} |\hat{c}_l|$ \item[(ii)] The
+weighted frequency localization error, $m_2 = \sum_{l : \hat{f}_l \in N_j}
+|\hat{c}_l| \{ \min_{f_j \in T} d(f_j,\hat{f}_l) \}^2$ \item[(iii)] Error in
+approximation of amplitudes in the near region, $m_3 = \left| c_j - \sum_{l :
+\hat{f_l} \in N_j} \hat{c}_l \right|$ \end{enumerate} These are precisely the
+quantities that we prove tend to zero in Theorem~\ref{support}.
+
 \begin{figure*}[htbp]
   \begin{tabular}{c}
 	\includegraphics[width=0.5\textwidth]{figures/mse_snr_128_8_randamp}
@@ -1103,7 +1255,6 @@ variance $\sigma^2$ required in the regularization parameter is estimated from $
 \caption{ {\bfseries MSE vs SNR plots:} This graph compares MSE vs SNR for a subset of experiments with $n=128$ samples. From top left, clockwise, the plots are for combinations of $8$, $16$, and $32$ sinusoids with amplitudes and frequencies sampled at random.}
 \label{fig:mse-snr}
 \end{figure*}
-
 
 In Figure~\ref{fig:mse-snr}, we show MSE vs SNR plots for a subset of
 experiments when $n=128$ time samples are taken to take a closer look at the
@@ -1149,6 +1300,33 @@ results of \cite{cpsc} where the authors look at the full Fourier basis ($N=n$)
 and the noise-free case. This is the situation where discretization effect is
 most prominent. We instead look at the scenario where $N \gg n$.
 
+In Figure~\ref{fig:msnr}, we display how the error metrics vary with
+increasing SNR for AST, MUSIC and Cadzow.  We restrict these plots to the experiments with $n =
+256$ samples. These plots demonstrate that AST localizes frequencies
+substantially better than MUSIC and Cadzow even for low signal to noise ratios
+as there is very little energy in the far region of the frequencies ($m_1$) and
+has the smallest weighted mean square frequency deviation ($m_2$). Although we
+have plotted the average value in these plots, we observed spikes in the plots
+for Cadzow's algorithm as the average is dominated by the worst performing
+instances.  These large errors are due to the numerical instability of polynomial root finding. 
+
+\begin{figure}[htbp]
+\begin{tabular}{ccc}
+	\includegraphics[height=43mm]{figures/mSNR1_16.pdf} &
+	\includegraphics[height=43mm]{figures/mSNR2_16.pdf} &
+	\includegraphics[height=43mm]{figures/mSNR3_16.pdf} \\
+	\includegraphics[height=43mm]{figures/mSNR1_32.pdf} &
+	\includegraphics[height=43mm]{figures/mSNR2_32.pdf} &
+	\includegraphics[height=43mm]{figures/mSNR3_32.pdf} \\
+	\includegraphics[height=43mm]{figures/mSNR1_64.pdf} &
+	\includegraphics[height=43mm]{figures/mSNR2_64.pdf} &
+	\includegraphics[height=43mm]{figures/mSNR3_64.pdf}
+\end{tabular}
+\caption{For $n = 256$ samples, the plots from left to right in order measure the average value over 20 random experiments for the error metrics $m_1, m_2$ and $m_3$ respectively. The top, middle and the bottom third of the plots respectively represent the subset of the experiments
+with the number of frequencies $k=16, 32$ and $64$.}
+\label{fig:msnr}
+\end{figure}
+
 
 We use \emph{performance profiles} to summarize the behavior of the various
 algorithms across all of the parameter settings. Performance profiles provide a
@@ -1184,6 +1362,25 @@ performance degrades drastically, and never provides adequate mean-squared
 error. Figure~\ref{fig:pp}(b) shows that the denoising performance
 improves  with grid size.
 
+\begin{figure}[htp]
+\begin{tabular}{ccc}
+	\includegraphics[height=42mm]{figures/m1_pp.pdf} &
+	\includegraphics[height=42mm]{figures/m2_pp.pdf} &
+	\includegraphics[height=42mm]{figures/m3_pp.pdf}\\
+	(a) $m_1$ & (b) $m_2$ & (c) $m_3$
+\end{tabular}
+\caption{ Performance Profiles for AST, MUSIC and Cadzow.
+(a) Sum of the absolute value of amplitudes in the far region ($m_1$)
+(b) The weighted frequency localization error, $m_2$
+(c) Error in approximation of amplitudes in the near region, $m_3$ }
+\label{fig:pp}
+\end{figure}
+
+The performance profiles in Figure~\ref{fig:pp} show that AST is the best
+performing algorithm for all the three metrics.  AST in fact outperforms
+MUSIC and Cadzow by a substantial margin for metrics $m_1$ and $m_2$. 
+
+
 \section{Conclusion and Future Work}\label{sec:conclusions}
 
 \todo{Modify Conclusions by merging in with Minimax and Removing Stuff}
@@ -1210,7 +1407,7 @@ investigation should be accompanied by a determination of the minimax rates for
 line spectral estimation. Such minimax rates would shed further light on the
 rates achievable for line spectral estimation.
 
-\paragraph {Moments Supported Inside the Disk} Our work also naturally extends
+\paragraph{Moments Supported Inside the Disk} Our work also naturally extends
 to moment problems where the atomic measures are supported on the unit disk in
 the complex plane. These problems arise naturally in controls and systems
 theory and include model order reduction, system identification, and control

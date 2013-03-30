@@ -271,3 +271,78 @@ performance as the AST.
 
 
 \section{System ID Algorithms}
+
+\section{Algorithms for atomic norm minimization}\label{sec:computation}
+
+From here on, let us assume that the $G_\star$ that we seek to estimate has all of its poles of magnitude at most $\rho$  ( we will call $\rho$ the \emph{stability radius}, and treat it as a known parameter).  Let $\D_\rho$ denote the set of all complex numbers with norm at most $\rho$.  Note that if $G_\star$ has stability radius $\rho$ then
+\[
+	\|G\|_{\cA}:=\inf\left\{ \sum_{w\in \D_\rho} |c_w|~:~G(z) = \sum_{w\in \D_\rho} \frac{c_w (1-|w|^2)}{z-w}\right\}\,.
+\]
+That is, we can restrict our set of atoms to only be those single pole systems with stability radius equal to $\rho$.  For the remainder of this manuscript, we assume that $\cA$ only consists of such single pole systems.
+
+In what follows, we focus our attention on linear measurement maps.  Let $\cL_i: \cH \mapsto \C $ be a linear functional that serves as a measurement operator for the system $G(z)$.  Many maps of interest can be phrased as linear functionals of the transfer function,
+\begin{enumerate}
+	\item Samples of the frequency response $\mathcal{L}_k(G):=G(e^{i\theta_k})$ for $k=1,\ldots, n$.  From a control theoretic perspective, this measurement operator corresponds to measuring the gain and phase of the linear system at different frequencies.
+	\item Samples of the impulse response, $\mathcal{L}_k(G):=g_{i_k}$ for $k=1,\ldots, n$ and $i_k \in [1,\infty)$.
+	\item Convolutions of the impulse response with a pseudorandom signal $u_k$: $\mathcal{L}_k(G):=\sum_{j=1}^{\infty} g_j u_{k-j}$.
+\end{enumerate}
+
+In all of these cases, we consider the problem
+\begin{equation}\label{eq:atomic-norm-lin-inverse}
+	\minimize_{G} \tfrac{1}{2} \sum_{i=1}^n |\cL_i(G) - y_i |^2 + \mu \|G\|_{\cA}\,.
+\end{equation}
+This problem is equivalent to the constrained, semi-infinite programming problem
+\[
+	\begin{array}{ll}
+	\minimize_{x,G} & \tfrac{1}{2}\sum_{k=1}^n |x_k - y_k |^2 + \mu \sum_{w\in \D_\rho} |c_w|\\
+	\st & x_k = \cL_k(G)~~\mbox{for}~i=1,\ldots, n\\
+	& G = \sum_{w\in \D_\rho} \frac{c_w(1-|w|^2)}{z-w}
+	\end{array}
+\]
+Eliminating the equality constraint gives yet another equivalent formulation
+\begin{equation}\label{eq:atomic-norm-lin-inverse-finite-dim}
+	\begin{array}{ll}
+	\minimize_{x} & \tfrac{1}{2}\sum_{k=1}^n |x_k - y_k |^2 + \mu \sum_{w\in \D_\rho} |c_w|\\
+	\st & x_k = \sum_{w\in \D_\rho} c_w \cL_k\left(\frac{1-|w|^2}{z-w}\right)~~\mbox{for}~i=1,\ldots, n\,.
+	\end{array}
+\end{equation}
+Note that in this final formulation, our decision variable is $x$, a finite dimensional vector, and $c_w$, the coefficients of the atomic decomposition.  The infinite dimensional variable $G$ has been eliminated.  Let us define a norm on $\R^n$ based on the formulation~\eq{atomic-norm-lin-inverse-finite-dim}
+\[
+	\|x\|_{\cL(\cA)} = \inf \left\{ \sum_{w\in \D_\rho} |c_w| ~:~ x_i = \sum_{w\in\D_\rho} c_w\mathcal{L}_i\left(\frac{1-|w|^2}{z-w} \right)\right\}\,.
+\]
+Then we see that problem~\eq{atomic-norm-lin-inverse} is equivalent to the denoising problem
+\begin{equation}\label{eq:finite-dim-ast}
+	\minimize_{x} \tfrac{1}{2}\|x-y\|_2^2 + \mu \|x\|_{\cL(\cA)}\,.
+\end{equation}
+Note that the first term is simply the squared Euclidean distance between $y$ and $x$ in $\R^n$.  The second term is an atomic norm on $\R^n$ induced by the linear map of the set of transfer functions via the measurement operator $\cL$.  In order to tractably solve~\eq{atomic-norm-lin-inverse}, we thus only need focus on computational schemes for computing or approximating $\|x\|_{\cL(\cA)}$.  The following proposition asserts that we can approximate this finite dimensional atomic norm via a sufficiently fine discretization of the unit disk.
+
+
+
+\begin{prop}\label{prop:grid}
+Let $\D_\rho^{(\epsilon)}$ be a finite subset of the unit disc such that for any $w \in \D_\rho$ there exists a $v \in \D_\rho^{(\epsilon)}$ satisfying $|w-v| \leq \epsilon$.  Define
+\[
+	\|x\|_{\cL(\cA_\epsilon)} = \inf\left\{ \sum_{w\in \D_{\rho}^{(\epsilon)}} |c_w| ~:~ x_i = \sum_{w\in\D_{\rho}^{(\epsilon)}} c_w\mathcal{L}_i\left(\frac{1-|w|^2}{z-w} \right)\right\}\,.
+\]
+Then there exists a constant $C_\epsilon \in [0,1]$ such that
+\[
+	C_\epsilon \|x\|_{\cL(\cA_{\epsilon})} \leq \|x\|_{\cL(\cA)} \leq \|x\|_{\cL(\cA_{\epsilon})} \,.
+\]
+\end{prop}
+\noindent The set $\D_\rho^{(\epsilon)}$ is called an $\epsilon$-net for the set $\D_\rho$.  We show in the appendix that when $\mathcal{L}_k(G) = G(e^{i\theta_k})$, $C_{\epsilon}$ is at least $(1-\tfrac{16 \rho \epsilon}{\pi(1-\rho)})$.  Other measurement ensembles can be treated similarly.
+
+When we replace $\|x\|_{\cL(\cA)}$ with its discretized counterpart $\|x\|_{\cL(\cA)}$ in~\eq{finite-dim-ast}, 
+\[
+	\minimize_{x} \tfrac{1}{2}\|x-y\|_2^2 + \mu \|x\|_{\cL(\cA_\epsilon)}
+\]
+is equivalent to
+\begin{equation}\label{eq:DAST}
+	\minimize_{c}  \tfrac{1}{2}\|Mc-y\|_2^2 + \mu \sum_{w\in \D_\rho^{(\epsilon)}} |c_w|
+\end{equation}
+where
+\[
+	M_{ij} = \mathcal{L}_i \left(\tfrac{1-|w_j|^2}{z-w_j}\right)
+\]
+and $j$ indexes the set $\D_{\rho}^{(\epsilon)}$. That is $M$ is an $n \times |\D_\rho^{(\epsilon)}|$ matrix.  Problem~\eq{DAST} is a weighted $\ell_1$ regularization problem with real or complex data depending on specific problem.  We call~\eq{DAST} \emph{Discretized Atomic Soft Thresholding} (DAST), as coined in~\cite{BhaskarAllerton11}.
+
+The DAST problem can be solved very efficiently with a variety of off-the-shelf tools including SPARSA~\cite{Wright09}, FPC~\cite{Hale08} or even more general purpose packages such as YALMIP~\cite{YALMIP} or CVX~\cite{cvx}.  DAST yields an approximate solution to problem~\eq{atomic-norm-lin-inverse}, and, as we will see, yields a statistically consistent estimate provided the parameter $\epsilon$ is adjusted to meet the desired numerical accuracy.
+

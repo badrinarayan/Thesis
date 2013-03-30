@@ -1,3 +1,4 @@
+%!TEX root = /Users/badri/Documents/Thesis/dissertation.tex
 \chapter{Simple Models}
 
 The foundation of our technique consists of extending recent work on
@@ -100,15 +101,19 @@ Suppose our target signal $x^\star \in \R^n$ is composed only of atoms from a
 small subset $S \subset \A$ of the original \emph{dictionary} of atoms. We call
 $S$, a \emph{support} of $x^\star$. If the number of elements $k = |S|$ in the
 support is small relative to the dimension $n$ of the signal, we say $x^\star$
-is a $k$ \emph{sparse} combination of atoms. We emphasize that the \emph{atomic 
+is a $k$ \emph{simple} combination of atoms. We emphasize that the \emph{atomic 
 set} $\A$ could be infinite.
 
-What we just described is a general notion of sparsity which subsumes many 
-simple structures in high dimension. For instance, a low rank matrix in a high 
-dimensional space can be considered sparse with respect to the infinite 
-dictionary of all unit norm, rank-$1$ matrices.
+This notion of simplicity generalizes sparsity for many structures in high
+dimension. For instance, the rank of a matrix is a notion of simplicity and
+indeed a low rank matrix in a high dimensional space can be written as a
+combination of a few elements from the infinite atomic set of all unit norm,
+rank-$1$ matrices. Similarly, we can attach a notion of simplicity to a vector
+$x \in \R^n$ as the smallest number of elements from a dictionary $\mathcal{D}$
+of $p$ elements needed to express $x$ as a linear combination. I don't believe this.
 
-\subsection{Decomposition}
+
+\subsection{Decomposition and Atomic Norm}
 
 
 Can we recover this sparse decomposition and find the composing atoms from
@@ -118,6 +123,8 @@ linearly independent, there is a unique sparsest decomposition of $x^\star$
 provided there is a decomposition that is at most $\ceil{n/2}$ sparse. Such
 a dictionary of atoms is called a full spark frame and we shall use this
 assumption throughout the thesis.
+
+
 
 The goal of atomic norm decomposition is to write $x^\star$ as the
 sparsest combination of atoms in $\A$. We argue that a decomposition that

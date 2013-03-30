@@ -19,10 +19,10 @@
 %%% You'll want ``oneside'' for the deposit version, but probably not for any versions that don't need to meet the UW requirements
 \documentclass[12pt,oneside,letterpaper]{memoir}
 
-\input{includes/preamble}
-\input{includes/defs}
-\input{includes/thesisdefs}
-\input{includes/notationmacros}
+\input{includes/preamble.tex}
+\input{includes/defs.tex}
+\input{includes/thesisdefs.tex}
+\input{includes/notationmacros.tex}
 \svnidlong{$LastChangedBy$}{$LastChangedRevision$}{$LastChangedDate$}{$HeadURL: http://freevariable.com/dissertation/branches/diss-template/dissertation.tex $} 
 
 \clearpage\pagenumbering{roman}
@@ -50,16 +50,16 @@
 %% Add \part declarations if you want, but it's not necessary
 %\part{Preliminaries}
 
-\include{frontmatter/frontmatter}
+\input{frontmatter/frontmatter.tex}
 
 %% Now include the tex files for each chapter, like so (I put these in separate dirs): 
-\include{intro/intro}
+\input{intro/intro.tex}
 % \include{motivation/motivation}
 % \include{related/related}
-\include{denoising/ast}
-\include{linespect/linespect}
-\include{system_id/system_id}
-\include{algos/algos}
+\input{denoising/ast.tex}
+\input{linespect/linespect.tex}
+\input{system_id/system_id.tex}
+\input{algos/algos.tex}
 
 %% etc, etc.
 

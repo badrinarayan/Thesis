@@ -2,35 +2,127 @@
 \chapter{Algorithms}
 \label{chap:algos}
 
-As alluded to in Chapter 1, the problems of atomic norm decomposition and
-regularization have linear and quadratic objectives can be efficiently computed
-provided there is an efficient way to test membership in the constraint sets.
-The constraint sets of the primal and dual problems are the sublevel sets of
-the atomic and the dual atomic norm. Therefore, it is sufficient to develop
-efficient characterizations of the atomic norm ball to develop efficient
-algorithms for these problems.
+As alluded to in Chapter 1, \todo{please do allude and find a backing cite} the
+problems of atomic norm decomposition and regularization have linear and
+quadratic objectives can be efficiently computed provided there is an efficient
+way to test membership in the constraint sets. The constraint sets of the primal
+and dual problems are the sublevel sets of the atomic and the dual atomic norm.
+Therefore, it is sufficient to develop efficient characterizations of the atomic
+norm ball.
 
 For the special case of Fourier measurements, the atomic norm ball has
 semidefinite characterizations which we derive in this chapter. The positive
 case is classical and comes from moment theory and the dual theory of positive
-polynomials. We will see how to derive the semidefinite characterization for
-the more general complex case. We will also review the results for the positive case which we will need, and provide the proofs for the positive case for completeness. 
+polynomials. We will see how to derive the semidefinite characterization for the
+more general complex case. We will also review the results for the positive case
+which we will need, and provide the proofs for the positive case for
+completeness.
 
-\section{Semidefinite Characterization}
+\section{Trigonometric Moments}
 
-\subsection{Positive Trigonometric Moments}
+Given a measure $\mu$ defined on $\mathbb{T}$, recall that the $m$th
+trigonometric moment is defined by
+\begin{equation}
+	\label{eq:trig-moment-measure}
+	x_m = \int_\mathbb{T} e^{i 2 \pi k f} \mu ( d f)
+\end{equation}
+The classical trigonometric moment problem asks when the sequence of moments
+$\{x_m\}_{m=-\infty}^{\infty}$ characterizes the measure $\mu$. When the measure $\mu$ is discrete and is composed of atoms at $f_1, \ldots, f_l$, we can write
+\[
+\mu(f) = \sum_{l=1}^k c_l \xi_{f_l}
+\]
+where $\xi_f$ denotes the point measure at $f$ and $\set{c_l}$ are the amplitudes. In this case, we have
+\begin{align}
+	x_m &= \int_\mathbb{T} e^{i 2 \pi k f} \sum_{l=1}^k c_l \xi_{f_l}(d f)\\
+	&= \sum_{l=1}^k c_l e^{i 2 \pi f_l m}.
+\end{align}
+Define the trigonometric monomial $a(f)$ by
+\[
+a(f) = \begin{pmatrix}
+	1\\
+	e^{i 2\pi f}\\
+	\vdots\\
+	e^{i2\pi f (n-1)}
+\end{pmatrix}
+\] as in Chapter~\ref{chap:linespect}. Then the moment vector
+$x = \begin{pmatrix}x_0 & \cdots & x_{n-1}\end{pmatrix} \in \C^n$ is given by
+\[
+x = \sum_{l=1}^k c_l a(f_l)
+\]
+Thus, depending on whether $\set{c_l}$ are positive or complex, the $x$ lies in
+the conical hull of $\A_+$ or $\A$.
 
+\section{Duality : Moments and Polynomials}
+In this chapter, we develop semidefinite characterizations for the atomic sets
+\begin{align}
+\A_+ = \setof{a(f)}{f \in \mathbb{T}}\\
+\A = \setof{a(f) \exp(i 2\pi \phi)}{f, \phi \in \mathbb{T}}
+\end{align}
+and a corresponding characterization of the dual atomic set
+\begin{align}
+\A^*_+ = \setof{q \in \C^n}{\sum_{j=0}^{n-1}{q_j \exp(i 2\pi j f)} \geq 0, \text{ for all } f \in \mathbb{T}}\\
+\\A^* = \setof{q \in \C^n}{\sum_{j=0}^{n-1}{|q_j \exp(i 2\pi j f)|} \geq 0, \text{ for all } f \in \mathbb{T}}
+\end{align}
 
-\subsection{General Trigonometric Moments}
+The sets $\cone(\A_+)$ (resp $\cone(\A$)) and $\cone(\A^*_+)$ (resp
+$\cone(\A^*$)) are dual cones. Interestingly, for the positive case, the
+characterizations of the conical hulls of the atomic norm balls are sufficient
+to characterize the norm balls themselves. The general case requires a little
+more computation.
 
-\subsection{SDP for Atomic Soft Thresholding}
-\label{sec:sdp-ast}
+\section{Positive Trigonometric Moments}
 
-In this section, we present a semidefinite characterization of the atomic norm
-associated with the line spectral atomic set $\mathcal{A} = \{a_{f,\phi} | f
-\in [0, 1], \phi \in [0, 1]\}$. This characterization allows us to rewrite
- {\eqref{AST}} as an equivalent semidefinite programming problem.
+The conical hull of the atomic set $\A_+$ given by $\cone(\A_+)$ is called the
+trigonometric moment cone and has a classical characterization due to
+Caratheodory-Toeplitz theorem.Before we state the theorem, we will need a bit of
+notation. Define the map $T:\mathbb{C}^n \rightarrow \mathbb{C}^{n\times n}$
+which creates a Hermitian Toeplitz matrix out of its input, that is
+\[
+T(x)= \left[
+\begin{array}{ccccc} x_1 & x_2 & \ldots & x_n\\ 
+x^*_2 & x_1  & \ldots & x_{n-1}\\
+ \vdots & \vdots & \ddots & \vdots\\
+ x^*_n & x^*_{n-1}  & \ldots & x_1
+ \end{array}\right]
+\]
 
+\begin{theorem}[Caratheodory-Toeplitz theorem]
+	$x \in \C^n$ corresponds to the first $n$ trigonometric moments of a measure $\mu$ (i.e., $x \in \cone(\A_+)$) if and only if $T x \succeq 0.$
+\end{theorem}
+
+This theorem can be proved using Herglotz theorem~\cite{herglotz} and the idea
+of flat extensions studied in~\cite{Curto97}. We provide a simple version of the
+proof of this theorem in the appendix.\todo{Do this or skip} We refer the
+interested reader to~\cite{grenander01} for an alternative algebraic proof.
+
+Now, as a consequence of the moment cone characterization, we have a simple characterization of the moment sequences. 
+
+\begin{theorem}
+	$\vnorm{x}_{\A_{+}} \leq 1$ if and only if $T x \geq 0$ and $x_1 \leq 1$.
+\end{theorem}
+\begin{proof}
+If $T x \succeq 0$, then there exists an atomic decomposition $x = \sum_l c_l a(f_l)$ by Caratheodory-Toeplitz theorem since it is in the conical hull of the atomic set $\A_+$. Since we have an invariant $x_0 = \sum_l c_l$ for any such decomposition, we have that
+\[
+\vnorm{x}_{\A_{+}}  = \inf\setof{\sum_{c_l}}{x = \sum_l c_l} = x_1.
+\]
+On the other hand, if $Tx \not\succeq 0$, $x \not\in \cone(\A_+)$ and thus $\vnorm{x}_{\A_{+}} = +\infty$.
+\end{proof}
+
+\section{Positive Trigonometric Polynomials}
+
+A vector $q \in \C^n$ is called a $n$th degree positive trigonometric polynomial
+if $\Re\sum_{j=1}^{n} q_{j-1} \exp(i2\pi j f) \geq 0$ for every $f \in
+\mathbb{T}.$ Such polynomials have a simple characterization due to spectral
+factorization theorem.
+
+\begin{definition}
+A vector $q \in \C^n$ is a positive trigonometric polynomial if
+for every $f \in \mathbb{T},~ \Re\sum_{j=1}^{n} q_{j-1} \exp(i2\pi j f) \geq 0.$
+\end{definition}
+
+\section{General Trigonometric Moments}
+\subsection{Atomic Norm and Caratheory-Toeplitz theorem}
+\subsection{Dual Atomic Norm and Bounded Real Lemma}
 Recall from \eqref{eq:dual-norm-poly} that the dual atomic norm of a vector $v
 \in \mathbb{C}^n$ is the maximum absolute value of a complex trigonometric
 polynomial $V(f) = \sum_{l=0}^{n-1} v_l e^{-2\pi i l f}$. As a
@@ -44,18 +136,7 @@ polynomial in the variables $z$ and $z^*$ with $|z|=1$). A necessary and
 sufficient condition for $q(f)$ to be nonnegative is that it can be written as
 a sum of squares of trigonometric polynomials~\cite{Megretski03}. 
 Testing if $q$ is a sum of squares can be achieved
-via semidefinite programming. To state the associated semidefinite program,
-define the map $T:\mathbb{C}^n \rightarrow \mathbb{C}^{n\times n}$ which
-creates a Hermitian Toeplitz matrix out of its input, that is
-\[
-T(x)= \left[
-\begin{array}{ccccc} x_1 & x_2 & \ldots & x_n\\ 
-x^*_2 & x_1  & \ldots & x_{n-1}\\
- \vdots & \vdots & \ddots & \vdots\\
- x^*_n & x^*_{n-1}  & \ldots & x_1
- \end{array}\right]
-\]
-Let $T^*$ denote the adjoint of the map $T$. Then we have the following
+via semidefinite programming. Let $T^*$ denote the adjoint of the map $T$. Then we have the following
 succinct characterization
 
 \begin{lemma}\cite[Theorem 4.24]{brl2007}\label{lm:brl} For any given causal trigonometric polynomial $V(f) = \sum_{l=0}^{n-1} v_l
@@ -72,6 +153,15 @@ Here, ${e}_1$ is the first canonical basis vector with a one at the first
 component and zeros elsewhere and $v^*$ denotes the Hermitian adjoint
 (conjugate transpose) of $v$.
 \end{lemma}
+
+\section{SDP for Atomic Soft Thresholding}
+\label{sec:sdp-ast}
+
+In this section, we present a semidefinite characterization of the atomic norm
+associated with the line spectral atomic set $\mathcal{A} = \{a_{f,\phi} | f
+\in [0, 1], \phi \in [0, 1]\}$. This characterization allows us to rewrite
+ {\eqref{AST}} as an equivalent semidefinite programming problem.
+
 
 
 Using Lemma \ref{lm:brl}, we rewrite the atomic norm $\|x\|_\A =

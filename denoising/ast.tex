@@ -1,13 +1,12 @@
 %!TEX root = ../dissertation.tex
-\chapter{Simple Models}
+\chapter{Simple Models and Atomic Norms}
 
-The foundation of our technique consists of extending recent work on
-\emph{atomic norms} in linear inverse problems in \cite{crpw}. In this work,
-the authors describe how to reconstruct models that can be expressed as sparse
-linear combinations of \emph{atoms} from some basic set $\A.$ The set $\A$ can
-be very general and not assumed to be finite. For example, if the signal is
-known to be a low rank matrix, $\A$ could be the set of all unit norm rank-$1$
-matrices.
+The foundation of our technique consists of extending work on \emph{atomic
+norms} in linear inverse problems in \cite{crpw}. In this work, the authors
+describe how to reconstruct models that can be expressed as sparse linear
+combinations of \emph{atoms} from some basic set $\A.$ The set $\A$ can be very
+general and not assumed to be finite. For example, if the signal is known to be
+a low rank matrix, $\A$ could be the set of all unit norm rank-$1$ matrices.
 
 We will first review the work in~\cite{crpw} and show atomic norms generalize
 various notions of sparsity and structure.  We will also show how to use an
@@ -32,7 +31,21 @@ resolution sufficiently high to guarantee excellent mean-squared error (MSE).
 The gridded problem reduces to the Lasso, and can be rapidly solved with freely
 available software such as SpaRSA~\cite{wright09}.
 
-\subsection{Outline and Summary of Results}
+\subsection{Summary of Results}
+
+We describe here our approach to a general sparse denoising problem and later
+specialize these results to line spectral estimation. The denoising problem is
+obtaining an estimate $\hat{x}$ of the signal $x^\star$ from $y = x^\star + w$,
+where $w$ is additive noise. We make the structural assumption that $x^\star$ is
+a sparse non-negative combination of points from an arbitrary, possibly infinite
+set $\A \subset \C^n$. This assumption is very expressive and generalizes many
+notions of sparsity~\cite{crpw}. The atomic norm $\vnorm{\cdot}_\A$, introduced
+in \cite{crpw}, is a penalty function specially catered to the structure of $\A$
+as we shall examine in depth in next section, and is defined as:
+\begin{equation*} \vnorm{x}_\A = \inf\left\{t > 0 ~\middle|~ x \in t \conv(\A)
+\right\}. \end{equation*} where $\conv(\A)$ is the convex hull of points in
+$\A.$ We analyze the denoising performance of an estimate that uses the atomic
+norm to encourage sparsity in $\A$.
 
 \paragraph*{Atomic norm denoising.} In Section \ref{sec:abstract-denoising},
 we characterize the performance of the estimate $\hat{x}$ that solves
@@ -75,7 +88,37 @@ in terms of the expected dual norm of the noise process $w$, equal to
 That is, the optimal $\tau$ and achievable MSE can be estimated
 by studying the extremal values of the stochastic process indexed by the atomic
 set $\A$.
- 
+\\
+
+\todo{Add Outline, Decomposition, Dual Certificate and Discretization.}
+\section{Preliminaries}
+
+The notion of atomic sets and simple models introduced in~\cite{crpw} subsumes
+several structures in high dimensional geometry, including sparse
+vectors, low rank matrices, discrete measures, linear systems of small order.
+The authors also define a notion of an \emph{atomic norm} as a natural convex
+penalties for encouraging simplicity with respect to these structures. In this
+section, we review these preliminaries.
+
+Consider a possibly infinite set $\A \subset \R^n$ which we shall dub the
+\emph{atomic set}. Every signal we shall consider is composed of a combination
+of \emph{atoms} from this dictionary. We say a target signal $x^\star \in \R^n$
+is \emph{simple}, if it is can be written as a nonnegative combination of small
+subset $S \subset \A$ of atoms. We call $S$, a \emph{support} of $x^\star$. If
+the number of elements $k = |S|$ in the support is small relative to the
+dimension $n$ of the signal, we say $x^\star$ is a $k$ \emph{simple} combination
+of atoms.
+
+Allowing the dictionary of atomic set to be infinite offers tremendous
+flexibility in the kind of high dimensional structures that can be modeled. As a
+motivating example, rank is a notion of simplicity for matrices and indeed a low
+rank matrix in a high dimensional space can be written as a nonnegative
+combination of a few elements from the \emph{infinite} atomic set of all unit
+norm, rank-$1$ matrices. \\
+
+\todo{Examples}
+
+\subsection{Atomic Norm}
 
 \begin{definition}[Atomic Norm]
 The atomic norm $\vnorm{\cdot}_\A$ of $\A$ is the Minkowski functional (or the
@@ -95,36 +138,15 @@ minimizing the atomic norm subject to equality constraints provided exact
 solutions of a variety of linear inverse problems with nearly optimal bounds on
 the number of measurements required.
 
-\section{Simple Models}
+\section{Decomposition}
 
-Suppose our target signal $x^\star \in \R^n$ is composed only of atoms from a
-small subset $S \subset \A$ of the original \emph{dictionary} of atoms. We call
-$S$, a \emph{support} of $x^\star$. If the number of elements $k = |S|$ in the
-support is small relative to the dimension $n$ of the signal, we say $x^\star$
-is a $k$ \emph{simple} combination of atoms. We emphasize that the \emph{atomic 
-set} $\A$ could be infinite.
-
-This notion of simplicity generalizes sparsity for many structures in high
-dimension. For instance, the rank of a matrix is a notion of simplicity and
-indeed a low rank matrix in a high dimensional space can be written as a
-combination of a few elements from the infinite atomic set of all unit norm,
-rank-$1$ matrices. Similarly, we can attach a notion of simplicity to a vector
-$x \in \R^n$ as the smallest number of elements from a dictionary $\mathcal{D}$
-of $p$ elements needed to express $x$ as a linear combination. I don't believe this.
-
-
-\subsection{Decomposition and Atomic Norm}
-
-
-Can we recover this sparse decomposition and find the composing atoms from
-$x^\star$? As stated, the problem is ill-posed, for there could many
-decompositions. If we assume that every collection of $n$ atoms from $\A$ is
-linearly independent, there is a unique sparsest decomposition of $x^\star$
-provided there is a decomposition that is at most $\ceil{n/2}$ sparse. Such
-a dictionary of atoms is called a full spark frame and we shall use this
-assumption throughout the thesis.
-
-
+A natural question is whether it is always possible to recover the composing
+atoms of a simple $x^\star$? As stated, the problem is ill-posed, for there
+could many decompositions. If we assume that every collection of $n$ atoms from
+$\A$ is linearly independent, there is a unique sparsest decomposition of
+$x^\star$ provided there is a decomposition that is at most $\ceil{n/2}$ sparse.
+Such a dictionary of atoms is called a \emph{full spark frame}~\cite{spark} and
+we shall use this assumption throughout the thesis.
 
 The goal of atomic norm decomposition is to write $x^\star$ as the
 sparsest combination of atoms in $\A$. We argue that a decomposition that
@@ -137,8 +159,10 @@ a dual certificate, which is one of the subgradients of the atomic norm.
 
 Subgradients of atomic norm are supporting hyperplanes of the atomic norm
 ball. 
+\\
+\todo{Dual Certificate}
 
-\section{Atomic Soft Thresholding}
+\section{Denoising}
 \label{sec:abstract-denoising}
 
 To set up the atomic norm denoising problem, suppose we observe a signal $y =

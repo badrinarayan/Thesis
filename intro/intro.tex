@@ -13,21 +13,22 @@ task even for simple instances of the problem.
 
 For example, imagine a data series of $n$ measurements that can be described by
 a linear model, in terms of a large number $p \gg n$ of potential predictor
-variables. Finding the linear model from these limited measurements is a
-hopelessly underdetermined problem. However, when the linear model is
-\emph{simple} and it is known a priori that only a small subset of the predictor
-variables are actually active, it becomes possible to formulate this problem. A
-simple description of the data series expresses it in terms of a sparse
-combination of predictor variables. Our task of choosing the ``right'' model for
-the data can be cast as a combinatorial optimization problem with the objective
-of finding the smallest subset of predictor variables that describe the data
-well. This is called the ``small n, large p'' problem in statistics and such
-datasets are ubiquitous - For example, biologists want to characterize samples
-in terms of a small subset of a large number of genes from limited measurements.
-Machine learning practioners want to infer the active features from a large
-feature space from relatively small number of measurements.
+variables or features. Finding the linear model from these limited measurements
+is a hopelessly underdetermined problem. However, when the linear model is
+\emph{simple} and it is known a priori that only a small subset of the features
+are actually active, it becomes possible to formulate this problem. A simple
+description of the data series expresses the data series in terms of a few
+active features and corresponding feature weights. Our task of choosing the
+``right'' model for the data can be cast as a combinatorial \emph{feature
+selection} problem with the objective of finding the smallest subset of feature
+that describe the data well. This is called the ``small n, large p'' problem in
+statistics and such datasets are ubiquitous - For example, biologists want to
+characterize samples in terms of a small subset of a large number of genes from
+limited measurements. Machine learning practioners want to infer the active
+features from a large feature space with a relatively small number of
+measurements.
 
-A \naive{} algorithm would explore all the possible subsets of features till we
+A naïve algorithm would explore all the possible subsets of features till we
 find a solution. There does not appear to be an efficient algorithm for this as
 there are an exponential number of subsets to choose from. In fact, this
 selection problem is provably \textsc{NP-Hard}\footnote{Informally, this means
@@ -39,10 +40,18 @@ possibility of designing efficient algorithms that work on \emph{most}
 instances. In fact, there is now a large body of literature on the theoretical
 understanding of the surprising success of convex relaxation methods in
 efficiently solving the sparse recovery problem most of the time.
-\\
-\todo{Summarize Coherence, RIP. Emphasize Local Recovery and Off grid. Emphasize flexibility. Say problems like System ID and Line Spectral Estimation are not even expressible in this framework. Rephrase everything in terms of feature weights and use the term signal if possible.}
 
-These convex relaxation methods penalize the $\ell_1$ norm of the feature weights instead of sparsity of feature weights.
+The idea of using the $\ell_1$ norm of the feature weights (instead of the hard
+combinatorial problem of minimizing sparsity of feature weights) as a convex
+heuristic for model or feature selection and its robustness to outliers and
+noise was known to several early practitioners in Geophysics and
+seismology~\cite{claerbout:robust,taylor:deconvolution,levy:spike-train,santosa}.
+It was introduced in statistics as a sparsity inducing regularization
+in~\cite{tibshirani96} and in Signal Processing as a means of exact and robust
+decomposition by~\cite{chen98} and subsequently studied by Donoho and his
+coworkers~\cite{donoho:huo,spark} Since the publication of
+~\cite{CRT06,meinshausen:variable-selection}, the study of convex penalties for
+feature selection has been a subject of intense research. Later, this theory was extended to other high dimensional structures including group sparse vectors\cite{group:lasso}, low rank matrices~\cite{recht07} and cut matrices~\cite{cut:goemans}.
 
 %This can be thought of as a model selection or a feature selection problem.
 % Problems involving estimation of high dimensional parameters under corrupted and limited linear measurements are ubiquitous.
@@ -58,6 +67,9 @@ frequencies.  In \cite{crpw}, the authors propose using ``atomic norm'' as a
 convex heuristic to recover simple models from linear measurements. The atomic
 norm may be thought of as a convex proxy to the combinatorial objective
 function that arises naturally in sparse recovery problems.
+\\
+\todo{Summarize Coherence, RIP. Emphasize Local Recovery and Off grid. Emphasize flexibility. Say problems like System ID and Line Spectral Estimation are not even expressible in this framework. Rephrase everything in terms of feature weights and use the term signal if possible.}
+
 
 
 Contributions and Organization of the Thesis.

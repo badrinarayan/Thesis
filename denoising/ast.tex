@@ -23,7 +23,7 @@ computing low mean-squared-error estimates. We show how certain Gaussian
 statistics and geometrical quantities of particular atomic norms are
 sufficient to bound estimation rates with these penalty functions. Our
 approach is essentially a generalization of the
-Lasso~\cite{tibshirani96,chen01} to infinite dictionaries.
+Lasso~\cite{tibshirani96,chen98} to infinite dictionaries.
 
 We show that solving the Lasso problem on an oversampled grid of frequencies
 approximates the solution of the atomic norm minimization problem to a
@@ -367,7 +367,7 @@ case, the atomic set is the collection of columns of $\Phi$ and $-\Phi$, and
 the atomic norm is $\vnorm{x}_{\A} = \min \left\{\vnorm{c}_1: x = \Phi c\right\}$.
 Therefore, the proposed optimization
 problem \eqref{AST} coincides with the Lasso estimator~\cite{tibshirani96}.
-This method is also known as Basis Pursuit Denoising~\cite{chen01}. If we
+This method is also known as Basis Pursuit Denoising~\cite{chen98}. If we
 assume that $w$ is a gaussian vector with variance $\sigma^2$ for its entries,
 the expected dual atomic norm of the noise term, $\vnorm{w}_\A^* =
 \vnorm{\Phi^*w}_\infty$ is simply the expected maximum of $p$ gaussian random

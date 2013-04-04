@@ -61,7 +61,7 @@ We restrict our attention to SISO systems in this manuscript, as this will simpl
 \end{equation}
 This formulation uses the parameter $\mu$ to balance between model complexity and fidelity to the data.  The least-squares cost can be modified to other convex loss functions if knowledge about measurement noise is available (as in~\cite{Smith12,Paganini96}), though in general it is less clear how to design a good penalty function.
 
-In many applications, we know that the true model can be decomposed as a linear combination of very simple building blocks.  For instance, sparse vectors can be written as short linear combinations of vectors from some discrete dictionary and low-rank matrices can be written as a sum of a few rank-one factors.  In~\cite{CRPW10}, Chandraskearan et al. proposed a universal heuristic for constructing regularizers based on such prior information.  If we assumed that 
+In many applications, we know that the true model can be decomposed as a linear combination of very simple building blocks.  For instance, sparse vectors can be written as short linear combinations of vectors from some discrete dictionary and low-rank matrices can be written as a sum of a few rank-one factors.  In~\cite{crpw}, Chandraskearan et al. proposed a universal heuristic for constructing regularizers based on such prior information.  If we assumed that 
 \[
 	G_\star = \sum_{i=1}^r c_i a_i\,,~\mbox{for some}~a_i\in\cA,c_i\in \C\,,
 \]
@@ -71,7 +71,7 @@ where $\cA$ is an origin-symmetric set of ``atoms'' normalized to have unit norm
 	\|G\|_{\cA}: & = \inf\left\{ t \; : \; G \in t\text{ conv}(\cA)  \right\}  =\inf\left\{ \sum_{a\in \cA} |c_a|~:~G = \sum_{a\in \cA} c_a a\right\}\,.
 \end{split}
 \end{equation}
-In~\cite{CRPW10}, it is shown that minimizing the atomic norm subject to compressed measurements yielded the tightest known bounds for recovering many classes of models from linear measurements. Moreover, in~\cite{BhaskarAllerton11}, the atomic norm regularizer was studied in the context of denoising problems and was found to produce consistent estimates at nearly optimal estimation error rates for many classes of atoms.
+In~\cite{crpw}, it is shown that minimizing the atomic norm subject to compressed measurements yielded the tightest known bounds for recovering many classes of models from linear measurements. Moreover, in~\cite{BhaskarAllerton11}, the atomic norm regularizer was studied in the context of denoising problems and was found to produce consistent estimates at nearly optimal estimation error rates for many classes of atoms.
 
 To apply these atomic norm techniques to system identification, we must first determine the appropriate set of atoms.  For discrete time LTI systems with small McMillan degree, we can always decompose any finite dimensional, strictly proper system $G(z)$ as:
 $$
@@ -180,7 +180,7 @@ The proof of theorem~\ref{thm:estimation} is provided in the appendix.  We prove
 
 \section{Conclusion}\label{sec:conclusion}
 
-By using the atomic norm framework of~\cite{CRPW10}, we were able to posit a reasonable regularizer for linear systems, understand the computational demands of such a regularizer, and analyze its statistical performance.  Since it is closely connected to the Hankel nuclear norm but is computationally more practical, we believe that our atomic norm will be useful in a variety of practical implementations and also in theoretical analysis.  However, there are still several outstanding questions to address before we fully understand the potential of this norm.  We list several of these open problems here.
+By using the atomic norm framework of~\cite{crpw}, we were able to posit a reasonable regularizer for linear systems, understand the computational demands of such a regularizer, and analyze its statistical performance.  Since it is closely connected to the Hankel nuclear norm but is computationally more practical, we believe that our atomic norm will be useful in a variety of practical implementations and also in theoretical analysis.  However, there are still several outstanding questions to address before we fully understand the potential of this norm.  We list several of these open problems here.
 
 \paragraph{Other measurement ensembles} Our analysis in Section~\ref{sec:statistics} focused on the particular case of sampling the frequency response at regular intervals.  By focusing on this example, we were able illustrate the critical ingredients to computing convergence rates.  First, we needed to show that our measurement error provided a reasonable upper bound on the distance to the true transfer function.  Second, we used convex analysis to upper bound the measurement error in terms of the statistics of the noise process.  Third, we estimated the noise statistics using probabilistic techniques and appealing to the structure of the atomic set and its $\epsilon$-nets.  This methodology can be extended to the other sampling methods described in Section~\ref{sec:computation}, and may also be extendable to estimating transfer functions from pairs of input-output time series.
 
@@ -262,7 +262,7 @@ Here,~\eq{tri-ineq}  is the triangle inequality.~\eq{nuc-2-l2} follows because t
 \end{proof}
 
 \section{Dual norms}
-We record here a few basic properties about dual atomic norms that we need for our proofs (see~\cite{CRPW10,BhaskarAllerton11} for more details).  For an atomic set $\cA$, the dual norm is given by
+We record here a few basic properties about dual atomic norms that we need for our proofs (see~\cite{crpw,BhaskarAllerton11} for more details).  For an atomic set $\cA$, the dual norm is given by
 \[
 	\| z \|_{\cA}^* = \sup_{a \in \cA} \langle a, z \rangle\,.
 \] 

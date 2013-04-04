@@ -18,8 +18,11 @@
 
 %%% You'll want ``oneside'' for the deposit version, but probably not for any versions that don't need to meet the UW requirements
 \documentclass[12pt,oneside,letterpaper]{memoir}
+% \setlrmarginsandblock{1in}{*}{1}
+% \checkandfixthelayout
 
 \input{includes/preamble.tex}
+\hypersetup{pageanchor=false}
 \input{includes/defs.tex}
 \input{includes/thesisdefs.tex}
 \input{includes/notationmacros.tex}
@@ -35,6 +38,7 @@
 \renewcommand*{\refname}{Bibliography}
 
 \begin{document}
+\onehalfspacing
 %%% Uncomment the following if your .bib contains references that you will not 
 %%% explicitly cite, but that should be in the final bibliography:
 % \nocite{*}
@@ -46,12 +50,12 @@
 \fi
 
 \maketitle
-
+\doublespacing
 %% Add \part declarations if you want, but it's not necessary
 %\part{Preliminaries}
 
 \input{frontmatter/frontmatter.tex}
-
+\hypersetup{pageanchor=true}
 \input{intro/intro.tex}
 % \include{motivation/motivation}
 % \include{related/related}

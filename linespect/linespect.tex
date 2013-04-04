@@ -760,7 +760,7 @@ Applying Lemma \ref{part1} to the error function, we get
 \vnorm{e}_2^2 \leq \vnorm{E(f)}_\infty 
 \left( \int_F{|\nu|(df)} + I_0 + I_1 + I_2\right)
 \end{equation}
-As a consequence of our choice of $\tau$ in \eqref{tau}, we can show that $\vnorm{E(f)}_\infty \leq (1+2\eta^{-1})\tau$ with high probability. In fact, we have
+As a consequence of our choice of $\tau$ in \eq{tau}, we can show that $\vnorm{E(f)}_\infty \leq (1+2\eta^{-1})\tau$ with high probability. In fact, we have
 \begin{align*}
 \vnorm{E(f)}_\infty &= \sup_{f \in [0,1]}\left|\langle e, a(f) \rangle\right|\\
 &= \sup_{f \in [0,1]} \left| \langle x^\star - \hat{x}, a(f) \rangle\right|\\
@@ -806,7 +806,7 @@ Putting together Lemmas \ref{part1}, \ref{part2} and \ref{part3}, we finally pro
 & \leq \frac{C k \tau^2}{n^2}\\
 &= O\left(\sigma^2\frac{k \log(n)}{n}\right).
 \end{align*}
-The first three inequalities come from successive applications of Lemmas 1, 2 and 3 respectively. The fourth inequality follows from \eqref{errbd} and the fifth by our choice of $\tau$ according to Eq. \eqref{tau}. This completes the proof of Theorem \ref{main}.
+The first three inequalities come from successive applications of Lemmas 1, 2 and 3 respectively. The fourth inequality follows from \eqref{errbd} and the fifth by our choice of $\tau$ according to Eq. \eq{tau}. This completes the proof of Theorem \ref{main}.
 
 
 
@@ -965,7 +965,7 @@ f) | d  f$. Since $K ( f) = G ( f)^2$, we have
 \begin{eqnarray}
   \int_0^1 | K' ( f) | d  f  =  2\int_0^1 | G ( f) G' ( f) | d
    f
-   \leq  2\| G ( f) \|_2 \| G' ( f) \|_2\label{holder}
+   \leq  2\| G ( f) \|_2 \| G' ( f) \|_2\label{eq:holder-int}
 \end{eqnarray}
 We have already established that $\| G ( f) \|_2^2 \leq C / {n}$ and we
 will now show that $\| G' ( f) \|_2^2 \leq C' {n}$. Differentiating the
@@ -980,7 +980,7 @@ Therefore, by applying Parseval's identity again, we get
   & \leq &  \pi^2 m^2 \sum_{l = - m / 2}^{m / 2} | g_l |^2\\
   & \leq & C' n
 \end{eqnarray*}
-Plugging back into \eqref{holder} yields
+Plugging back into \eqref{eq:holder-int} yields
 \begin{align}
 \int_0^1 |K'(f)| df \leq C \label{bdK1f}
 \end{align}
@@ -1200,11 +1200,11 @@ used this estimate in equation~\eq{tau} to determine the regularization
 parameter for both our AST and Lasso experiments.
 
 First, we implemented AST using the ADMM method described in detail in
-Chapter~\ref{algos}. We used the stopping criteria described in~\cite{admm2011}
-and set $\rho=2$ for all experiments. We use the dual solution $\hat{z}$ to
-determine the support of the optimal solution $\hat{x}$ using the procedure
-described in Section~\ref{sec:frequency-localize}. Once the frequencies
-$\hat{f}_l$ are extracted, we ran the least squares problem
+Chapter~\ref{chap:algos}. We used the stopping criteria described
+in~\cite{admm2011} and set $\rho=2$ for all experiments. We use the dual
+solution $\hat{z}$ to determine the support of the optimal solution $\hat{x}$
+using the procedure described in Section~\ref{sec:frequency-localize}. Once the
+frequencies $\hat{f}_l$ are extracted, we ran the least squares problem
 $\mbox{minimize}_\alpha \|U \alpha - y\|^2$ where $U_{jl} = \exp(i 2\pi j
 \hat{f}_l)$ to obtain a \emph{debiased} solution. After computing the optimal
 solution $\alpha_{\mathrm{opt}}$, we returned the prediction $\hat{x} =
@@ -1351,16 +1351,16 @@ P_s(\beta) = \frac{\mathop{\#}\left\{p \in \mathcal{P} ~:~ \mathrm{MSE}_s(p) \le
 (a) & (b)
 \end{tabular}
 \caption{ (a) Performance Profile  comparing various algorithms and AST. (b) Performance profiles for Lasso with different grid sizes.}
-\label{fig:pp}
+\label{fig:pp1}
 \end{figure}
 
 
-From the performance profile in Figure~\ref{fig:pp}(a), we see that AST is the
+From the performance profile in Figure~\ref{fig:pp1}(a), we see that AST is the
 best performing algorithm, with Lasso coming in
 second. Cadzow does not perform as well as AST, even though it is fed the true
 number of sinusoids. When Cadzow is fed an incorrect $k$, even off by $1$, the
 performance degrades drastically, and never provides adequate mean-squared
-error. Figure~\ref{fig:pp}(b) shows that the denoising performance
+error. Figure~\ref{fig:pp1}(b) shows that the denoising performance
 improves  with grid size.
 
 \begin{figure}[htp]
@@ -1374,12 +1374,13 @@ improves  with grid size.
 (a) Sum of the absolute value of amplitudes in the far region ($m_1$)
 (b) The weighted frequency localization error, $m_2$
 (c) Error in approximation of amplitudes in the near region, $m_3$ }
-\label{fig:pp}
+\label{fig:pp2}
 \end{figure}
 
-The performance profiles in Figure~\ref{fig:pp} show that AST is the best
-performing algorithm for all the three metrics.  AST in fact outperforms
-MUSIC and Cadzow by a substantial margin for metrics $m_1$ and $m_2$. 
+The performance profiles in Figure~\ref{fig:pp2} show that AST is the best
+performing algorithm for all the three metrics for frequency localization. AST
+in fact outperforms MUSIC and Cadzow by a substantial margin for metrics $m_1$
+and $m_2$.
 
 
 \section{Conclusion and Future Work}\label{sec:conclusions}

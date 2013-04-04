@@ -197,13 +197,13 @@ $\hat{x}$ is the solution of \eqref{AST} if and only if\\
 \end{lemma}
 \begin{proof}
 The function $f(x) = \tfrac{1}{2}\vnorm{y - x}_2^2 + \tau\vnorm{x}_\A$ is minimized at $\hat{x}$, if for all $\alpha \in (0,1)$ and all $x$,
-\begin{eqnarray}
-&& f(\hat{x} + \alpha(x - \hat{x})) \geq f(\hat{x})\nonumber
-\end{eqnarray}
+\begin{equation*}
+f(\hat{x} + \alpha(x - \hat{x})) \geq f(\hat{x})
+\end{equation*}
 or equivalently,
-\begin{eqnarray}
+\begin{equation}
  \alpha^{-1} \tau \left(\vnorm{\hat{x} + \alpha(x - \hat{x})}_\A - \vnorm{\hat{x}}_\A  \right) \geq \vabs{y - \hat{x}}{x - \hat{x}} - \frac{1}{2}\alpha \vnorm{x - \hat{x}}_2^2\label{eq:limit}
-\end{eqnarray}
+\end{equation}
 Since $\vnorm{\cdot}_\A$ is convex, we have
 \[
 \vnorm{x}_\A - \vnorm{\hat{x}}_\A \geq \alpha^{-1}  \left(\vnorm{\hat{x} + \alpha(x - \hat{x})}_\A - \vnorm{\hat{x}}_\A \right),

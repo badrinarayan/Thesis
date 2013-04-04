@@ -88,12 +88,16 @@
 \usepackage[LY1]{fontenc}
 
 %% Substitute your favorite serif and sans fonts here....
-\IfFileExists{tgpagella.sty}{%
-% TeX Gyre pagella, like Palatino
-\usepackage{tgpagella}%
-}{}
-
-\usepackage[LY1]{eulervm}
+% \IfFileExists{tgpagella.sty}{%
+% % TeX Gyre pagella, like Palatino
+% \usepackage{tgpagella}%
+% }{}
+% 
+% \usepackage[LY1]{eulervm}
+\usepackage[T1]{fontenc}
+\usepackage{charter}
+\usepackage[expert]{mathdesign}
+\usepackage{tgheros}
 
 \ifpdf
 \usepackage[pdftex]{graphicx}
@@ -138,10 +142,10 @@
   \renewcommand{\chapterheadstart}{}
   \renewcommand{\printchaptername}{}
   \renewcommand{\chapternamenum}{}
-  \renewcommand{\printchapternum}{\parbox{2em}{\MakeLowercase{\Large\scshape\thechapter{}}} }
+  \renewcommand{\printchapternum}{\parbox{3em}{\MakeLowercase{\Huge\thechapter{}}} }
   \renewcommand{\afterchapternum}{}
   \renewcommand{\printchaptertitle}[1]{%
-  \raggedright\Large\scshape\MakeLowercase{##1}}
+  \raggedright\Huge{##1}}
   \renewcommand{\afterchaptertitle}{%
   \vskip\onelineskip \hrule\vskip\onelineskip}
 }

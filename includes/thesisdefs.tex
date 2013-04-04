@@ -29,7 +29,7 @@
 \newcounter {lotpage}
 \newcounter {listofheading}
 
-\newcommand\@thesistitlemedskip{0.25in}
+\newcommand\@thesistitlemedskip{0.2in}
 \newcommand\@thesistitlebigskip{0.6in}
 \newcommand{\degree}[1]{\gdef\@degree{#1}}
 \newcommand{\project}{\gdef\@doctype{A masters project report}}
@@ -47,9 +47,17 @@
 \gdef\@degree{Doctor of Philosophy}    %Default is PhD
 \gdef\@doctype{A dissertation}         %Default is dissertation
 
-\gdef\@department{(Electrical Engineering)} 
-
+\gdef\@department{(Electrical Engineering)}
+\gdef\@defensedate{04/24/2013}
+\gdef\@committee{
+  \hspace*{1cm}John A.~Gubner, Professor, Electrical and Computer Engineering\\
+  \hspace*{1cm}Robert D.~Nowak, Professor, Electrical and Computer Engineering\\
+  \hspace*{1cm}Benjamin H.~Recht, Professor, Computer Sciences Dept.\\
+  \hspace*{1cm}Barry D.~Van Veen, Electrical and Computer Engineering\\
+  \hspace*{1cm}Stephen J.~Wright, Professor, Computer Sciences Dept.
+ }
 \renewcommand{\maketitle}{%
+  \singlespacing
   \begin{titlepage}
 %-----------------------------------------------------------------------------
 % -- The thesis office doesn't like thanks on title page.  Put it in
@@ -59,19 +67,22 @@
 %-----------------------------------------------------------------------------
     \def\thanks##1{\typeout{Warning: `thanks' deleted from thesis titlepage.}}
     \let\footnotesize\small \let\footnoterule\relax \setcounter{page}{1}
-    \vspace*{0.1in}
     \begin{center}
-      {\textbf{\expandafter\uppercase\expandafter{\@title}}} \\[\@thesistitlebigskip]
+      {\Large\textbf{\expandafter\expandafter{\@title}}} \\[\@thesistitlebigskip]
        by \\[\@thesistitlemedskip]
-      \@author \\[\@thesistitlebigskip]
+      \@author \\[\@thesistitlemedskip]
       \@doctype\ submitted in partial fulfillment of \\
       the requirements for the degree of\\[\@thesistitlebigskip]
       \@degree \\[\@thesistitlemedskip]
       \@department \\[\@thesistitlebigskip]
-      at the \\[\@thesistitlebigskip]
-      UNIVERSITY OF WISCONSIN--MADISON\\[\@thesistitlebigskip]
+      at the \\[\@thesistitlemedskip]
+      UNIVERSITY OF WISCONSIN--MADISON\\[\@thesistitlemedskip]
       \@date
+ 	  \\[\@thesistitlebigskip]
     \end{center}
+	Date of final oral examination: \@defensedate \\[\@thesistitlemedskip]
+	The dissertation is approved by the following members of the Final Oral Committee:\\
+	  \@committee
   \end{titlepage}
   \setcounter{footnote}{0}
   \setcounter{page}{1} %title page is NOT counted
@@ -176,7 +187,7 @@
   \chapter*{}            % Required for \vfill to work
   \begin{center}
    \vfill
-   \copyright\ Copyright by \@author\ \@date\\
+   \textcopyright\ Copyright by \@author\ \@date\\
    All Rights Reserved
   \end{center}}
 

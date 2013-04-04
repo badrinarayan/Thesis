@@ -1,6 +1,8 @@
 %!TEX root = ../dissertation.tex
 \chapter{Introduction}
 
+\todo{TODO: Reorganize like this. First state our contribution. \emph{then}
+discuss previous work.}
 We live in a world of data abundance. Due to advancements in data collection,
 and massive storage capabilities, we now have a dizzying amount of high
 dimensional data to analyze. The task of the data scientist is to infer a simple
@@ -11,22 +13,22 @@ dimension. The challenge is to exploit the simplicity of these objects and
 recover them robustly from limited linear measurements. This can be a formidable
 task even for simple instances of the problem.
 
-For example, imagine a data series of $n$ measurements that can be described by
-a linear model, in terms of a large number $p \gg n$ of potential predictor
-variables or features. Finding the linear model from these limited measurements
-is a hopelessly underdetermined problem. However, when the linear model is
-\emph{simple} and it is known a priori that only a small subset of the features
-are actually active, it becomes possible to formulate this problem. A simple
-description of the data series expresses the data series in terms of a few
-active features and corresponding feature weights. Our task of choosing the
-``right'' model for the data can be cast as a combinatorial \emph{feature
-selection} problem with the objective of finding the smallest subset of feature
-that describe the data well. This is called the ``small n, large p'' problem in
-statistics and such datasets are ubiquitous - For example, biologists want to
-characterize samples in terms of a small subset of a large number of genes from
-limited measurements. Machine learning practioners want to infer the active
-features from a large feature space with a relatively small number of
-measurements.
+For example, imagine a data series composed of $n$ measurements that can be
+described by a linear model, in terms of a large number $p \gg n$ of potential
+predictor variables or features. Finding the linear model from these limited
+measurements is a hopelessly underdetermined problem. However, when the linear
+model is \emph{simple} and it is known a priori that only a small subset of the
+features are actually active, the problem of determining the linear model is no
+longer ill posed. A simple description of the data series expresses the data
+series in terms of a few active features and corresponding feature weights. Our
+task of choosing the ``right'' model for the data can be cast as a combinatorial
+\emph{feature selection} problem with the objective of finding the smallest
+subset of features that describe the data well. This is called the ``small n,
+large p'' problem in statistics and such datasets are ubiquitous - For example,
+biologists want to characterize samples in terms of a small subset of a large
+number of genes from limited measurements. Machine learning practioners want to
+infer the active features from a large feature space with a relatively small
+number of measurements.
 
 A naïve algorithm would explore all the possible subsets of features till we
 find a solution. There does not appear to be an efficient algorithm for this as
@@ -43,33 +45,99 @@ efficiently solving the sparse recovery problem most of the time.
 
 The idea of using the $\ell_1$ norm of the feature weights (instead of the hard
 combinatorial problem of minimizing sparsity of feature weights) as a convex
-heuristic for model or feature selection and its robustness to outliers and
-noise was known to several early practitioners in Geophysics and
+heuristic for model or feature selection, and the robustness of $\ell^1$
+penalties to outliers and noise was known to several early practitioners in
+Geophysics and
 seismology~\cite{claerbout:robust,taylor:deconvolution,levy:spike-train,santosa}.
-It was introduced in statistics as a sparsity inducing regularization
+This was introduced in statistics as a sparsity inducing regularization
 in~\cite{tibshirani96} and in Signal Processing as a means of exact and robust
 decomposition by~\cite{chen98} and subsequently studied by Donoho and his
-coworkers~\cite{donoho:huo,spark} Since the publication of
-~\cite{CRT06,meinshausen:variable-selection}, the study of convex penalties for
-feature selection has been a subject of intense research. Later, this theory was extended to other high dimensional structures including group sparse vectors\cite{group:lasso}, low rank matrices~\cite{recht07} and cut matrices~\cite{cut:goemans}.
+coworkers~\cite{donoho:huo,spark}. Since the seminal publication of
+~\cite{CRT06,meinshausen:variable-selection}, which rigorously established the exact recovery and model selection properties the study of convex penalties for
+feature selection has been a subject of intense research. This theory was
+extended to other high dimensional structures including group sparse
+vectors\cite{group:lasso}, low rank matrices~\cite{recht07} and cut
+matrices~\cite{cut:goemans}.
 
 %This can be thought of as a model selection or a feature selection problem.
 % Problems involving estimation of high dimensional parameters under corrupted and limited linear measurements are ubiquitous.
 
-The idea of treating simple objects as a sparse combination of atoms from a
-possibly infinite dictionary unifies several related problems in sparse
-recovery and approximation. Simple objects may be expressed as a sparse linear
-combination of a few basic atoms drawn from a possibly infinite dictionary of
-atoms. For instance, a sparse vector in high dimension is a combination of a
-few canonical unit vectors. A low rank matrix is a combination of a few rank-1
-matrices. A signal with a finite discrete spectrum is a combination of a few
-frequencies.  In \cite{crpw}, the authors propose using ``atomic norm'' as a
-convex heuristic to recover simple models from linear measurements. The atomic
-norm may be thought of as a convex proxy to the combinatorial objective
+The unifying theme in different structures in high dimension is some notion of
+simplicity like sparsity for vectors or rank for matrices. Our work builds on a
+recent publication~\cite{crpw} which discusses the notion of simple objects as a
+sparse combination of atoms from a possibly infinite dictionary. This unifies
+several related problems in sparse recovery and approximation. Simple objects
+may be expressed as a sparse linear combination of a few basic atoms drawn from
+a possibly infinite dictionary of atoms. For instance, a sparse vector in high
+dimension is a combination of a few canonical unit vectors. A low rank matrix is
+a combination of a few rank-1 matrices. A signal with a finite discrete spectrum
+is a combination of a few frequencies. The authors propose using ``atomic norm''
+as a convex heuristic to recover simple models from linear measurements. The
+atomic norm may be thought of as a convex proxy to the combinatorial objective
 function that arises naturally in sparse recovery problems.
-\\
-\todo{Summarize Coherence, RIP. Emphasize Local Recovery and Off grid. Emphasize flexibility. Say problems like System ID and Line Spectral Estimation are not even expressible in this framework. Rephrase everything in terms of feature weights and use the term signal if possible.}
 
+Furthermore, the atomic norm framework allows us to naturally extend convex
+relaxations to work on infinite dimensional objects which cannot be handled
+satisfactorily using standard finite dimensional Lasso. In this thesis, I
+discuss my joint work with Gongguo Tang, Parikshit Shah and Prof. Ben Recht on
+denoising using atomic norms and the application of these ideas to revisit two
+fundamental signal processing problems -- line spectral estimation and system
+identification. We will also discuss efficient algorithms for these problems.
 
+Line Spectral Estimation involves estimating frequencies and amplitudes from a
+limited number of noisy measurements. This is an extremely well studied problem
+in signal processing and there are a number of classical algorithms dating back
+to Prony's technique. Surprisingly, using convex methods we shall discuss in
+this thesis, we can outperform these classical techniques and also theoretically
+characterize the performance of our algorithms.
 
-Contributions and Organization of the Thesis.
+The goal of system identification is to infer a low order system from a limited set of measurements. Using the convex methods discussed in the thesis, we can develop a simple algorithm for system identification. We see that it compares favorably in terms of prediction errors to the popular subspace ID method.
+ 
+%  \\ \todo{Summarize
+% Coherence, RIP. Emphasize Local Recovery and Off grid. Emphasize flexibility.
+% Say problems like System ID and Line Spectral Estimation are not even
+% expressible in this framework. Rephrase everything in terms of feature weights
+% and use the term signal if possible.}
+
+\section{Contributions and Organization} % (fold)
+\label{sec:contributions}
+
+In Chapter~\ref{chap:ast}, we will look at the atomic norm framework in depth
+and see how it unifies many linear inverse problems in high dimensional
+statistics. We extend this framework and introduce a general regularized estimator using the atomic norm penalty which we call Atomic Norm Soft Thresholding (AST). This may be thought of as an infinite dimensional version of Lasso. We establish universal properties of the estimator and indicate when accelerated convergence rates are possible. The choice of the regularization parameter for AST depends upon extremal properties of the dual atomic norm of noise, and we examine general techniques for estimating the regularization parameter.
+
+In Chapter~\ref{chap:linespect}, we apply our atomic norm soft thresholding
+estimator to denoise line spectral signals. We show consistency of estimation
+for all signals using our universal slow rate. By exploiting properties of a
+dual certificate constructed by Candes and Granda, we show that we can achieve
+accelerated convergence rates when the frequencies in the line spectral signal
+are well separated. As is the case for coherent designs using Lasso, we show
+that this is nearly minimax optimal. This result may be thought of as a local
+version of coherence. Although our dictionary is highly coherent, as long as the
+signal we wish to recover is composed of relatively incoherent frequencies, it
+is possible to recover it robustly. 
+
+We also show that the frequencies localized by AST tend to be near the true
+frequencies. We also show with extensive experiments that our proposal
+outperforms classical line spectral estimation algorithms.
+
+We turn our attention to the System Identification problem in
+Chapter~\ref{chap:sysid} and show our technique can be adapted for this problem.
+We describe how to setup an estimator for several kinds of linear measurements.
+For the special case of frequency samples, we are able to derive finite sample
+guarantees on the $\mathcal{H}^2$ prediction error of the transfer function
+using AST.
+
+Finally, in Chapter~\ref{chap:algos}, we look at algorithms for AST. It turns
+out that we can efficiently solve AST as long as we have a reasonably efficient
+algorithm to test membership in atomic norm ball. For the case of fourier
+measurements, we show that atomic norm balls can be characterized by a
+semidefinite program. While the positive case is classical, the general case is
+a non-trivial extension. We describe how we can develop a fast parallelizable
+algorithm for the SDP using Alternating Directions Method of Multipliers (ADMM).
+We also show an alternative efficient discretized version of AST which can be
+used in the absence of semidefinite characterizations and in general for large
+problem sizes. This boils down to solving a Lasso problem on a grid. We study
+the convergence of the Lasso solution which provides justification for discretization and Lasso on a grid as a general strategy.
+
+% section contributions (end)

@@ -13,10 +13,17 @@ norm ball.
 For the special case of Fourier measurements, the atomic norm ball has
 semidefinite characterizations which we derive in this chapter. The positive
 case is classical and comes from moment theory and the dual theory of positive
-polynomials. We will see how to derive the semidefinite characterization for the
-more general complex case. We will also review the results for the positive case
-which we will need, and provide the proofs for the positive case for
-completeness.
+polynomials. We will review the results for the positive case and provide the
+proofs for completeness. We will also derive the semidefinite characterization
+for the more general complex case using these results.
+
+For the problem of system identification, there are no tractable semidefinite
+formulations. While it is possible to develop a sequence of semidefinite
+relaxations, we instead describe how we can use a discretization approach for
+the atomic soft thresholding (AST) problem described in Chapter~\ref{chap:ast}
+and this essentially reduces to solving a Lasso problem on an overcomplete grid.
+Our proofs for discretized atomic soft thresholding (DAST) demonstrate why Lasso
+is often successful even for off-grid data.
 
 \section{Trigonometric Moments}
 

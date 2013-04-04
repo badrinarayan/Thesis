@@ -1,5 +1,6 @@
 %!TEX root = ../dissertation.tex
-\chapter{System Identification} 
+\chapter{System Identification}
+\label{chap:sysid}
 
 Identifying dynamical systems from noisy observation of their input-output
 behavior is of fundamental importance in systems and control theory. Often times
@@ -17,7 +18,7 @@ We draw novel connections between contemporary high-dimensional statistics,
 operator theory, and linear systems theory to prove consistent estimators of
 linear systems from small measurement sets. In particular, building on recent
 studies of \emph{atomic norms} in estimation
-theory~\cite{CRPW10,BhaskarAllerton11}, we propose a penalty function which
+theory~\cite{crpw,BhaskarAllerton11}, we propose a penalty function which
 encourages estimated models to have small McMillan degree.
 
 A related family of system identification techniques use finite sample Hankel
@@ -196,7 +197,7 @@ To extend our methodology to MIMO systems, we need to find an appropriate set of
 where $p$ is the number of inputs and $r$ is the number of outputs.  Any discrete time, MIMO system with  McMillan degree $d$ can be written in terms of $d$ of these atoms.  The only difficulty remains computing or approximating the norm $\|u\|_{\cL(\cA)}$ for finite measurements as described in Section~\ref{sec:computation}.
 
 
-\todo{Unsorted Appendices}
+\todo{FIXME: Unsorted Appendices}
 
 \section{Useful Lemmas} Before we proceed with the proofs of our main results, let us record a few useful lemmas.  Recall that our atomic functions are defined as
 \[

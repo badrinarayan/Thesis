@@ -24,25 +24,12 @@ and this essentially reduces to solving a Lasso problem on an overcomplete grid.
 Our proofs for discretized atomic soft thresholding (DAST) demonstrate why Lasso
 is often successful even for off-grid data.
 
-\section{Trigonometric Moments}
 
-Given a measure $\mu$ defined on $\mathbb{T}$, recall that the $m$th
-trigonometric moment is defined by
-\begin{equation}
-	\label{eq:trig-moment-measure}
-	x_m = \int_\mathbb{T} e^{i 2 \pi k f} \mu ( d f)
-\end{equation}
-The classical trigonometric moment problem asks when the sequence of moments
-$\{x_m\}_{m=-\infty}^{\infty}$ characterizes the measure $\mu$. When the measure $\mu$ is discrete and is composed of atoms at $f_1, \ldots, f_l$, we can write
-\[
-\mu(f) = \sum_{l=1}^k c_l \xi_{f_l}
-\]
-where $\xi_f$ denotes the point measure at $f$ and $\set{c_l}$ are the amplitudes. In this case, we have
-\begin{align}
-	x_m &= \int_\mathbb{T} e^{i 2 \pi k f} \sum_{l=1}^k c_l \xi_{f_l}(d f)\\
-	&= \sum_{l=1}^k c_l e^{i 2 \pi f_l m}.
-\end{align}
-Define the trigonometric monomial $a(f)$ by
+\subsection{Summary and Organization of this chapter} % (fold)
+\label{sub:main_results}
+
+Recall the definition of the trigonometric monomial $a(f),$ 
+{\footnotesize
 \[
 a(f) = \begin{pmatrix}
 	1\\
@@ -50,41 +37,96 @@ a(f) = \begin{pmatrix}
 	\vdots\\
 	e^{i2\pi f (n-1)}
 \end{pmatrix}
-\] as in Chapter~\ref{chap:linespect}. Then the moment vector
-$x = \begin{pmatrix}x_0 & \cdots & x_{n-1}\end{pmatrix} \in \C^n$ is given by
-\[
-x = \sum_{l=1}^k c_l a(f_l)
 \]
-Thus, depending on whether $\set{c_l}$ are positive or complex, the $x$ lies in
-the conical hull of $\A_+$ or $\A$.
+}
+as defined in Chapter~\ref{chap:linespect}, which form the basic atoms for Line
+Spectral Estimation. The first part of this chapter gives a computable algebraic characterization of the atomic norm balls of the following atomic sets derived from these atoms:
 
-\section{Duality : Moments and Polynomials}
-In this chapter, we develop semidefinite characterizations for the atomic sets
 \begin{align}
-\A_+ = \setof{a(f)}{f \in \mathbb{T}}\\
-\A = \setof{a(f) \exp(i 2\pi \phi)}{f, \phi \in \mathbb{T}}
-\end{align}
-and a corresponding characterization of the dual atomic set
-\begin{align}
-\A^*_+ = \setof{q \in \C^n}{\sum_{j=0}^{n-1}{q_j \exp(i 2\pi j f)} \geq 0, \text{ for all } f \in \mathbb{T}}\\
-\\A^* = \setof{q \in \C^n}{\sum_{j=0}^{n-1}{|q_j \exp(i 2\pi j f)|} \geq 0, \text{ for all } f \in \mathbb{T}}
+\A_+ &= \setof{a(f)}{f \in \mathbb{T}}\\
+\A   &= \setof{a(f) \exp(i 2\pi \phi)}{f, \phi \in \mathbb{T}}
 \end{align}
 
-The sets $\cone(\A_+)$ (resp $\cone(\A$)) and $\cone(\A^*_+)$ (resp
-$\cone(\A^*$)) are dual cones. Interestingly, for the positive case, the
-characterizations of the conical hulls of the atomic norm balls are sufficient
-to characterize the norm balls themselves. The general case requires a little
-more computation.
+The first set $\A_+$ is a one dimensional manifold called the trigonometric
+moment curve and the second set $\A$ is the two dimensional manifold
+corresponding to a phase-symmetric trigonometric moment curve. The unit norm
+ball of the atomic sets are precisely the convex hulls of the atomic sets. A
+semidefinite characterization of the convex hull of $\A_+$ is well known, which
+we will review in Section~\ref{sec:preliminaries}, whereas the semidefinite
+characterization of $\conv{\A}$ requires some computation. 
 
-\section{Positive Trigonometric Moments}
+The conical hull of $\A_+$, called the moment cone, corresponds to allowable
+observations for the the case of line spectral estimation with nonnegative
+amplitudes, or alternatively valid trigonometric moments of a positive measure
+on the torus $\mathbb{T}$. The characterization of moment cone allows us to
+describe the convex hull of the general atomic moments~$\conv{\A}$ and we will
+derive the following semidefinite characterization in Section~\ref{sec:general-trig-moments}. 
 
-The conical hull of the atomic set $\A_+$ given by $\cone(\A_+)$ is called the
-trigonometric moment cone and has a classical characterization due to
-Caratheodory-Toeplitz theorem.Before we state the theorem, we will need a bit of
-notation. Define the map $T:\mathbb{C}^n \rightarrow \mathbb{C}^{n\times n}$
-which creates a Hermitian Toeplitz matrix out of its input, that is
+\begin{theorem}\label{thm:sdp-char}
+	For $x\in \C^n$,
+	\begin{equation}
+	\label{eq:atomic_sdp}
+	\|x\|_{\mathcal{A}} = \inf\setof{\tfrac{1}{2n} \tr( T_n(u)) +\tfrac{1}{2} t}{\begin{bmatrix}
+T_n(u) & x\\
+x^* & t
+\end{bmatrix} \succeq 0}.
+	\end{equation}
+\end{theorem}
+
+
+The characterization of atomic norm ball of $\A$ can also be derived by working on the dual problem. In fact, for any $x,$ the optimization problem
+\begin{equation}
+	\label{eq:dual-form-atomic-norm}
+	\begin{aligned}
+		\minimize_q~ & \vabs{q}{x} &&\\
+		\text{such that } & \vnorm{q}_\A^*	 \leq 1.	&&
+	\end{aligned}
+\end{equation}
+is the dual characterization which has an optimum value $\vnorm{x}_\A$. For the atomic set of general trigonometric moments, the constraint set in Equation \eqref{eq:dual-form-atomic-norm}
+\begin{align}
+	\setof{q \in \C^n}{\vnorm{q}_\A^* \leq 1} &
+	= \setof{q \in \C^n}{\sup_{a \in \A}\vabs{q}{a} \leq 1} \\
+	&= \setof{q \in \C^n}{\sum_{j=0}^{n-1}{|q_j \exp(i 2\pi j f)|} \leq 1, \text{ for all } f \in \mathbb{T}}
+\end{align}
+is the set of complex trigonometric polynomials with a maximum modulus of $1$
+and is characterized by the Bounded Real Lemma. 
+
+When there are no efficient characterization, we may resort to a discretized
+approach which may be thought of as an approximation to the atomic norm defined
+by equation~\eqref{eq:dual-form-atomic-norm} by relaxing the semi-infinite
+program to a finite set of inequalities. We show convergence rates for this
+approximation for the line spectral estimation problem and the system
+identification problem. In this case, the atomic soft thresholding problem can
+be approximated by solving a Lasso problem on an overcomplete grid.
+
+% subsection main_results (end)
+
+\section{Preliminaries} % (fold)
+\label{sec:preliminaries}
+
+The observations in a line spectral estimation problem may be regarded as
+trigonometric moments of a measure. 
+
+\begin{definition}[Trigonometric Moments]
+Given a measure $\mu$ defined on the torus $\mathbb{T}$, the $m$th
+trigonometric moment is defined by
+\begin{equation}
+	\label{eq:trig-moment-measure}
+	x_m = \int_\mathbb{T} e^{i 2 \pi k f} \mu ( d f)
+\end{equation}
+\end{definition}
+
+By a simple reparametrization, the $m$th trigonometric moment may be described
+as complex moments $\int_\mathbb{T} z^m \mu(dz)$ when we regard $\mu$ as defined
+on the unit circle. In this section, we will review two classical results. The
+first, due to Herglotz gives a complete characterization of the infinite
+sequence of Trigonometric moments for positive measures. Before we state the
+theorem, we will need a bit of notation. Define the map $T_n:\mathbb{C}^n
+\rightarrow \mathbb{C}^{n\times n}$ which creates a Hermitian Toeplitz matrix
+out of its input, that is
+
 \[
-T(x)= \left[
+T_n(x)= \left[
 \begin{array}{ccccc} x_1 & x_2 & \ldots & x_n\\ 
 x^*_2 & x_1  & \ldots & x_{n-1}\\
  \vdots & \vdots & \ddots & \vdots\\
@@ -92,19 +134,128 @@ x^*_2 & x_1  & \ldots & x_{n-1}\\
  \end{array}\right]
 \]
 
-\begin{theorem}[Caratheodory-Toeplitz theorem]
-	$x \in \C^n$ corresponds to the first $n$ trigonometric moments of a measure $\mu$ (i.e., $x \in \cone(\A_+)$) if and only if $T x \succeq 0.$
+
+\begin{theorem}[Herglotz Theorem]\label{thm:herglotz}
+	The sequence of complex numbers $\{x_m\}_{m=-\infty}^{\infty}$ are
+trigonometric moments of a positive Borel measure $\mu$ on $\mathbb{T}$ if and
+only if the sequence $\{x_m\}_{m=-\infty}^{\infty}$ is positive definite.
 \end{theorem}
 
-This theorem can be proved using Herglotz theorem~\cite{herglotz} and the idea
-of flat extensions studied in~\cite{Curto97}. We provide a simple version of the
-proof of this theorem in the appendix.\todo{Do this or skip} We refer the
-interested reader to~\cite{grenander01} for an alternative algebraic proof.
+\begin{proof}
 
-Now, as a consequence of the moment cone characterization, we have a simple characterization of the moment sequences. 
+A sequence $\set{x_m}$ is positive definite if for every $n \in \N$, and every
+sequence $(c_1, \ldots, c_n)$ of $n$ complex numbers, $\sum_{k,l=1}^n x_{k-1}
+c_k c_l^* \geq 0.$ Using our notation for the Toeplitz map, we can simply write
+this condition as $T_n x \succeq 0$ for every $n \in \N.$
+
+Suppose indeed the set $\set{x_m}$ is a sequence of trigonometric moments
+corresponding to some measure $\mu > 0$ on $\mathbb{T}.$ Then, for any $n \in
+\N,$
+
+\begin{align*}
+	\sum_{k,l=1}^n x_{k-l} c_k c_l^* &= \sum_{k,l=1}^n c_k c_l^* \int \exp(i 2 \pi (k-l) t ) \mu (dt)\\
+	&= \int \left(\sum_{k=1}^n c_k \exp(i 2 \pi k t) \right) \left(\sum_{k=1}^n c_l \exp(i 2 \pi l t) \right)^* \mu (dt) \\
+	&= \int \left|\sum_{k=1}^n c_k \exp(i 2 \pi k t) \right|^2 \mu (dt) \geq 0.
+\end{align*}
+
+Conversely, if the sequence $\set{x_m}$ is positive semidefinite, then for any $t \in \R,$  we have
+\[
+X_n(t) = \sum_{k,l=1}^n x_{k-l} e^{i 2 \pi (k-l) t} \geq 0
+\]
+But, we have
+\[
+	X_n(t) = \sum_{k=-(n-1)}^{(n-1)} \left( 1 - \frac{|k|}{n}\right) x_k \exp(i 2\pi k t)
+\]
+By Fourier Series theory, we have that for every $|k| \leq n,$
+
+\begin{equation}
+	\label{eq:moment-sequence-limit}
+	\left( 1 - \frac{|k|}{n} \right) x_k = \int_0^1 X_n(t) \exp(i 2\pi k t ) d t
+\end{equation}
+
+Define a sequence of measures $\mu_n$ given by
+\[
+	\mu_n(B) = \int_0^1 X_n(t) d t
+\]
+
+for every Borel subset $B \subset [0,1].$ The sequence of measures $\set{\mu_n}$
+are tight and therefore by Helly selection theorem, there exists a subsequence
+$\mu_{n_k}$ which converges weakly to a measure $\mu$ on $\mathbb{T}.$ Finally, using~\ref{eq:moment-sequence-limit} we conclude that $\set{x_k}$ is the sequence of moments for the measure $\mu.$
+\end{proof}
+
+We are interested in \emph{discrete} positive measures, i.e., measures composed
+of a finite number of atoms at $f_1, \ldots, f_l$, so we can write
+
+\[
+\mu(f) = \sum_{l=1}^k c_l \xi_{f_l}
+\]
+
+where $\xi_f$ denotes the point measure at $f$ and $\set{c_l} > 0$ are the
+amplitudes. The first $n$ moments of such a measure concentrated on $k$ atoms
+corresponds to a $k$ simple combination of atomic moment sequences $a(f).$ In
+fact,
+
+\begin{align*}
+	x_m &= \int_\mathbb{T} e^{i 2 \pi k f} \sum_{l=1}^k c_l \xi_{f_l}(d f)\\
+	&= \sum_{l=1}^k c_l e^{i 2 \pi f_l m}.
+\end{align*}
+
+Then the moment vector
+$x = \begin{pmatrix}x_0 & \cdots & x_{n-1}\end{pmatrix} \in \C^n$ is given by
+\[
+x = \sum_{l=1}^k c_l a(f_l)
+\]
+
+Our second classical result due to Caratheodory and Toeplitz gives conditions
+under which one can find a discrete measure corresponding to a partially
+observed sequence of moments.
+
+\begin{theorem}[Caratheodory-Toeplitz theorem]
+\label{thm:caratheodory-toeplitz}
+	$x \in \C^n$ corresponds to the first $n$ trigonometric moments of a measure $\mu$ (i.e., $x \in \cone(\A_+)$) only if and only if $T x \succeq 0.$ Furthermore, if $k = \rank(T x)$, there exists positive numbers $c_1, \ldots, c_k$ and $f_1, \ldots, f_k \in \mathbb{T}$ such  that
+\[
+	\mu = \sum_{l=1}^k c_l \delta(f - f_l)
+\]
+so that
+\begin{align*}
+	x &= \int_{\mathbb{T}} a(f) \mu(df)\\
+	& = \sum_{l=1}^k c_l a(f_l)
+\end{align*}
+Finally, when $k < n,$ there is a unique extension of $x$ to an infinite positive definite sequence and only a unique measure $\mu$ with $x$ for its moments.
+\end{theorem}
+
+This theorem can be proved using Herglotz theorem~\cite{herglotz} and the
+theorems on flat extensions of moment sequences studied in~\cite{Curto97}. We
+provide a simple version of the proof of this theorem in the appendix. We refer
+the interested reader to~\cite{grenander01} for an alternative algebraic proof.
+\todo{Do this or skip}
+
+% section preliminaries (end)
+
+% \section{Duality : Moments and Polynomials}
+% The sets $\cone(\A_+)$ (resp $\cone(\A$)) and $\cone(\A^*_+)$ (resp
+% $\cone(\A^*$)) are dual cones, a fact that can be easily checked with a little
+% computation. Interestingly, for the positive case, the characterizations of the
+% conical hulls of the atomic norm balls are sufficient to characterize the norm
+% balls themselves. The general case requires a little more computation.
+% 
+% \section{Positive Trigonometric Moments}
+% 
+% The conical hull of the atomic set $\A_+$ given by $\cone(\A_+)$ is called the
+% trigonometric moment cone and has a classical characterization due to
+% Caratheodory-Toeplitz theorem.
+
+\section{SDP for Trigonometric Moments} % (fold)
+\label{sec:sdp_for_trigonometric_moments}
+
+
+\subsection{Positive Trigonometric Moments} % (fold)
+\label{sub:positive_trigonometric_moments}
+
+As a consequence of the Caratheodory's characterization of the moment cone , we have a simple characterization of the the convex hull of $\A_+$.
 
 \begin{theorem}
-	$\vnorm{x}_{\A_{+}} \leq 1$ if and only if $T x \geq 0$ and $x_1 \leq 1$.
+	$\vnorm{x}_{\A_{+}} \leq 1$ if and only if $T x \succeq 0$ and $x_1 \leq 1$.
 \end{theorem}
 \begin{proof}
 If $T x \succeq 0$, then there exists an atomic decomposition $x = \sum_l c_l a(f_l)$ by Caratheodory-Toeplitz theorem since it is in the conical hull of the atomic set $\A_+$. Since we have an invariant $x_0 = \sum_l c_l$ for any such decomposition, we have that
@@ -114,6 +265,61 @@ If $T x \succeq 0$, then there exists an atomic decomposition $x = \sum_l c_l a(
 On the other hand, if $Tx \not\succeq 0$, $x \not\in \cone(\A_+)$ and thus $\vnorm{x}_{\A_{+}} = +\infty$.
 \end{proof}
 
+% subsection positive_trigonometric_moments (end)
+
+\subsection{General Trigonometric Moments} % (fold)
+\label{sub:general_trigonometric_moments}
+
+\begin{proof}[Proof of Theorem~\ref{thm:sdp-char}]
+We prove the case $J = \{0, \ldots, n-1\}$. The other case can be proved in a similar manner. Denote the value of the right hand side of \eq{atomic_sdp} by $\mathrm{SDP}(x)$.  Suppose $x = \sum_k c_k a(f_k,\phi_k)$ with $c_k>0$.  Defining $u = \sum_k c_k a(f_k,0)$ and $t = \sum_k c_k$, we note that 
+\[
+T(u) = \sum_{k}c_k a(f_k,0) a(f_k,0)^* = \sum_{k}c_k a(f_k,\phi_k) a(f_k,\phi_k)^*.
+\] 
+Therefore, 
+\begin{align}\label{eqn:verifyfeasibility}
+		\begin{bmatrix}
+T (u) & x\\
+x^* & t
+\end{bmatrix}
+= \sum_{k} c_k \begin{bmatrix} a(f_k,\phi_k) \\ 1 \end{bmatrix}\begin{bmatrix} a(f_k,\phi_k) \\ 1 \end{bmatrix}^* 		 \succeq 0
+	\end{align}
+
+Now, $\frac{1}{n}\trace(T(u)) = t = \sum_k c_k$ so that $SDP(x) \leq \sum_k c_k$. Since this holds for any decomposition of $x$, we conclude that $\|x\|_{\mathcal{A} }\geq \mathrm{SDP}(x)$.
+
+Conversely,  suppose for some $u$ and $x$,
+\begin{equation}\label{eq:toep-psd}
+\begin{bmatrix}
+T (u) & x\\
+x^* & t
+\end{bmatrix} \succeq 0\,.
+\end{equation}
+In particular, $T (u)\succeq 0$.  Form a Vandermonde decomposition
+\[
+	T(u)= V D V^*
+\]
+as promised by Lemma~\ref{lm:vand}.  Since $V D V^* = \sum_k d_k a(f_k,0) a(f_k,0)^*$ and $\|a(f_k,0)\|_2=\sqrt{n}$, we have $\frac{1}{n}\trace(T (u)) = \trace(D)$.
+
+Using this Vandermonde decomposition and the matrix inequality~\eq{toep-psd}, it follows that $x$ is in the range of $V$, and hence
+\[
+	x = \sum_k w_k a(f_k,0) = Vw
+\]
+for some complex coefficient vector $w = [\cdots, w_k, \cdots]^T$.  Finally, by the Schur Complement Lemma, we have
+\[
+	V D V^* \succeq t^{-1} V w w^* V^*
+\]
+Let $q$ be any vector such that $V^*q = \operatorname{sign}(w)$.  Such a vector exists because $V$ is full rank.  Then
+\[
+	\trace(D)= q^* V D V^*q \succeq t^{-1}q^* V w w^* V^*q = t^{-1} \left(\sum_k |w_k|\right)^2.
+\]
+implying that $\trace(D) t \geq \left(\sum_k |w_k|\right)^2$.   By the arithmetic geometric mean inequality,
+\[
+	\tfrac{1}{2n} \trace(T (u)) + \tfrac{1}{2} t = 	\tfrac{1}{2} \trace(D) + \tfrac{1}{2} t \geq \sqrt{\trace(D) t} \geq \sum_k |w_k| \geq \|x\|_\A
+\]
+implying that $\mathrm{SDP}(x)\geq \|x\|_{\mathcal{A}}$ since the previous chain of inequalities hold for any choice of $u,t$ that are feasible.
+\end{proof}
+% subsection general_trigonometric_moments (end)
+
+% section sdp_for_trigonometric_moments (end)
 \section{Positive Trigonometric Polynomials}
 
 A vector $q \in \C^n$ is called a $n$th degree positive trigonometric polynomial
@@ -127,7 +333,12 @@ for every $f \in \mathbb{T},~ \Re\sum_{j=1}^{n} q_{j-1} \exp(i2\pi j f) \geq 0.$
 \end{definition}
 
 \section{General Trigonometric Moments}
-\subsection{Atomic Norm and Caratheory-Toeplitz theorem}
+
+\subsection{Atomic Norm and Caratheory-Toeplitz theorem} % (fold)
+\label{sec:general-trig-moments}
+LOL
+% section general-trig-moments (end)
+
 \subsection{Dual Atomic Norm and Bounded Real Lemma}
 Recall from \eqref{eq:dual-norm-poly} that the dual atomic norm of a vector $v
 \in \mathbb{C}^n$ is the maximum absolute value of a complex trigonometric
@@ -206,15 +417,12 @@ Therefore, the atomic denoising problem \eqref{AST} for the set of trigonometric
 
 The semidefinite program \eq{sdpdenoising} can be solved by off-the-shelf
 solvers such as SeDuMi~\cite{sedumi} and SDPT3~\cite{SDPT3}. However, these
-solvers tend to be slow for  large problems. For the interested reader, we provide a reasonably efficient algorithm based upon the Alternating Direction Method of Multipliers.
+solvers tend to be slow for large problems. In the next section, we provide a
+reasonably efficient algorithm based upon the Alternating Direction Method of
+Multipliers.
 
 \section{Alternating Direction Method of Multipliers}
 \label{sec:admm}
-
-\subsection{Decomposition}
-\subsection{Missing Samples}
-\subsection{Denoising}
-
 
 A thorough survey of the ADMM algorithm is given in~\cite{admm2011}. We only
 present the details essential to the implementation of atomic norm soft
@@ -291,17 +499,84 @@ Note that the dual solution $\hat{z}$ can be obtained as $\hat{z} = y - \hat{x}$
 primal solution $\hat{x}$ obtained from ADMM by using
 Lemma~\ref{lem:dual-problem}.
 
+
+\section{Discretization}
+
+When the number of samples is larger than a few hundred, the running time of our
+ADMM method is dominated by the cost of computing eigenvalues and is usually
+expensive~\cite{btr12}. For very large problems, we now propose using Lasso as
+an alternative to the semidefinite program~\eq{sdpdenoising}. Our justification for using the finite dimensional Lasso as an alternative to the general infinite atomic norm soft thresholding problem relies on approximation guarantees for epsilon-nets of the atomic sets.
+
+\subsection{Expected MSE for Approximated Atomic Norms}
+\label{proof:expected-mse-approx}
+
+We close this section by noting that it may sometimes be easier to solve
+\eqref{AST} on a different set $\widetilde{\A}$ (say, an $\epsilon$-net of
+$\A$ instead of $\A$. If for some $M>0,$
+\[
+M^{-1}\vnorm{x}_{\widetilde{\A}} \leq \vnorm{x}_{\A} \leq 
+\vnorm{x}_{\widetilde{\A}}
+\] 
+holds for every $x$, then Theorem $\ref{cor:expected-mse}$ still applies with a 
+constant factor $M$. We will need the following lemma.
+
+\begin{lemma}
+${\vnorm{z}_{\A}^* \leq M\vnorm{z}_{\widetilde{\A}}^*}$ for every $z$ iff
+${M^{-1}\vnorm{x}_{\widetilde{\A}} \leq \vnorm{x}_{\A}}$ for every $z$.
+\end{lemma}
+\begin{proof}\belowdisplayskip=-12pt
+We will show the forward implication -- the converse will follow since the dual
+of the dual norm is again the primal norm. By \eqref{holder}, for any $x$, 
+there exists a $z$ with
+$\vnorm{z}_{\widetilde{\A}}^* \leq 1$ and ${\vabs{x}{z} =
+\vnorm{x}_{\widetilde{\A}}}$. So,
+\begin{align*}
+M^{-1}\vnorm{x}_{\widetilde{\A}} &= M^{-1}\vabs{x}{z} &&\\
+&\leq M^{-1}\vnorm{z}_{\A}^* \vnorm{x}_{\A} &&\text{by \eqref{holder}}\\
+&\leq \vnorm{x}_{\A} &&\text{by assumption.}
+\end{align*}
+\end{proof}
+Now, we can state the sufficient condition for the following proposition in
+terms of either the primal or the dual norm:
+\begin{prop}\label{prop:grid-approx-mse}
+Suppose 
+\begin{equation}
+  \label{dni}
+  \vnorm{z}_{\widetilde{\A}}^* \leq \vnorm{z}_{\A}^* \leq 
+  M\vnorm{z}_{\widetilde{\A}}^* \text{ for every } z,
+\end{equation}
+or equivalently 
+\begin{equation}
+  \label{pni}
+  M^{-1}\vnorm{x}_{\widetilde{\A}} \leq \vnorm{x}_{\A} \leq \vnorm{x}_{\widetilde{\A}} \text{ for every } x,
+\end{equation}
+then under the same conditions as in Theorem \ref{cor:expected-mse},
+\begin{equation*}
+    \frac{1}{n} \E \vnorm{\tilde{x} - x^\star}_2^2 \leq \frac{M \tau}{n}\vnorm{x^\star}_\A
+\end{equation*}
+where $\tilde{x}$ is the optimal solution for \eqref{AST} with $\A$ replaced by $\widetilde{\A}.$
+\end{prop}
+\begin{proof}\belowdisplayskip=-12pt
+By assumption, $\E\left(\vnorm{w}_{\A}^*\right) \leq \tau$. Now, \eqref{dni}
+implies $\E\left(\vnorm{w}_{\widetilde{\A}}^*\right) \leq \tau.$ Applying
+Theorem \ref{cor:expected-mse}, and using \eqref{pni}, we get
+\begin{equation*}
+\frac{1}{n} \E \vnorm{\tilde{x} - x^\star}_2^2 \leq \frac{\tau}{n}\vnorm{x^\star}_{\widetilde{\A}} \leq \frac{M \tau}{n}\vnorm{x^\star}_{\A}.
+\end{equation*}
+\end{proof}
+
+\todo{TODO: Semi-infinite Programming and LP Perturbations}
+\todo{TODO: More Stuff}
+
+
 \section{DAST}
 \subsection{Line Spectral Signals}
 \subsection{Discretization and Lasso}
 \label{sec:comp-method}
-When the number of samples is larger than a few hundred, the running time of
-our ADMM method is dominated by the cost of computing eigenvalues and is
-usually expensive~\cite{12BhaskarArxiv}. For very large problems, we now propose using Lasso as an
-alternative to the semidefinite program~\eq{sdpdenoising}. To proceed, pick a
-uniform grid of $N$ frequencies and form $\A_N = \left\{ a_{m/N,\phi}
-~\middle|~ 0 \leq m \leq N-1 \right\} \subset \A $ and solve \eqref{AST} on
-this grid. i.e., we solve the problem
+
+To proceed, pick a uniform grid of $N$ frequencies and form $\A_N = \left\{
+a_{m/N,\phi} ~\middle|~ 0 \leq m \leq N-1 \right\} \subset \A $ and solve
+\eqref{AST} on this grid. i.e., we solve the problem
 \begin{equation}
 	\label{epsprimal} \text{minimize }\frac{1}{2} \vnorm{x - y}_2^2 + \tau \vnorm{x}_{\A_N}. 
 \end{equation}
@@ -346,7 +621,7 @@ O\left(
 
 Due to the efficiency of the FFT, the discretized approach
 has a much lower algorithmic complexity than either Cadzow's alternating
-projections method or the ADMM method described in  the extended technical report~\cite{12BhaskarArxiv},
+projections method or the ADMM method described in  the extended technical report~\cite{btr12},
 which each require computing an eigenvalue decomposition at
 each iteration. Indeed, fast solvers for~\eqref{sparsa} converge to an
 $\epsilon$ optimal solution in no more than $1/\sqrt{\epsilon}$ iterations.
@@ -439,7 +714,16 @@ where
 \[
 	M_{ij} = \mathcal{L}_i \left(\tfrac{1-|w_j|^2}{z-w_j}\right)
 \]
-and $j$ indexes the set $\D_{\rho}^{(\epsilon)}$. That is $M$ is an $n \times |\D_\rho^{(\epsilon)}|$ matrix.  Problem~\eq{DAST} is a weighted $\ell_1$ regularization problem with real or complex data depending on specific problem.  We call~\eq{DAST} \emph{Discretized Atomic Soft Thresholding} (DAST), as coined in~\cite{BhaskarAllerton11}.
+and $j$ indexes the set $\D_{\rho}^{(\epsilon)}$. That is $M$ is an $n \times
+|\D_\rho^{(\epsilon)}|$ matrix. Problem~\eq{DAST} is a weighted $\ell_1$
+regularization problem with real or complex data depending on specific problem.
+We call~\eq{DAST} \emph{Discretized Atomic Soft Thresholding} (DAST), as coined
+in~\cite{btr12}.
 
-The DAST problem can be solved very efficiently with a variety of off-the-shelf tools including SPARSA~\cite{wright09}, FPC~\cite{Hale08} or even more general purpose packages such as YALMIP~\cite{YALMIP} or CVX~\cite{cvx}.  DAST yields an approximate solution to problem~\eq{atomic-norm-lin-inverse}, and, as we will see, yields a statistically consistent estimate provided the parameter $\epsilon$ is adjusted to meet the desired numerical accuracy.
+The DAST problem can be solved very efficiently with a variety of off-the-shelf
+tools including SPARSA~\cite{wright09}, FPC~\cite{Hale08} or even more general
+purpose packages such as YALMIP~\cite{YALMIP} or CVX~\cite{cvx}. DAST yields an
+approximate solution to problem~\eq{atomic-norm-lin-inverse}, and, as we will
+see, yields a statistically consistent estimate provided the parameter
+$\epsilon$ is adjusted to meet the desired numerical accuracy.
 

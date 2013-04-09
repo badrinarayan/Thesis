@@ -18,7 +18,7 @@ We draw novel connections between contemporary high-dimensional statistics,
 operator theory, and linear systems theory to prove consistent estimators of
 linear systems from small measurement sets. In particular, building on recent
 studies of \emph{atomic norms} in estimation
-theory~\cite{crpw,BhaskarAllerton11}, we propose a penalty function which
+theory~\cite{crpw,btr12}, we propose a penalty function which
 encourages estimated models to have small McMillan degree.
 
 A related family of system identification techniques use finite sample Hankel
@@ -71,7 +71,7 @@ where $\cA$ is an origin-symmetric set of ``atoms'' normalized to have unit norm
 	\|G\|_{\cA}: & = \inf\left\{ t \; : \; G \in t\text{ conv}(\cA)  \right\}  =\inf\left\{ \sum_{a\in \cA} |c_a|~:~G = \sum_{a\in \cA} c_a a\right\}\,.
 \end{split}
 \end{equation}
-In~\cite{crpw}, it is shown that minimizing the atomic norm subject to compressed measurements yielded the tightest known bounds for recovering many classes of models from linear measurements. Moreover, in~\cite{BhaskarAllerton11}, the atomic norm regularizer was studied in the context of denoising problems and was found to produce consistent estimates at nearly optimal estimation error rates for many classes of atoms.
+In~\cite{crpw}, it is shown that minimizing the atomic norm subject to compressed measurements yielded the tightest known bounds for recovering many classes of models from linear measurements. Moreover, in~\cite{btr12}, the atomic norm regularizer was studied in the context of denoising problems and was found to produce consistent estimates at nearly optimal estimation error rates for many classes of atoms.
 
 To apply these atomic norm techniques to system identification, we must first determine the appropriate set of atoms.  For discrete time LTI systems with small McMillan degree, we can always decompose any finite dimensional, strictly proper system $G(z)$ as:
 $$
@@ -141,15 +141,21 @@ where  $\|G\|_{\cA}$ is given by~\eq{atomic-norm-def}.
 \noindent Theorem~\ref{thm:hankel-nuclearity} asserts that a transfer function has a finite atomic norm if and only if the sum of its Hankel singular values is finite.  In particular, this means that every rational transfer function has a finite atomic norm.  More importantly, the atomic norm is equivalent to the Hankel nuclear norm.  Thus if we can approximately solve atomic norm-minimization, we can approximately solve Hankel nuclear norm minimization and vice-versa.
 
 \section{Statistical Bounds}\label{sec:statistics}
-Let $\cL_i: \cH \mapsto \C $ be a linear functional that serves as a measurement operator for the system $H(z)$.  In this section, let us suppose that we obtain noisy measurements of the form
+Let $\cL_i: \cH \mapsto \C $ be a linear functional that serves as a measurement
+operator for the system $H(z)$. In this section, let us suppose that we obtain
+noisy measurements of the form
 $$
 y_i=\cL_i \left( H(z) \right) +\omega_i \qquad i=1, \ldots, n.
 $$
-where $\omega_i$ is a noise sequence consisting of independent, identically distributed random variables.  In this section, we will specialize our results to the case where $\cL$ returns samples from the frequency response at uniformly spaced frequencies:
+where $\omega_i$ is a noise sequence consisting of independent, identically
+distributed random variables. In this section, we will specialize our results to
+the case where $\cL$ returns samples from the frequency response at uniformly
+spaced frequencies:
 $$
 \cL_k(H(z))=H(z_k), \qquad z_k=e^{\frac{2 \pi i k}{m} }, \; k=1, \ldots, n.
 $$
-While the techniques here extend to other measurement ensembles, they will be explored in a longer version of the paper.
+% While the techniques here extend to other measurement ensembles, they will be
+% explored in a longer version of the paper.
 %
 %
 %We only prove one theorem to illustrate the techniques required to analyze a general set of measurements.  The theorem will change with different grindings of the disk, measurements, and noise models.  We will study other examples in future work.
@@ -180,15 +186,56 @@ The proof of theorem~\ref{thm:estimation} is provided in the appendix.  We prove
 
 \section{Conclusion}\label{sec:conclusion}
 
-By using the atomic norm framework of~\cite{crpw}, we were able to posit a reasonable regularizer for linear systems, understand the computational demands of such a regularizer, and analyze its statistical performance.  Since it is closely connected to the Hankel nuclear norm but is computationally more practical, we believe that our atomic norm will be useful in a variety of practical implementations and also in theoretical analysis.  However, there are still several outstanding questions to address before we fully understand the potential of this norm.  We list several of these open problems here.
+By using the atomic norm framework of~\cite{crpw}, we were able to posit a
+reasonable regularizer for linear systems, understand the computational demands
+of such a regularizer, and analyze its statistical performance. Since it is
+closely connected to the Hankel nuclear norm but is computationally more
+practical, we believe that our atomic norm will be useful in a variety of
+practical implementations and also in theoretical analysis. However, there are
+still several outstanding questions to address before we fully understand the
+potential of this norm. We list several of these open problems here.
 
-\paragraph{Other measurement ensembles} Our analysis in Section~\ref{sec:statistics} focused on the particular case of sampling the frequency response at regular intervals.  By focusing on this example, we were able illustrate the critical ingredients to computing convergence rates.  First, we needed to show that our measurement error provided a reasonable upper bound on the distance to the true transfer function.  Second, we used convex analysis to upper bound the measurement error in terms of the statistics of the noise process.  Third, we estimated the noise statistics using probabilistic techniques and appealing to the structure of the atomic set and its $\epsilon$-nets.  This methodology can be extended to the other sampling methods described in Section~\ref{sec:computation}, and may also be extendable to estimating transfer functions from pairs of input-output time series.
+\paragraph{Other measurement ensembles} Our analysis in
+Section~\ref{sec:statistics} focused on the particular case of sampling the
+frequency response at regular intervals. By focusing on this example, we were
+able illustrate the critical ingredients to computing convergence rates. First,
+we needed to show that our measurement error provided a reasonable upper bound
+on the distance to the true transfer function. Second, we used convex analysis
+to upper bound the measurement error in terms of the statistics of the noise
+process. Third, we estimated the noise statistics using probabilistic techniques
+and appealing to the structure of the atomic set and its $\epsilon$-nets. This
+methodology can be extended to the other sampling methods described in
+Section~\ref{sec:computation}, and may also be extendable to estimating transfer
+functions from pairs of input-output time series.
 
-\paragraph{Fast Rates and minimax optimality}  The rates provided by Theorem~\ref{thm:estimation} demonstrate that the DAST algorithm is asymptotically consistent.  However, we believe the upper bound we have derived is quite crude.  In particular, as discussed in~\cite{BhaskarAllerton11}, it may very well be possible to improve our upper bounds by leveraging more of the geometry of the set of single-pole transfer functions.  It would be interesting to find reasonable lower-bounds on the reconstruction error from limited measurements, and to see how close we can match these worst-case estimates via a new analysis.
+\paragraph{Fast Rates and minimax optimality} The rates provided by
+Theorem~\ref{thm:estimation} demonstrate that the DAST algorithm is
+asymptotically consistent. However, we believe the upper bound we have derived
+is quite crude. In particular, as discussed in~\cite{btr12}, it may
+very well be possible to improve our upper bounds by leveraging more of the
+geometry of the set of single-pole transfer functions. It would be interesting
+to find reasonable lower-bounds on the reconstruction error from limited
+measurements, and to see how close we can match these worst-case estimates via a
+new analysis.
 
-\paragraph{Interpolating with derivatives}  While gridding the space of poles enables us to quickly solve atomic norm problems, a main drawback is that we are then can never exactly localize the true poles of the system without an extremely fine grid.  One recent proposal to enable such a localization uses a linearization technique to simultaneously fit a model on the grid points and at the derivatives of the transfer functions at these grid points~\cite{Simoncelli11}.  It would be of interest to see if such an adjoining method could work in this setting, and future experiments will evaluate the improvements on system identification in theory and in practice.
+\paragraph{Interpolating with derivatives} While gridding the space of poles
+enables us to quickly solve atomic norm problems, a main drawback is that we are
+then can never exactly localize the true poles of the system without an
+extremely fine grid. One recent proposal to enable such a localization uses a
+linearization technique to simultaneously fit a model on the grid points and at
+the derivatives of the transfer functions at these grid
+points~\cite{Simoncelli11}. It would be of interest to see if such an adjoining
+method could work in this setting, and future experiments will evaluate the
+improvements on system identification in theory and in practice.
 
-\paragraph{Extension to MIMO Systems}  While we focused on the single-input single-output (SISO) case in this paper, we expect that these techniques would extend to the multi-input multi-output (MIMO) case. One simple extension to note is that if the number of inputs and outputs in the system remain small, the SISO techniques presented herein could be applied to each input-output pair. Alternative approaches that avoid this pairwise identification would be important in large-scale systems with many inputs and outputs, this is an important direction for future research.
+\paragraph{Extension to MIMO Systems} While we focused on the single-input
+single-output (SISO) case, we expect that these techniques would
+extend to the multi-input multi-output (MIMO) case. One simple extension to note
+is that if the number of inputs and outputs in the system remain small, the SISO
+techniques presented herein could be applied to each input-output pair.
+Alternative approaches that avoid this pairwise identification would be
+important in large-scale systems with many inputs and outputs, this is an
+important direction for future research.
 
 To extend our methodology to MIMO systems, we need to find an appropriate set of atoms. One possibility is the set
 \[
@@ -262,7 +309,7 @@ Here,~\eq{tri-ineq}  is the triangle inequality.~\eq{nuc-2-l2} follows because t
 \end{proof}
 
 \section{Dual norms}
-We record here a few basic properties about dual atomic norms that we need for our proofs (see~\cite{crpw,BhaskarAllerton11} for more details).  For an atomic set $\cA$, the dual norm is given by
+We record here a few basic properties about dual atomic norms that we need for our proofs (see~\cite{crpw,btr12} for more details).  For an atomic set $\cA$, the dual norm is given by
 \[
 	\| z \|_{\cA}^* = \sup_{a \in \cA} \langle a, z \rangle\,.
 \] 
@@ -303,7 +350,7 @@ Rearranging both sides of this inequality gives
 with $C_\tau =  1-\tfrac{16\rho\tau}{\pi(1-\rho)}$, completing the proof.
 
 \section{Optimality conditions for DAST}
-The following two important inequalities were proven in~\cite[Section 2]{BhaskarAllerton11}:
+The following two important inequalities were proven in~\cite[Section 2]{btr12}:
 \begin{theorem}\label{thm:badri}
 Let $\mathcal{Q}\subset \R^n$ be an arbitrary set of atoms.  Suppose that we observe $y = x_\star+\omega$ where $\omega\sim \mathcal{N}(0,\sigma^2 I)$.  Let $\hat{x}$ denote the optimal solution of
 \[

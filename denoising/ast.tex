@@ -32,29 +32,36 @@ resolution sufficiently high to guarantee excellent mean-squared error (MSE).
 The gridded problem reduces to the Lasso, and can be rapidly solved with freely
 available software such as SpaRSA~\cite{wright09}.
 
-\subsection{Summary of Results}
+\subsection{Organization of this chapter}
 
-We describe here our approach to a general sparse denoising problem and later
-specialize these results to line spectral estimation. The denoising problem is
-obtaining an estimate $\hat{x}$ of the signal $x^\star$ from $y = x^\star + w$,
-where $w$ is additive noise. We make the structural assumption that $x^\star$ is
-a sparse non-negative combination of points from an arbitrary, possibly infinite
-set $\A \subset \C^n$. This assumption is very expressive and generalizes many
-notions of sparsity~\cite{crpw}. The atomic norm $\vnorm{\cdot}_\A$, introduced
-in \cite{crpw}, is a penalty function specially catered to the structure of $\A$
-as we shall examine in depth in next section, and is defined as:
-\begin{equation*} \vnorm{x}_\A = \inf\left\{t > 0 ~\middle|~ x \in t \conv(\A)
-\right\}. \end{equation*} where $\conv(\A)$ is the convex hull of points in
-$\A.$ We analyze the denoising performance of an estimate that uses the atomic
-norm to encourage sparsity in $\A$.
+We describe in this chapter our approach to a general sparse denoising problem
+and later specialize these results to line spectral estimation. The denoising
+problem is obtaining an estimate $\hat{x}$ of the signal $x^\star$ from $y =
+x^\star + w$, where $w$ is additive noise. We make the structural assumption
+that $x^\star$ is a sparse non-negative combination of points from an arbitrary,
+possibly infinite set $\A \subset \C^n$. This assumption is very expressive and
+generalizes many notions of sparsity~\cite{crpw}. The atomic norm
+$\vnorm{\cdot}_\A$, introduced in \cite{crpw}, is a penalty function specially
+catered to the structure of $\A$ as we shall examine in depth in Section~\ref{sec:ast:preliminaries},
+and is defined as: \begin{equation*} \vnorm{x}_\A = \inf\left\{t > 0 ~\middle|~
+x \in t \conv(\A) \right\}. \end{equation*} where $\conv(\A)$ is the convex hull
+of points in $\A.$ We analyze the denoising performance of an estimate that uses
+the atomic norm to encourage sparsity in $\A$.
 
-\paragraph*{Atomic norm denoising.} In Section \ref{sec:abstract-denoising},
-we characterize the performance of the estimate $\hat{x}$ that solves
+\paragraph*{Decomposition.} In Section~\ref{sec:decomposition}, we start with
+vectors $x^\star$ that may be written as a sparse nonnegative combination of
+elements from the atomic set $\A$ and ask how one might certify that $x^\star$
+has a unique sparsest decomposition in terms of the atoms. We will see how the
+existence of certain vectors in the dual space can certify uniqueness of the
+sparsest decomposition under some mild technical conditions
+
+\paragraph*{Denoising.} In Section \ref{sec:abstract-denoising},
+we will characterize the performance of the estimate $\hat{x}$ that solves
 
 \begin{equation}
 \label{AST}\mathop{\textrm{minimize}}_x \frac{1}{2} \vnorm{x - y}_2^2 + \tau \vnorm{x}_\A.
 \end{equation}
-where $\tau$ is an appropriately chosen regularization parameter. We provide an
+where $\tau$ is an appropriately chosen regularization parameter, where $y = x^\star + w$ is a a vector of noisy measurements. We provide an
 upper bound on the MSE when the noise statistics are known. Before we state the
 theorem, we note that the dual norm $\vnorm{\cdot}_\A^*$, corresponding to the
 atomic norm, is given by
@@ -63,8 +70,8 @@ atomic norm, is given by
 \]
 where $\vabs{x}{z} = \Re(z^*x)$ denotes the real inner product.  
 
-\begin{theorem}
- \label{cor:expected-mse}
+\begin{theorem}[Universal Denoising Guarantee]
+\label{cor:expected-mse}
 
 Suppose we observe the signal $y = x^\star + w$ where $x^\star \in \C^n$ is a
 sparse nonnegative combination of points in $\A$. The estimate $\hat{x}$ of
@@ -80,19 +87,29 @@ MSE
 This theorem implies that when $\E \vnorm{w}_\A^*$ is $o(n)$, the estimate
 $\hat{x}$ is consistent.
 
-\paragraph*{Choosing the regularization parameter.} Our lower bound on $\tau$ is
-in terms of the expected dual norm of the noise process $w$, equal to
-
+\paragraph*{Choosing the regularization parameter.} In 
+Section~\ref{sec:dual-atomic-bounds}, we discuss the choice of regularization
+parameter $\tau$. Our lower bound on $\tau$ is in terms of the expected dual norm of the noise process $w$, equal to
  \[
  	\E \vnorm{w}_\A^* = \mathbb{E}[\sup_{a\in \A} {\vabs{w}{a}}].
  \]
 That is, the optimal $\tau$ and achievable MSE can be estimated
 by studying the extremal values of the stochastic process indexed by the atomic
 set $\A$.
-\\
 
-\todo{TODO: Add Outline, Decomposition, Dual Certificate and Discretization.}
+\paragraph*{Accelerated Convergence Rates} In
+Section~\ref{sec:convergence-rate}, we describe a condition on the atomic sets
+that enables accelerate convergence rates. This is a generalization of the weak
+compatibility criterion~\cite{degeer} and unifies the condition for fast rates
+for several atomic sets. In particular, under this assumption, we show that we
+can recover fast convergence rates published in literature for sparse vectors
+and low rank matrices.
+
+% \paragraph*{Local Rates}
+% \todo{TODO: Modulus of Convexity, Bregman divergences and fast rates.}
+
 \section{Preliminaries}
+\label{sec:ast:preliminaries}
 
 The notion of atomic sets and simple models introduced in~\cite{crpw} subsumes
 several structures in high dimensional geometry, including sparse
@@ -111,13 +128,18 @@ dimension $n$ of the signal, we say $x^\star$ is a $k$ \emph{simple} combination
 of atoms.
 
 Allowing the dictionary of atomic set to be infinite offers tremendous
-flexibility in the kind of high dimensional structures that can be modeled. As a
+flexibility in the kind of high dimensional structures that can be modeled. To
+see this, consider the following examples of atomic sets:
+
+\paragraph{Sparse Vectors} 
+
+As a
 motivating example, rank is a notion of simplicity for matrices and indeed a low
 rank matrix in a high dimensional space can be written as a nonnegative
 combination of a few elements from the \emph{infinite} atomic set of all unit
-norm, rank-$1$ matrices. \\
+norm, rank-$1$ matrices.\\
 
-\todo{TODO: Examples}
+\todo{TODO: Examples. Include Bregman Kernel and Blanscke Products}
 
 \subsection{Atomic Norm}
 
@@ -139,7 +161,34 @@ minimizing the atomic norm subject to equality constraints provided exact
 solutions of a variety of linear inverse problems with nearly optimal bounds on
 the number of measurements required.
 
+\subsection{Dual Atomic Norm}
+
+Corresponding to the atomic norm, we can define the dual atomic norm, which is given by
+\begin{equation}
+  \label{defdualatnorm}
+  \vnorm{z}_{\A}^* = \sup_{\vnorm{x}_\A \leq 1}{\vabs{x}{z}},
+\end{equation}
+which implies
+\begin{equation}
+  \label{holder}
+  \vabs{x}{z} \leq \vnorm{x}_\A \vnorm{z}_\A^*.
+\end{equation}
+
+The supremum in \eqref{defdualatnorm} is achievable, namely, for any $x$ there
+is a $z$ that achieves equality. Since $\A$ contains all extremal points of
+$\{x: \|x\|_\A \leq 1\}$, we are guaranteed that the optimal solution will
+actually lie in the set $\A$ (See~\cite{bonsall} for a proof):
+
+\begin{equation}
+\vnorm{z}_{\A}^* = \sup_{a \in \A}{\vabs{a}{z}}.\label{bonsall}
+\end{equation}
+
+The dual norm will play a critical role throughout, as our asymptotic error
+rates will be in terms of the dual atomic norm of noise processes. The dual
+atomic norm also appears in the dual problem of \eqref{AST} 
+
 \section{Decomposition}
+\label{sec:decomposition}
 
 A natural question is whether it is always possible to recover the composing
 atoms of a simple $x^\star$? As stated, the problem is ill-posed, for there
@@ -158,33 +207,38 @@ a dual certificate, which is one of the subgradients of the atomic norm.
 
 \subsubsection{Subgradients of Atomic Norm}
 
-Subgradients of atomic norm are supporting hyperplanes of the atomic norm
-ball. 
-\\
-\todo{TODO: Dual Certificate}
+Subgradients of atomic norm are the supporting hyperplanes of the atomic norm
+ball. It is easy to verify that $q$ is a subgradient of $\vnorm{\A}$ at
+$x^\star/\vnorm{x}_\A$ if and only if $\langle q, x \rangle = \vnorm{x}_\A$ and
+$\vnorm{q}_\A^* \leq 1.$
+
+ A supporting hyperplane which intersects $\A$ at only the support of a small
+number of atoms $T \subset \A \subset \R^n$ is a \emph{dual certificate} that
+guarantees that $x^\star$ may be written as a combination of atoms in $T.$ When
+$\A$ is a full spark frame, as we assume, this provides a way of recovering the
+composing atoms of $x^\star$.
 
 \section{Denoising}
 \label{sec:abstract-denoising}
 
 To set up the atomic norm denoising problem, suppose we observe a signal $y =
-x^\star + w$ and that we know \emph{a priori} that $x^\star$ can be written as
-a linear combination of a few atoms from $\A$. One way to estimate $x^\star$
-from these observations would be to search over all short linear combinations
-from $\A$ to select the one which minimizes $\vnorm{y- x}_2$. However,
-this could be formidable: even if the set of atoms is a finite collection of
-vectors, this problem is the NP-hard SPARSEST VECTOR
-problem~\cite{Natarajan95}.
+x^\star + w$ and that we know \emph{a priori} that $x^\star$ can be written as a
+linear combination of a few atoms from $\A$. One way to estimate $x^\star$ from
+these observations would be to search over all short linear combinations from
+$\A$ to select the one which minimizes $\vnorm{y- x}_2$. However, this could be
+formidable: even if the set of atoms is a finite collection of vectors, this
+problem is the NP-hard SPARSEST VECTOR problem~\cite{Natarajan95}.
 
 On the other hand, the problem~\eqref{AST} is convex, and reduces to many
 familiar denoising strategies for particular $\A$. The mapping from $y$ to the
 optimal solution of \eqref{AST} is called the proximal operator of the atomic
-norm applied to $y$, and can be thought of as a soft thresholded version of
-$y$. Indeed, when $\A$ is the set of $1$-sparse atoms, the atomic norm is the
-$\ell_1$-norm, and the proximal operator corresponds to
-\emph{soft-thresholding} $y$ by element-wise shrinking towards
-zero~\cite{donoho1995noising}. Similarly, when $\A$ is the set of rank-$1$
-matrices, the atomic norm is the nuclear norm and the proximal operator
-shrinks the singular values of the input matrix towards zero.
+norm applied to $y$, and can be thought of as a soft thresholded version of $y$.
+Indeed, when $\A$ is the set of $1$-sparse atoms, the atomic norm is the
+$\ell_1$-norm, and the proximal operator corresponds to \emph{soft-thresholding}
+$y$ by element-wise shrinking towards zero~\cite{donoho1995noising}. Similarly,
+when $\A$ is the set of rank-$1$ matrices, the atomic norm is the nuclear norm
+and the proximal operator shrinks the singular values of the input matrix
+towards zero.
 
 We now establish some universal properties about the problem~\eqref{AST}.
 First, we collect a simple consequence of the optimality conditions in a lemma:
@@ -242,28 +296,6 @@ where $I_A(\cdot)$ is the convex indicator function. Using this in \eq{reformula
 \end{proof}
 
 
-The dual atomic norm is given by
-\begin{equation}
-  \label{defdualatnorm}
-  \vnorm{z}_{\A}^* = \sup_{\vnorm{x}_\A \leq 1}{\vabs{x}{z}},
-\end{equation}
-which implies
-\begin{equation}
-  \label{holder}
-  \vabs{x}{z} \leq \vnorm{x}_\A \vnorm{z}_\A^*.
-\end{equation}
-The supremum in \eqref{defdualatnorm} is achievable, namely, for any $x$ there is a
-$z$ that achieves equality. Since $\A$ contains all extremal points of
-$\{x: \|x\|_\A \leq 1\}$, we are guaranteed that the optimal solution will actually lie in the set
-$\A$:
-\begin{equation}
-\vnorm{z}_{\A}^* = \sup_{a \in \A}{\vabs{a}{z}}.\label{bonsall}
-\end{equation}
-
-The dual norm will play a critical role throughout, as our asymptotic error
-rates will be in terms of the dual atomic norm of noise processes. The dual
-atomic norm also appears in the dual problem of \eqref{AST} 
-
 \begin{lemma}[Dual Problem] \label{lem:dual-problem} The dual problem
 of~\eqref{AST} is
 \begin{equation*}
@@ -297,18 +329,28 @@ g(z) = \inf_{x,u} L(x,u,z)
 + \inf_{u}\left( \tau\vnorm{u}_\A - \vabs{z}{u} \right)\\
 & = \frac{1}{2}\left(\vnorm{y}_2^2 - \vnorm{y - z}_2^2\right) - I_{\left\{ w : \vnorm{w}_\A^* \leq \tau\right\}}(z).
 \end{align*}
-where the first infimum follows by completing the squares and the second infimum follows from \eq{conjugate-norm}. Thus the dual problem  of maximizing $g(z)$ can be written as in \eq{dual-ast}.
+where the first infimum follows by completing the squares and the second infimum
+follows from \eq{conjugate-norm}. Thus the dual problem of maximizing $g(z)$ can
+be written as in \eq{dual-ast}.
 
-The solution to the dual problem is the unique projection $\hat{z}$ of $y$ on to the closed convex set $C = \{ z : \vnorm{z}_\A^* \leq \tau \}$. By projection theorem for closed convex sets, $\hat{z}$ is a projection of $y$ onto $C$ if and only if $\hat{z} \in C$ and $\vabs{z - \hat{z}}{y - \hat{z}} \leq 0$ for all  $z \in C$, or equivalently if $\vabs{\hat{z}}{y - \hat{z}} \geq \sup_z\,\vabs{z}{y - \hat{z}} = \tau \vnorm{y - \hat{z}}_\A.$
-These conditions are satisfied for $\hat{z} = y - \hat{x}$ where $\hat{x}$ minimizes $f(x)$ by Lemma \ref{lem:optimality-conditions}. Now the proof follows by the substitution $\hat{z} = y - \hat{x}$ in the previous lemma. The absence of duality gap can be obtained by noting that the primal objective function at $\hat{x},$
+The solution to the dual problem is the unique projection $\hat{z}$ of $y$ on to
+the closed convex set $C = \{ z : \vnorm{z}_\A^* \leq \tau \}$. By projection
+theorem for closed convex sets, $\hat{z}$ is a projection of $y$ onto $C$ if and
+only if $\hat{z} \in C$ and $\vabs{z - \hat{z}}{y - \hat{z}} \leq 0$ for all $z
+\in C$, or equivalently if $\vabs{\hat{z}}{y - \hat{z}} \geq \sup_z\,\vabs{z}{y
+- \hat{z}} = \tau \vnorm{y - \hat{z}}_\A.$ These conditions are satisfied for
+$\hat{z} = y - \hat{x}$ where $\hat{x}$ minimizes $f(x)$ by Lemma
+\ref{lem:optimality-conditions}. Now the proof follows by the substitution
+$\hat{z} = y - \hat{x}$ in the previous lemma. The absence of duality gap can be
+obtained by noting that the primal objective function at $\hat{x},$
 \[
 f(\hat{x}) = \frac{1}{2}\vnorm{y - \hat{x}}_2^2 + \vabs{\hat{z}}{\hat{x}}
 = \frac{1}{2}\vnorm{\hat{z}}_2^2 + \vabs{\hat{z}}{\hat{x}} = g(\hat{z}).
 \]
 \end{proof}
 
-A straightforward corollary of this Lemma is
-a certificate of the support of the solution to \eqref{AST}.
+A straightforward corollary of this Lemma is a certificate of the support of the
+solution to \eqref{AST}.
 
 \begin{corollary}[Dual Certificate of Support]
 \label{cor:dual-cert-support}
@@ -379,8 +421,38 @@ If $\hat{x}$ is the denoised signal, we have from Theorem
 \log(p)}$, \[ \frac{1}{n}\E\vnorm{\hat{x} - x^\star}_2^2 \leq \sigma
 \frac{\sqrt{2\log(p)} }{n} \vnorm{c^\star}_1, \] which is the stability result
 for Lasso reported in \cite{greenshtein04} assuming no conditions on $\Phi$.
+\section{Dual Atomic Norm Bounds} % (fold)
+\label{sec:dual-atomic-bounds}
 
-\subsection{Accelerated Convergence Rates}\label{sec:convergence-rate}
+As noted in Theorem~\ref{cor:expected-mse}, the optimal choice of the
+regularization problem is dictated by the dual atomic norm of the noise process.
+To see why this is the case, let us consider the dual problem to Atomic Soft
+Thresholding, given by Lemma~\ref{lem:dual-problem}:
+\begin{equation*}
+  \begin{split} \minimize_z~&\vnorm{y - z}_2\\
+	 \text{subject to }&\vnorm{z}_\A^* \leq \tau.
+  \end{split}
+\end{equation*} 
+Using the optimality conditions in Lemma~\ref{lem:dual-problem}, we see that the
+primal solution $\hat{x}$ is a good estimate of the target $x^\star$ if the dual
+solution is a good estimate of the noise vector $w$. Thus $\tau$ may be
+interpreted as controlling the amount of shrinkage towards origin. In fact, when
+$\tau > \vnorm{y}_\A^*$, we have $\hat{z} = y$ and $\hat{x} = 0.$ This suggests
+a choice of $\tau = \E \vnorm{w}_\A^*$, which corresponds to the strongest
+mean-squared-error guarantee in Theorem~\ref{cor:expected-mse}. Specializing
+this to the case of sparse vectors in noise, we see that the recommendation $\tau = \E \vnorm{w}_\infty \approx \sqrt{2 \log(n)}$ coincides with the optimal tuning parameter in~\cite{donoho1995noising}.
+
+The quantity 
+\[
+	\E\vnorm{w}_\A^* = \E\sup_{a \in \A} \vabs{w}{a}
+\]
+where $w \in \mathcal{N}(0,I_n)$ is called the Gaussian width of the atomic set $\A$. In some cases, the parameterization of the atoms in $\A$ allow the Gaussian width to be viewed as an extremum of a Gaussian process and thus this can be estimated using standard tools such as Dudley's inequality, Talagrand's method of generic chaining.
+
+However, for special centrosymmetric sets satisfying a weak condition, we can produce a simpler argument that often gives 
+% section dual-atomic-bounds (end)
+
+\section{Accelerated Convergence Rates} %(fold)
+\label{sec:convergence-rate}
 In this section, we provide conditions under which a faster convergence rate
 can be obtained for AST.
 \begin{prop}[Fast Rates]
@@ -410,7 +482,7 @@ cone $C_\gamma$ where $\phi_\gamma$ must be controlled in parallel with
 the~\emph{tangent cones} studied in~\cite{crpw}. There, the authors showed that
 the mean width of the cone $C_0(x^\star,\A)$ determined the number of random
 linear measurements required to recover $x^\star$ using atomic norm
-minimization. In our case, $\gamma$ is greater than zero, and represents a
+minimization.	 In our case, $\gamma$ is greater than zero, and represents a
 ``widening'' of the tangent cone. When $\gamma=1$, the cone is all of $\R^n$ or $\C^n$
 (via the triangle inequality), hence $\tau$ must be larger than the
 expectation to enable our proposition to hold.
@@ -546,66 +618,4 @@ the minimax optimal MSE
 \frac{1}{n^2}\vnorm{X-\hat{X}}_F^2 = O\left( \frac{\sigma^2 r}{n} \right).
 \end{align*}
 
-\section{Discretization}
-\todo{TODO: Semi-infinite Programming and LP Perturbations}
-\subsection{Expected MSE for Approximated Atomic Norms}
-\label{proof:expected-mse-approx}
-
-We close this section by noting that it may sometimes be easier to solve
-\eqref{AST} on a different set $\widetilde{\A}$ (say, an $\epsilon$-net of
-$\A$ instead of $\A$. If for some $M>0,$
-\[
-M^{-1}\vnorm{x}_{\widetilde{\A}} \leq \vnorm{x}_{\A} \leq 
-\vnorm{x}_{\widetilde{\A}}
-\] 
-holds for every $x$, then Theorem $\ref{cor:expected-mse}$ still applies with a 
-constant factor $M$. We will need the following lemma.
-
-\begin{lemma}
-${\vnorm{z}_{\A}^* \leq M\vnorm{z}_{\widetilde{\A}}^*}$ for every $z$ iff
-${M^{-1}\vnorm{x}_{\widetilde{\A}} \leq \vnorm{x}_{\A}}$ for every $z$.
-\end{lemma}
-\begin{proof}\belowdisplayskip=-12pt
-We will show the forward implication -- the converse will follow since the dual
-of the dual norm is again the primal norm. By \eqref{holder}, for any $x$, 
-there exists a $z$ with
-$\vnorm{z}_{\widetilde{\A}}^* \leq 1$ and ${\vabs{x}{z} =
-\vnorm{x}_{\widetilde{\A}}}$. So,
-\begin{align*}
-M^{-1}\vnorm{x}_{\widetilde{\A}} &= M^{-1}\vabs{x}{z} &&\\
-&\leq M^{-1}\vnorm{z}_{\A}^* \vnorm{x}_{\A} &&\text{by \eqref{holder}}\\
-&\leq \vnorm{x}_{\A} &&\text{by assumption.}
-\end{align*}
-\end{proof}
-Now, we can state the sufficient condition for the following proposition in
-terms of either the primal or the dual norm:
-\begin{prop}\label{prop:grid-approx-mse}
-Suppose 
-\begin{equation}
-  \label{dni}
-  \vnorm{z}_{\widetilde{\A}}^* \leq \vnorm{z}_{\A}^* \leq 
-  M\vnorm{z}_{\widetilde{\A}}^* \text{ for every } z,
-\end{equation}
-or equivalently 
-\begin{equation}
-  \label{pni}
-  M^{-1}\vnorm{x}_{\widetilde{\A}} \leq \vnorm{x}_{\A} \leq \vnorm{x}_{\widetilde{\A}} \text{ for every } x,
-\end{equation}
-then under the same conditions as in Theorem \ref{cor:expected-mse},
-\begin{equation*}
-    \frac{1}{n} \E \vnorm{\tilde{x} - x^\star}_2^2 \leq \frac{M \tau}{n}\vnorm{x^\star}_\A
-\end{equation*}
-where $\tilde{x}$ is the optimal solution for \eqref{AST} with $\A$ replaced by $\widetilde{\A}.$
-\end{prop}
-\begin{proof}\belowdisplayskip=-12pt
-By assumption, $\E\left(\vnorm{w}_{\A}^*\right) \leq \tau$. Now, \eqref{dni}
-implies $\E\left(\vnorm{w}_{\widetilde{\A}}^*\right) \leq \tau.$ Applying
-Theorem \ref{cor:expected-mse}, and using \eqref{pni}, we get
-\begin{equation*}
-\frac{1}{n} \E \vnorm{\tilde{x} - x^\star}_2^2 \leq \frac{\tau}{n}\vnorm{x^\star}_{\widetilde{\A}} \leq \frac{M \tau}{n}\vnorm{x^\star}_{\A}.
-\end{equation*}
-\end{proof}
-
-\todo{TODO: More Stuff}
-\section{Dual Atomic Norm Bounds}
-\todo{TODO: Say stuff about Gaussian width here.}
+% section convergence-rate (end)

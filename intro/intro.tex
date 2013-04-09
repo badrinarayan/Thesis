@@ -24,8 +24,8 @@ task of choosing the ``right'' model for the data can be cast as a combinatorial
 subset of features that describe the data well. This is called the ``small n,
 large p'' problem in statistics and such datasets are ubiquitous - For example,
 biologists want to characterize samples in terms of a small subset of a large
-number of genes from limited measurements. Machine learning practioners want to
-infer the active features from a large feature space with a relatively small
+number of genes from limited measurements. Machine learning practitioners want
+to infer the active features from a large feature space with a relatively small
 number of measurements.
 
 A \naive{} algorithm would explore all the possible subsets of features till we
@@ -43,14 +43,14 @@ efficiently solving the sparse recovery problem most of the time.
 
 The idea of using the $\ell_1$ norm of the feature weights (instead of the hard
 combinatorial problem of minimizing sparsity of feature weights) as a convex
-heuristic for model or feature selection, and the robustness of $\ell^1$
+heuristic for model or feature selection, and the robustness of $\ell_1$
 penalties to outliers and noise was known to several early practitioners in
 Geophysics and
 seismology~\cite{claerbout:robust,taylor:deconvolution,levy:spike-train,santosa}.
 This was introduced in statistics as a sparsity inducing regularization
 in~\cite{tibshirani96} and in Signal Processing as a means of exact and robust
 decomposition by~\cite{chen98} and subsequently studied by Donoho and his
-coworkers~\cite{donoho:huo,spark}. Since the seminal publication of
+coworkers~\cite{donoho:huo,spark}. Since the seminal publications of
 ~\cite{CRT06,meinshausen:variable-selection}, which rigorously established the exact recovery and model selection properties the study of convex penalties for
 feature selection has been a subject of intense research. This theory was
 extended to other high dimensional structures including group sparse
@@ -80,29 +80,35 @@ satisfactorily using standard finite dimensional Lasso. In this thesis, I
 discuss my joint work with Gongguo Tang, Parikshit Shah and Prof. Ben Recht on
 denoising using atomic norms and the application of these ideas to revisit two
 fundamental signal processing problems -- line spectral estimation and system
-identification. We will also discuss efficient algorithms for these problems.
+identification, from the perspective of convex methods. We will also discuss
+efficient algorithms for these problems.
 
 Line Spectral Estimation involves estimating frequencies and amplitudes from a
 limited number of noisy measurements. This is an extremely well studied problem
 in signal processing and there are a number of classical algorithms dating back
-to Prony's technique. Surprisingly, using convex methods we shall discuss in
-this thesis, we can outperform these classical techniques and also theoretically
-characterize the performance of our algorithms.
+to Prony's technique. Surprisingly, using convex methods that we shall discuss
+in this thesis, we can empirically outperform these classical techniques and
+also theoretically show near minimax optimal performance of our algorithms.
 
-The goal of system identification is to infer a low order system from a limited set of measurements. Using the convex methods discussed in the thesis, we can develop a simple algorithm for system identification. We see that it compares favorably in terms of prediction errors to the popular subspace ID method.
- 
-%  \\ \todo{Summarize
-% Coherence, RIP. Emphasize Local Recovery and Off grid. Emphasize flexibility.
-% Say problems like System ID and Line Spectral Estimation are not even
-% expressible in this framework. Rephrase everything in terms of feature weights
-% and use the term signal if possible.}
+Another foundational problems in Signals and Systems theory is that of inferring
+a linear system from observed measurements. We show that we can robustly recover
+a low order system from a limited set of noisy measurements, using the convex
+methods discussed in the thesis. We will see that it compares favorably in terms
+of prediction errors to the popular subspace ID method.
 
 \section{Contributions and Organization} % (fold)
 \label{sec:contributions}
 
 In Chapter~\ref{chap:ast}, we will look at the atomic norm framework in depth
 and see how it unifies many linear inverse problems in high dimensional
-statistics. We extend this framework and introduce a general regularized estimator using the atomic norm penalty which we call Atomic Norm Soft Thresholding (AST). This may be thought of as an infinite dimensional version of Lasso. We establish universal properties of the estimator and indicate when accelerated convergence rates are possible. The choice of the regularization parameter for AST depends upon extremal properties of the dual atomic norm of noise, and we examine general techniques for estimating the regularization parameter.
+statistics. We extend this framework and introduce a general regularized
+estimator using the atomic norm penalty which we call Atomic Norm Soft
+Thresholding (AST). This may be thought of as an infinite dimensional version of
+the \textsc{Lasso}. We establish universal properties of the estimator and
+indicate when accelerated convergence rates are possible. The choice of the
+regularization parameter for AST depends upon extremal properties of the dual
+atomic norm of noise, and we examine general techniques for estimating the
+regularization parameter.
 
 In Chapter~\ref{chap:linespect}, we apply our atomic norm soft thresholding
 estimator to denoise line spectral signals. We show consistency of estimation
@@ -120,22 +126,24 @@ frequencies. We also show with extensive experiments that our proposal
 outperforms classical line spectral estimation algorithms.
 
 We turn our attention to the System Identification problem in
-Chapter~\ref{chap:sysid} and show our technique can be adapted for this problem.
-We describe how to setup an estimator for several kinds of linear measurements.
-For the special case of frequency samples, we are able to derive finite sample
-guarantees on the $\mathcal{H}^2$ prediction error of the transfer function
-using AST.
+Chapter~\ref{chap:sysid} and show how our technique can be adapted for this
+problem. We describe a general regularization problem for different kinds of
+linear measurements of the system. For the special case of frequency samples, we
+are able to derive finite sample guarantees on the $\mathcal{H}^2$ prediction
+error of the transfer function of the linear system using AST.
 
 Finally, in Chapter~\ref{chap:algos}, we look at algorithms for AST. It turns
 out that we can efficiently solve AST as long as we have a reasonably efficient
-algorithm to test membership in atomic norm ball. For the case of fourier
-measurements, we show that atomic norm balls can be characterized by a
-semidefinite program. While the positive case is classical, the general case is
-a non-trivial extension. We describe how we can develop a fast parallelizable
+algorithm to test membership in the unit ball of the atomic norm. For the case
+of Fourier measurements, we show that atomic norm balls can be characterized by
+a semidefinite program (SDP), which can be readily solved using any of the
+various SDP solvers. While the positive case is classical and is well known, the
+general case is a non-trivial extension. We also describe a fast parallelizable
 algorithm for the SDP using Alternating Directions Method of Multipliers (ADMM).
 We also show an alternative efficient discretized version of AST which can be
 used in the absence of semidefinite characterizations and in general for large
 problem sizes. This boils down to solving a Lasso problem on a grid. We study
-the convergence of the Lasso solution which provides justification for discretization and Lasso on a grid as a general strategy.
+the convergence of the Lasso solution which provides justification for
+discretization and Lasso on a grid as a general strategy.
 
 % section contributions (end)

@@ -562,7 +562,7 @@ slow convergence rate was established with no assumptions about the separation
 of frequencies in the true signal. In~\cite{cg_noisy}, the authors provide
 guarantees on the $L_1$ energy of error in the frequency domain in the case
 that the frequencies are well separated. The noise is assumed to be adversarial
-with a small $L_1$ spectral energy. In contrast, our paper shows near minimax
+with a small $L_1$ spectral energy. In contrast, we show near minimax
 denoising error under Gaussian noise. It is also not clear that there is a
 computable formulation for the optimization problem analyzed
 in~\cite{cg_noisy}. While the guarantees the authors derive in~\cite{cg_noisy}
@@ -574,7 +574,7 @@ under the Gaussian noise model using the Beurling-Lasso ~\cite{azais}. There,
 the authors show that there is a true frequency in the neighborhood of every
 estimated frequency with large enough amplitude. We note that the
 Beurling-Lasso is equivalent to the atomic norm algorithm that we analyze in
-this paper. A more recent paper by Fernandez-Granda{\cite{granda2}} improves
+this chapter. A more recent paper by Fernandez-Granda{\cite{granda2}} improves
 this result by giving conditions on recoverability in terms of the true signal
 instead of the estimated signal and prove a theorem similar to
 Theorem~\ref{support}, but use a worst case $L_2$ bound on the noise samples.
@@ -682,13 +682,17 @@ The atomic norm of a vector $z$ defined in \eqref{def-atnorm} is the minimum tot
 
 \subsection{Dual Certificate and Exact Recovery}
 
-Atomic norm minimization attempts to recover the sparsest  decomposition by finding a decomposition that achieves the atomic norm, i.e., find ${c_l,f_l}$ such that  $x^\star = \sum_l c_l a(f_l)$ and $
-\vnorm{x^\star}_\A = \sum_l |c_l| 
-$ or equivalently, finding a representing measure $\mu$ of the form \eqref{mu} that minimizes the total variation norm $
-\vnorm{\mu}_{\mathrm{TV}}$. The authors  of~\cite{cg_exact12} showed 
-that when $n > 256$, the  decomposition that achieves the atomic norm is the sparsest decomposition 
-by explicitly constructing a dual certificate~\cite{dualcert} of optimality, whenever the composing 
-frequencies $f_1, \ldots, f_k$ satisfy a minimum separation condition~\eqref{min-sep}. In the rest of the paper, we always make the technical assumption that $n > 256$.
+Atomic norm minimization attempts to recover the sparsest decomposition by
+finding a decomposition that achieves the atomic norm, i.e., find ${c_l,f_l}$
+such that $x^\star = \sum_l c_l a(f_l)$ and $ \vnorm{x^\star}_\A = \sum_l |c_l|
+$ or equivalently, finding a representing measure $\mu$ of the form \eqref{mu}
+that minimizes the total variation norm $ \vnorm{\mu}_{\mathrm{TV}}$. The
+authors of~\cite{cg_exact12} showed that when $n > 256$, the decomposition that
+achieves the atomic norm is the sparsest decomposition by explicitly
+constructing a dual certificate~\cite{dualcert} of optimality, whenever the
+composing frequencies $f_1, \ldots, f_k$ satisfy a minimum separation
+condition~\eqref{min-sep}. In the rest of the chapter, we always make the
+technical assumption that $n > 256$.
 
 \begin{definition}[Dual Certificate]
 \label{dual-cert}
@@ -1385,15 +1389,13 @@ and $m_2$.
 
 \section{Conclusion and Future Work}\label{sec:conclusions}
 
-\todo{TODO: Modify Conclusions by merging in with Minimax and Removing Stuff}
-
 The Atomic norm formulation of line spectral estimation provides several
-advantages over prior approaches. By performing the
-analysis in the continuous domain we were able to derive simple closed form
-rates using fairly straightforward techniques.We only grid the unit circle at the very end of
-our analysis and determine the loss incurred from discretization. This approach
-allowed us to circumvent some of the more complicated theoretical arguments
-that arise when using concepts from compressed sensing or random matrix theory.
+advantages over prior approaches. By performing the analysis in the continuous
+domain we were able to derive simple closed form rates using fairly
+straightforward techniques. We only grid the unit circle at the very end of our
+analysis and determine the loss incurred from discretization. This approach
+allowed us to circumvent some of the more complicated theoretical arguments that
+arise when using concepts from compressed sensing or random matrix theory.
 
 This work provides several interesting possible future directions, both in line
 spectral estimation and in signal processing in general. We conclude with a
@@ -1402,12 +1404,19 @@ short outline of some of the possibilities.
 \paragraph{Fast Rates} Determining checkable conditions on the cones in
 Section~\ref{sec:convergence-rate} for the atomic norm problem is a major open
 problem. Our experiments suggest that when the frequencies are spread out, AST
-performs much better with a slightly larger regularization parameter.  This observation was also made in the model-based compressed sensing literature~\cite{duartescs}.  Moreover, Cand\`es and Fernandez Granda also needed a spread assumption to prove their theories.
+performs much better with a slightly larger regularization parameter. This
+observation was also made in the model-based compressed sensing
+literature~\cite{duartescs}. Moreover, Cand\`es and Fernandez Granda also needed
+a spread assumption to prove their theories.
 
-This evidence together suggests the \emph{fast rate} developed in Section~\ref{sec:convergence-rate} may be active for signals with well separated frequenies. Determining concrete conditions on the signal $x^\star$ that ensure this fast rate require techniques for estimating the parameter $\phi$ in~\eq{compatibility}. Such an
-investigation should be accompanied by a determination of the minimax rates for
-line spectral estimation. Such minimax rates would shed further light on the
-rates achievable for line spectral estimation.
+This evidence together suggests the \emph{fast rate} developed in
+Section~\ref{sec:convergence-rate} may be active for signals with well separated
+frequencies. Determining concrete conditions on the signal $x^\star$ that ensure
+this fast rate require techniques for estimating the parameter $\phi$
+in~\eq{compatibility}. Such an investigation should be accompanied by a
+determination of the minimax rates for line spectral estimation. Such minimax
+rates would shed further light on the rates achievable for line spectral
+estimation.
 
 \paragraph{Moments Supported Inside the Disk} Our work also naturally extends
 to moment problems where the atomic measures are supported on the unit disk in

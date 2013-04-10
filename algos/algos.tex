@@ -25,7 +25,7 @@ Our proofs for discretized atomic soft thresholding (DAST) demonstrate why Lasso
 is often successful even for off-grid data.
 
 
-\subsection{Summary and Organization of this chapter} % (fold)
+\subsection*{Summary and Organization of this chapter} % (fold)
 \label{sub:main_results}
 
 Recall the definition of the trigonometric monomial $a(f),$ 
@@ -41,7 +41,6 @@ a(f) = \begin{pmatrix}
 }
 as defined in Chapter~\ref{chap:linespect}, which form the basic atoms for Line
 Spectral Estimation. The first part of this chapter gives a computable algebraic characterization of the atomic norm balls of the following atomic sets derived from these atoms:
-
 \begin{align}
 \A_+ &= \setof{a(f)}{f \in \mathbb{T}}\\
 \A   &= \setof{a(f) \exp(i 2\pi \phi)}{f, \phi \in \mathbb{T}}
@@ -50,17 +49,21 @@ Spectral Estimation. The first part of this chapter gives a computable algebraic
 The first set $\A_+$ is a one dimensional manifold called the trigonometric
 moment curve and the second set $\A$ is the two dimensional manifold
 corresponding to a phase-symmetric trigonometric moment curve. The unit norm
-ball of the atomic sets are precisely the convex hulls of the atomic sets. A
-semidefinite characterization of the convex hull of $\A_+$ is well known, which
-we will review in Section~\ref{sec:preliminaries}, whereas the semidefinite
-characterization of $\conv{\A}$ requires some computation. 
+ball of the atomic sets are precisely the convex hulls of the atomic sets. In 
+Section~\ref{sec:preliminaries}, we will look at these sets.
 
-The conical hull of $\A_+$, called the moment cone, corresponds to allowable
-observations for the the case of line spectral estimation with nonnegative
-amplitudes, or alternatively valid trigonometric moments of a positive measure
-on the torus $\mathbb{T}$. The characterization of moment cone allows us to
-describe the convex hull of the general atomic moments~$\conv{\A}$ and we will
-derive the following semidefinite characterization in Section~\ref{sec:general-trig-moments}. 
+In Section~\ref{sub:positive_trigonometric_moments}, we look the classical
+characterization of the conical hull of $\A_+$, called the moment cone,
+corresponds to allowable observations for the the case of line spectral
+estimation with nonnegative amplitudes, or alternatively valid trigonometric
+moments of a positive measure on the torus $\mathbb{T}$. As a straightforward
+consequence, we can write down a semidefinite characterization of
+$\vnorm{\cdot}_{\A_+}$ can be written: 
+
+The semidefinite characterization of $\conv{\A}$ requires some computation.The
+characterization of moment cone allows us to describe the convex hull of the
+general atomic moments~$\conv{\A}$ and we will derive the following semidefinite
+characterization in Section~\ref{sub:general_trigonometric_moments}.
 
 \begin{theorem}\label{thm:sdp-char}
 	For $x\in \C^n$,
@@ -72,7 +75,6 @@ x^* & t
 \end{bmatrix} \succeq 0}.
 	\end{equation}
 \end{theorem}
-
 
 The characterization of atomic norm ball of $\A$ can also be derived by working on the dual problem. In fact, for any $x,$ the optimization problem
 \begin{equation}
@@ -226,9 +228,8 @@ Finally, when $k < n,$ there is a unique extension of $x$ to an infinite positiv
 
 This theorem can be proved using Herglotz theorem~\cite{herglotz} and the
 theorems on flat extensions of moment sequences studied in~\cite{Curto97}. We
-provide a simple version of the proof of this theorem in the appendix. We refer
-the interested reader to~\cite{grenander01} for an alternative algebraic proof.
-\todo{Do this or skip}
+refer the interested reader to~\cite{grenander01} for an alternative algebraic
+proof of this theorem.
 
 % section preliminaries (end)
 
@@ -255,12 +256,18 @@ the interested reader to~\cite{grenander01} for an alternative algebraic proof.
 As a consequence of the Caratheodory's characterization of the moment cone , we have a simple characterization of the the convex hull of $\A_+$.
 
 \begin{theorem}
-	$\vnorm{x}_{\A_{+}} \leq 1$ if and only if $T x \succeq 0$ and $x_1 \leq 1$.
+Suppose $x = (x_0 \cdots x_{n-1})^T \in \C^n.$ Then, 
+	\[
+		\vnorm{x}_{\A_{+}} = \begin{cases}
+			x_0, & T x \succeq 0,\\
+			+\infty, & \text{otherwise.}
+		\end{cases}
+	\]
 \end{theorem}
 \begin{proof}
 If $T x \succeq 0$, then there exists an atomic decomposition $x = \sum_l c_l a(f_l)$ by Caratheodory-Toeplitz theorem since it is in the conical hull of the atomic set $\A_+$. Since we have an invariant $x_0 = \sum_l c_l$ for any such decomposition, we have that
 \[
-\vnorm{x}_{\A_{+}}  = \inf\setof{\sum_{c_l}}{x = \sum_l c_l} = x_1.
+\vnorm{x}_{\A_{+}}  = \inf\setof{\sum_l{c_l}}{x = \sum_l c_l} = x_0.
 \]
 On the other hand, if $Tx \not\succeq 0$, $x \not\in \cone(\A_+)$ and thus $\vnorm{x}_{\A_{+}} = +\infty$.
 \end{proof}
@@ -270,8 +277,14 @@ On the other hand, if $Tx \not\succeq 0$, $x \not\in \cone(\A_+)$ and thus $\vno
 \subsection{General Trigonometric Moments} % (fold)
 \label{sub:general_trigonometric_moments}
 
+For the general trigonometric atoms, let us denote the atoms by two indices for  frequency and phase,
+\[
+	a(f,\phi) = a(f) \exp(i 2\pi \phi)
+\]
+so that $\A = \setof{a(f,\phi)}{f, \phi \in \mathbb{T}}.$
+
 \begin{proof}[Proof of Theorem~\ref{thm:sdp-char}]
-We prove the case $J = \{0, \ldots, n-1\}$. The other case can be proved in a similar manner. Denote the value of the right hand side of \eq{atomic_sdp} by $\mathrm{SDP}(x)$.  Suppose $x = \sum_k c_k a(f_k,\phi_k)$ with $c_k>0$.  Defining $u = \sum_k c_k a(f_k,0)$ and $t = \sum_k c_k$, we note that 
+Denote the value of the right hand side of \eq{atomic_sdp} by $\mathrm{SDP}(x)$.  Suppose $x = \sum_k c_k a(f_k,\phi_k)$ with $c_k>0$.  Defining $u = \sum_k c_k a(f_k,0)$ and $t = \sum_k c_k$, we note that 
 \[
 T(u) = \sum_{k}c_k a(f_k,0) a(f_k,0)^* = \sum_{k}c_k a(f_k,\phi_k) a(f_k,\phi_k)^*.
 \] 
@@ -320,26 +333,28 @@ implying that $\mathrm{SDP}(x)\geq \|x\|_{\mathcal{A}}$ since the previous chain
 % subsection general_trigonometric_moments (end)
 
 % section sdp_for_trigonometric_moments (end)
-\section{Positive Trigonometric Polynomials}
 
-A vector $q \in \C^n$ is called a $n$th degree positive trigonometric polynomial
-if $\Re\sum_{j=1}^{n} q_{j-1} \exp(i2\pi j f) \geq 0$ for every $f \in
-\mathbb{T}.$ Such polynomials have a simple characterization due to spectral
-factorization theorem.
+\section{SDP for Trigonometric Polynomials} % (fold)
+\label{sec:sdp_for_trigonometric_polynomials}
+
+The dual problem to AST involves trigonometric polynomials instead of moments.
+
+\subsection{Positive Trigonometric Polynomials}
 
 \begin{definition}
 A vector $q \in \C^n$ is a positive trigonometric polynomial if
 for every $f \in \mathbb{T},~ \Re\sum_{j=1}^{n} q_{j-1} \exp(i2\pi j f) \geq 0.$
 \end{definition}
 
-\section{General Trigonometric Moments}
+Such polynomials have a simple characterization due to spectral
+factorization theorem.
 
-\subsection{Atomic Norm and Caratheory-Toeplitz theorem} % (fold)
-\label{sec:general-trig-moments}
-LOL
-% section general-trig-moments (end)
+\begin{theorem}\label{thm:gram-mtx-positive-poly}
+$q \in \C^n$ is a positive polynomial if and only if there exists $Q \succeq 0$ such that $T^*Q = q.$
+\end{theorem}
 
-\subsection{Dual Atomic Norm and Bounded Real Lemma}
+\subsection{General Trigonometric Polynomials}
+
 Recall from \eqref{eq:dual-norm-poly} that the dual atomic norm of a vector $v
 \in \mathbb{C}^n$ is the maximum absolute value of a complex trigonometric
 polynomial $V(f) = \sum_{l=0}^{n-1} v_l e^{-2\pi i l f}$. As a
@@ -371,7 +386,7 @@ component and zeros elsewhere and $v^*$ denotes the Hermitian adjoint
 (conjugate transpose) of $v$.
 \end{lemma}
 
-\section{SDP for Atomic Soft Thresholding}
+\subsection{Deriving the primal characterization from dual}
 \label{sec:sdp-ast}
 
 In this section, we present a semidefinite characterization of the atomic norm
@@ -420,6 +435,8 @@ solvers such as SeDuMi~\cite{sedumi} and SDPT3~\cite{SDPT3}. However, these
 solvers tend to be slow for large problems. In the next section, we provide a
 reasonably efficient algorithm based upon the Alternating Direction Method of
 Multipliers.
+
+% section sdp_for_trigonometric_polynomials (end)
 
 \section{Alternating Direction Method of Multipliers}
 \label{sec:admm}
@@ -569,9 +586,7 @@ Theorem \ref{cor:expected-mse}, and using \eqref{pni}, we get
 \todo{TODO: More Stuff}
 
 
-\section{DAST}
-\subsection{Line Spectral Signals}
-\subsection{Discretization and Lasso}
+\subsection{DAST for Line Spectral Signals}
 \label{sec:comp-method}
 
 To proceed, pick a uniform grid of $N$ frequencies and form $\A_N = \left\{
@@ -640,11 +655,7 @@ approximates the desired atomic norm soft thresholding problem. Moreover, we do
 not have to choose $N$ to be too large in order to achieve nearly the same
 performance as the AST.
 
-
-
-\section{System ID Algorithms}
-
-\section{Algorithms for atomic norm minimization}\label{sec:computation}
+\subsection{DAST for System ID}\label{sec:computation}
 
 From here on, let us assume that the $G_\star$ that we seek to estimate has all of its poles of magnitude at most $\rho$  ( we will call $\rho$ the \emph{stability radius}, and treat it as a known parameter).  Let $\D_\rho$ denote the set of all complex numbers with norm at most $\rho$.  Note that if $G_\star$ has stability radius $\rho$ then
 \[

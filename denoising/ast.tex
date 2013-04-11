@@ -52,8 +52,9 @@ the atomic norm to encourage sparsity in $\A$.
 vectors $x^\star$ that may be written as a sparse nonnegative combination of
 elements from the atomic set $\A$ and ask how one might certify that $x^\star$
 has a unique sparsest decomposition in terms of the atoms. We will see how the
-existence of certain vectors in the dual space can certify uniqueness of the
-sparsest decomposition under some mild technical conditions
+existence of certain vectors in the dual space can reveal the composing atoms
+and certify uniqueness of the sparsest decomposition under some mild technical
+conditions.
 
 \paragraph*{Denoising.} In Section \ref{sec:abstract-denoising},
 we will characterize the performance of the estimate $\hat{x}$ that solves
@@ -61,10 +62,11 @@ we will characterize the performance of the estimate $\hat{x}$ that solves
 \begin{equation}
 \label{AST}\mathop{\textrm{minimize}}_x \frac{1}{2} \vnorm{x - y}_2^2 + \tau \vnorm{x}_\A.
 \end{equation}
-where $\tau$ is an appropriately chosen regularization parameter, where $y = x^\star + w$ is a a vector of noisy measurements. We provide an
-upper bound on the MSE when the noise statistics are known. Before we state the
-theorem, we note that the dual norm $\vnorm{\cdot}_\A^*$, corresponding to the
-atomic norm, is given by
+where $\tau$ is an appropriately chosen regularization parameter, and $y =
+x^\star + w$ is a a vector of noisy measurements. We provide an upper bound on
+the MSE when the noise statistics are known. Before we state the theorem, we
+note that the dual norm $\vnorm{\cdot}_\A^*$, corresponding to the atomic norm,
+is given by
 \[
  \vnorm{z}_{\A}^* = \sup_{a \in \A}{\vabs{z}{a}},
 \]
@@ -118,12 +120,12 @@ The authors also define a notion of an \emph{atomic norm} as a natural convex
 penalties for encouraging simplicity with respect to these structures. In this
 section, we review these preliminaries.
 
-Let $F$ be $\C$ or $\R$. Consider a possibly infinite set $\A \subset F^n$
-which we shall dub the \emph{atomic set}. Every signal we shall consider is
-composed of a combination of \emph{atoms} from this dictionary. We say a target
-signal $x^\star \in F^n$ is \emph{simple}, if it is can be written as a
-nonnegative combination of small subset $S \subset \A$ of atoms. We call $S$, a
-\emph{support} of $x^\star$. If the number of elements $k = |S|$ in the support
+Let $F$ be $\C$ or $\R$. Consider a possibly infinite set $\A \subset F^n$ which
+we shall dub the \emph{atomic set}. Every signal we shall consider is composed
+of a combination of \emph{atoms} from this dictionary. We say a target signal
+$x^\star \in F^n$ is \emph{simple}, if it can be written as a nonnegative
+combination of small subset $T \subset \A$ of atoms. We call $T$, a
+\emph{support} of $x^\star$. If the number of elements $k = |T|$ in the support
 is small relative to the dimension $n$ of the signal, we say $x^\star$ is a $k$
 \emph{simple} combination of atoms.
 
@@ -138,7 +140,7 @@ framework.
 
 Consider the estimation of the \emph{non-negative} vector $x^\star \in \R^m$
 from the noisy observations $y = x^\star + w$ with the assumption that $x^\star$
-is nearly black -- i.e., most of its entries are zero. This problem was
+is nearly black --- i.e., most of its entries are zero. This problem was
 considered in \cite{DonohoNearlyBlack92,JohnstoneSparse94}, in order to shed
 light on the superresolution properties of the maximum entropy estimator for
 nearly black MRI images. In our framework, such an $x^\star$ is a sparse
@@ -147,10 +149,10 @@ unit vector.
 
 \paragraph{Compressed Sensing and Sparse Recovery}
 
-Many phenomena observed in high dimension is sparse in a suitable dictionary.
+Many phenomena observed in high dimension are sparse in a suitable dictionary.
 For instance, natural images expanded in a wavelet basis is well approximated by
-a sparse combination of wavelet coefficients. This means the data as highly
-rendundant but it is actually sparse when suitably transformed. Compression
+a sparse combination of wavelet coefficients. This means the data is highly
+redundant but it is actually sparse when suitably transformed. Compression
 techniques exploit this redundancy and represent the same high dimensional
 vector with fewer bits with no loss of accuracy. However, it is wasteful to
 acquire several linear measurements of the data only to compress them and throw
@@ -183,7 +185,7 @@ matrices, and consequently the observations of this matrix can be expressed as a
 the recovery of signals whose spectrum consists only of a finite number of
 frequencies. Thus, line spectral signals are a mixture of complex
 exponentials. An important signal processing task is the ability to recover
-the frequencies and ampltudes of the complex exponentials from a limited
+the frequencies and amplitudes of the complex exponentials from a limited
 number of time samples. For each frequency $f$ in $[-W,W]$, let $a(f)$ denote
 the vector of observed time samples. Then the set $\A$ of different vectors
 $a(f) \in \C^m$ denotes the atomic set for samples of line spectral signals.
@@ -280,24 +282,39 @@ The goal of atomic norm decomposition is to write $x^\star$ as the sparsest
 combination of atoms in $\A$. We argue that a decomposition that achieves the
 atomic norm is often the sparsest and provide some geometric insight to why this
 is true. The proof of optimality of a given atomic norm decomposition can be
-established in several ways. A useful device is that of a dual certificate,
-which is one of the subgradients of the atomic norm. It is easy to verify that
-$q$ is a subgradient of $\vnorm{\cdot}_\A $ at $x^\star$ if and only if $\langle
-q, x \rangle = \vnorm{x}_\A$ and $\vnorm{q}_\A^* \leq 1.$
+established in several ways.
 
 \subsection{Dual Certificate}
+
+A useful device is that of a dual certificate, which is one of the subgradients
+of the atomic norm. For a convex differentiable function $f$, the gradient
+defines a linear under approximator. Subgradients generalize this property to
+nonsmooth convex functions by characterizing all linear under approximators of
+the function. A vector $q$ is in the subgradient of $f$ at $x$ if for
+every $y,$
+\[
+	f(y) \geq f(x) + \vabs{q}{y-x}.
+\]
+When $f$ is differentiable at $x$, the set of subgradients at $x$ is simply the
+singleton set containing the gradient at $x$. It is easy to verify that $q$ is a
+subgradient of $\vnorm{\cdot}_\A $ at $x^\star$ if and only if $\langle q,
+x^\star \rangle = \vnorm{x^\star}_\A$ and $\vnorm{q}_\A^* \leq 1.$ A
+decomposition of a vector $x^\star$ gives an upper bound for its atomic norm.
+Subgradients in the dual space can provide a dual certificate of the optimality
+of a decomposition if it produces a matching lower bound.
 
 \begin{definition}[Dual Certificate]\label{def:dual-certificate}
 A vector $q$ is a dual certificate for the support $T \subset \A$ if 
 $\vabs{q}{a} = 1$ for every $a \in T$ and $\vabs{q}{a} \leq 1$ whenever $a \not\in T$. Furthermore, the vector $q$ is called a strict dual certificate if $\vabs{q}{a} < 1$ for every $a \not\in T.$
 \end{definition}
 
-By definition of the dual certificate, for every non-empty set $\vnorm{q}_\A^* =
-\sup_{a \in \A} \vabs{q}{a} = 1$, which guarantees that all the atoms (and hence
-$\conv(\A)$) lie on one side of a half plane determined by $q$, and also that
-atoms in $T$ (and hence $\conv(T)$) intersect this hyperplane. Geometrically,
-this says that $q$ is a supporting hyperplane for the exposed face $\conv(T)$ of
-the convex set $\conv(\A).$ The following proposition indicates why this is important.
+This has a pleasing geometric interpretation. By definition of the dual
+certificate, for every non-empty set $\vnorm{q}_\A^* = \sup_{a \in \A}
+\vabs{q}{a} = 1$, which guarantees that all the atoms (and hence $\conv(\A)$)
+lie on one side of a half plane determined by $q$, and also that atoms in $T$
+(and hence $\conv(T)$) intersect this hyperplane. Geometrically, this says that
+$q$ is a supporting hyperplane for the exposed face $\conv(T)$ of the convex set
+$\conv(\A).$ The following proposition indicates why this is important.
 
 \begin{prop}
 \label{prop:dual-certificate-is-subgrad}
@@ -330,8 +347,30 @@ Suppose $q$ is a subgradient of $\vnorm{\cdot}_\A$ at $x^\star \in \cone(\A)$ an
 Under our assumptions (that $\A$ has full spark), we are guaranteed that this is
 the unique sparsest decomposition of $x^\star$ in terms of the atoms provided
 $|T| < n/2$. This is especially useful as it allows us to determine a support of
-$x^\star$ purely in terms of the properties of the dual.
+$x^\star$ purely in terms of the properties of the dual. For a generic set, there is no guarantee that the atomic norm achieving decomposition is $n/2$ sparse and therefore that it recovers the \emph{correct} support. However, we have a rich theory now that this is indeed true for many interesting cases.
 
+Returning to our geometric interpretation, the existence of a dual certificate
+guarantees that $x^\star/\vnorm{x}_\A$ is in an exposed face of $\conv(\A)$. Due
+to our assumptions on $\A$, the faces are simplicial and there is a unique way
+of writing $x^\star$ as a combination of vertices in the face. When the face is
+also low dimensional, the decomposition of $x^\star$ is unique. So, we can
+always recover the support of a sparse vector provided all sparse combinations
+lie on low dimensional exposed simplicial faces. Again, this may not always be
+true and we refer the interested reader to~\cite{neighborliness} for geometric
+interpretation of sparse recovery.
+
+In practice, it may be hard to find a \emph{strict} dual certificate. However,
+if $\A$ has full spark like we assumed, any dual certificate will suffice to
+find a set of atoms for a decomposition that achieves the atomic norm. Given a simple $x^\star$, our recipe involves solving the semi-infinite program
+\begin{equation}
+\label{eq:ast:dual:support}
+\begin{split}
+	\maximize_q~ & \vabs{q}{x^\star}\\
+	\text{subject to } & \vabs{q}{a} \leq 1, \text{ for every } a \in \A.
+\end{split}
+\end{equation}
+to obtain a solution $\hat{q}$ which is one of the dual certificates of the
+support and a subgradient of $\vnorm{\cdot}_\A$ at $x^\star$. Since $\vabs{q}{a}$ is $1$ only for at most $n$ atoms. FIXME: There is something wrong here. 
 
 \section{Denoising}
 \label{sec:abstract-denoising}

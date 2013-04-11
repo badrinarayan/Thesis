@@ -229,7 +229,7 @@ programming approach outperforms MUSIC~\cite{music} and Cadzow's
 technique~\cite{cadzow05} in terms of the localization metrics defined by parts
 (i), (ii) and (iii) of Theorem~\ref{support}.
 
-\section{Application of AST to Line Spectral Estimation}
+\section{Denoising Line Spectral Signals}
 \label{sec:denoise-trig-moments} 
 
 We describe more precisely our signal model in this section. Suppose we wish to
@@ -277,10 +277,21 @@ The corresponding dual norm takes an intuitive form:
 \begin{align}
 	\|v\|_{\A}^* &= \sup_{{f,\phi}} \langle v, a_{f,\phi} \rangle=\sup_{f\in [0,1]}  \sup_{\phi \in [0,1]}  e^{i 2\pi \phi} \sum_{l=0}^{n-1} v_l e^{-2\pi i l f} =\sup_{ |z|\leq 1 }  \left| \sum_{l=0}^{n-1} v_l z^l\right|.\label{eq:dual-norm-poly}
 \end{align}
-In other words, $\|v\|_{\A}^*$ is the maximum absolute value attained on the
-unit circle by the polynomial $\zeta \mapsto \sum_{l=0}^{n-1} v_l \zeta^l$.  Thus, in what follows, we will frequently refer to the \emph{dual polynomial} as the polynomial whose coefficients are given by the dual optimal solution of the AST problem.
 
-\subsection{Choosing the regularization parameter}\label{subsec:parameter}
+In other words, $\|v\|_{\A}^*$ is the maximum absolute value attained on the
+unit circle by the polynomial $\zeta \mapsto \sum_{l=0}^{n-1} v_l \zeta^l$.
+Thus, in what follows, we will frequently refer to the \emph{dual polynomial} as
+the polynomial whose coefficients are given by the dual optimal solution of the
+AST problem given in \eqref{AST}:
+
+\begin{equation}
+\mathop{\textrm{minimize}}_x \frac{1}{2} \vnorm{x - y}_2^2 + \tau \vnorm{x}_\A.
+\end{equation}
+
+In the next section, we describe the choice of the regularization parameter
+$\tau$.
+
+\section{Choosing the regularization parameter}\label{subsec:parameter}
 The choice of the regularization parameter is dictated by the noise model and
 we show the optimal choice for white gaussian noise samples in our analysis. As
 noted in Theorem~\ref{cor:expected-mse}, the optimal choice of the
@@ -298,62 +309,71 @@ bound on the expected dual norm of noise for $n > 3$:
 \[\sigma\left(1  + \frac{1}{\log(n)}\right)\sqrt{n \log(n) + n\log( 4\pi \log(n))}\nonumber
 \]
 
-\section{Approximation of the Dual Atomic Norm}
-\label{proof:dual-norm-approximation}
-This section furnishes the proof that the atomic norms induced by $\A$ and $\A_N$ are equivalent. Note that the dual atomic norm of $w$ is given by
-\begin{equation}
-  \label{eq:maximum-modulus}
-  \vnorm{w}_\A^* = \sqrt{n}\sup_{f \in [0,1]} \left| W_n(e^{i2\pi f}) \right|.
-\end{equation}
-i.e., the maximum modulus of the polynomial $W_n$ defined by
-\begin{equation}
-\label{eq:random-poly}
-W_n(e^{i2\pi f}) =\frac{1}{\sqrt{n}} \sum_{m=0}^{n-1}{w_m e^{-i 2 \pi m f}}.
-\end{equation}
-Treating $W_n$ as a function of $f$,  with a slight abuse of  notation, define
-\begin{equation*}
-\vnorm{W_n}_\infty := \sup_{f \in [0,1]} \left| W_n(e^{i2\pi f}) \right|.
-\end{equation*}
-We show that we can approximate the maximum modulus by evaluating $W_n$ in a
-uniform grid of $N$ points on the unit circle. To show that as $N$ becomes large,
-the approximation is close to the true value, we bound the derivative of $W_n$ 
-using Bernstein's inequality for polynomials.
 
-\begin{theorem}[Bernstein, See, for example ~\cite{schaeffer41}]
-Let $p_n$ be any polynomial of degree $n$ with complex coefficients. Then,
-\begin{equation*}
- \sup_{|z|\leq 1} |p'(z)|  \leq n  \sup_{|z|\leq 1} |p(z)|.
-\end{equation*}
-\end{theorem}
-Note that for any $f_1, f_2 \in [0,1],$ we have
-\begin{align*}
-  \left|W_n(e^{i2\pi f_1})\right| - \left|W_n(e^{i2\pi f_2})\right|  &\leq   \left|e^{i2\pi f_1} - e^{i2\pi f_2}\right| \vnorm{W_n'}_\infty&&\\
-  &= 2|\sin(2\pi (f_1-f_2))| \vnorm{W_n'}_\infty\\
-  &\leq 4 \pi (f_1-f_2) \vnorm{W_n'}_\infty\label{diff}\\
-  & \leq 4 \pi n (f_1-f_2) \vnorm{W_n}_\infty,
-\end{align*}
-where the last inequality follows by Bernstein's theorem.
-Letting $s$ take any of the $N$ values $0,\tfrac{1}{N} \ldots, \tfrac{N-1}{N}$, we see that,
-\begin{equation*}
-\vnorm{W_n}_\infty \leq \max_{m=0,\ldots,N-1}\left| W_n\left(e^{i 2 \pi m/N}\right) \right| + \frac{2\pi n}{N}\vnorm{W_n}_\infty.
-\end{equation*}
-Since the maximum on the grid is a lower bound for maximum modulus of $W_n$, we have
+\section{Estimation of Gaussian Width}
+\label{gw}
+Let $\gamma_1, \gamma_2, \ldots$ be circularly symmetric independent sequence of standard complex normal variables. Define a random process on $T = [0,1]$ by
+\begin{equation}
+\label{ranproc}
+X_t = \frac{1}{\sqrt{n}}\sum_{k=0}^{n-1}\Re(\gamma_k e^{-2\pi k t}),
+\end{equation}
+for $t \in T$. We are interested in estimating $\sup_{t \in T} {X_t}$.
+
+If we define two independent $i.i.d$ sequences of standard normal numbers $\{ g_k\}_1^\infty$ and $\{h_k\}_1^\infty$, note that we can write
+\begin{equation}
+X_t = \frac{1}{\sqrt{2 n}} \sum_{k=0}^{n-1} \left[ g_k \cos(2 \pi k t) - h_k \sin(2\pi k t) \right].
+\end{equation}
+Note that $X_t$ is a normal random variable with zero mean and a variance of $1/2$. 
+
+\subsection{Upper Bound}
+Let us use a $1/N$-net of $T$ to estimate the expectation of  $\sup_{t \in T} {X_t}$. Define
+\begin{equation}
+T_k = \left\{t \in T ~ \middle| ~ \abs{t-k/N} \leq 1/N \right\}.
+\end{equation}
+We have
 \begin{align}
-\max_{m=0,\ldots,N-1} \left| W_n\left(e^{i 2 \pi m/N}\right) \right| \leq \vnorm{W_n}_\infty \\
-\leq  \left(1-\frac{2\pi n}{N}\right)^{-1} \max_{m=0,\ldots,N-1} \left| W_n\left(e^{i 2 \pi m/N}\right) \right|\nonumber\\
- \leq  \left(1+\frac{4\pi n}{N}\right) \max_{m=0,\ldots,N-1} \left| W_n\left(e^{i 2 \pi m/N}\right) \right|.
-\label{eq:grid-approx}
+\E\left[\sup_{t \in T} X_t \right] & \leq \E\left[\sup_{1 \leq k \leq N} X_{k/N} \right] + \E\left[\sup_{t \in T_k} \left(X_{t} - X_{k/N}\right) \right]\\
+& \leq \sqrt{\log(N)} + \frac{2 \pi n}{\sqrt{3}N} \E\left[\sup_{t \in T_k} Y_t \right]\label{balance}
 \end{align}
-Thus, for every $w,$
+where 
 \begin{equation}
-\vnorm{w}_{\A_N}^* \leq  \vnorm{w}_\A^* \leq  \left(1-\frac{2\pi n}{N}\right)^{-1} \vnorm{w}_{\A_N}^*
+Y_t = \frac{\sqrt{3} N  \left(X_t - X_{k/N}\right)}{4 \pi n}.
 \end{equation}
-or equivalently, for every $x,$
+Now,
+\begin{align}
+\rho^2(t,s) & := \E \abs{Y_t - Y_s}^2\\
+& = \frac{3 N^2}{8 \pi^2 n^2} \E \abs{X_t - X_s}^2\\
+& = \frac{3 N^2}{2 \pi^2 n^3} \sum_{k=0}^{n-1}{\sin^2(\pi k (t - s))}\\
+& \leq N^2 (t-s)^2.
+\end{align}
+
+Thus,
+\begin{align}
+\diam_\rho(T_k) &:= \sup_{t,s  \in T_k}\rho(t,s) = 1\\
+N(T_k, \rho, \epsilon) & = 1/\epsilon.
+\end{align}
+Now, by Dudley's integral inequality, we have
+\begin{align}
+\E\left[\sup_{t \in T_k} Y_t \right] & \leq 24 \int_0^{\diam_\rho(T_k)} \sqrt{N(T_k, \rho, \epsilon)} d\epsilon\\
+ & \leq 24 \int_0^1 \sqrt{\log(1/\epsilon)} d\epsilon = 12 \sqrt{\pi}. \label{dudley}
+\end{align}
+Thus, from \eqref{dudley} and \eqref{balance}, we have
+\begin{align}
+\E\left[\sup_{t \in T} X_t \right] & \leq  \sqrt{\log(N)} +  \frac{ 16 \pi^{3/2} n} { N}\\
+& \leq \sqrt{\log(n)} + O(1).
+\end{align}
+
+\subsection{Lower Bound}
+Using \eqref{ranproc}, we have that $X_t$ is zero mean for every $t \in [0,1]$ and
 \begin{equation}
- \left(1-\frac{2\pi n}{N}\right) \vnorm{x}_{\A_N} \leq  \vnorm{x}_\A \leq \vnorm{x}_{\A_N}
+\E X_t X_s = \frac{1}{2 n}\Re {\sum_{k=0}^{n-1} e^{2 \pi k (t - s) } } = \frac{ \cos(\pi (n - 1) (t-s)) \sin(n \pi (t - s) ) }{2 n \sin(\pi (t - s))}.
+\end{equation}
+Thus, the $n$ samples $\{ X_{k/n} \}_{k=1}^{n}$ are uncorrelated and thus independent. This gives a simple lower bound:
+\begin{equation}
+\E\left[\sup_{t \in T} X_t \right] \geq \E\left[\max_{k = 1, \ldots, n} X_{k/n} \right] \geq \sqrt{\log(n)}.
 \end{equation}
 
-\section{Dual Atomic Norm Bounds}
+\subsection{Dual Atomic Norm Bounds}
 \label{proof:dual-norm-bounds}
 This section derives non-asymptotic upper and lower bounds on the expected dual norm of gaussian noise vectors, which are asymptotically tight upto $\log\log$ factors. Recall that the dual atomic norm of $w$ is given by $\sqrt{n}\sup_{f \in [0,1]}|W_f|$ where
 \begin{equation*}
@@ -398,11 +418,9 @@ Using Lemma \ref{lem:max-chi}, we can compute
 \begin{align*}
 \vnorm{w}_{\A_N}^* & = \sqrt{n}\max_{m=0,\ldots,N-1} \left| W_n\left(e^{i 2 \pi m/N}\right) \right|  \leq \sigma\sqrt{n\left(\log{N}+1\right)}
 \end{align*}
-Plugging in $N = 4\pi n \log(n)$ and using \eq{maximum-modulus} and \eq{grid-approx} establishes a tight upper bound.
-
-\todo{TODO: Flow}
-If we set the regularization parameter $\tau$ equal to an
-upper bound on the expected dual atomic norm, i.e.,
+Plugging in $N = 4\pi n \log(n)$ and using \eq{maximum-modulus} and
+\eq{grid-approx} establishes a tight upper bound. If we set the regularization
+parameter $\tau$ equal to an upper bound on the expected dual atomic norm, i.e.,
 \begin{equation}
 \label{eq:tau}
 \tau = \sigma\left(1  +  \frac{1}{\log(n)}\right)\sqrt{n \log(n) + n\log(4\pi\log(n))}.
@@ -410,7 +428,8 @@ upper bound on the expected dual atomic norm, i.e.,
 an application of Theorem \ref{cor:expected-mse} yields the asymptotic result
 in Theorem \ref{thm:expmsels}.
 
-\subsection{Determining the frequencies}
+
+\section{Determining the frequencies}
 \label{sec:frequency-localize}
 \begin{figure}[htp]
 \centering
@@ -444,143 +463,6 @@ that in the noiseless case, the frequencies localized by the dual polynomial
 are exact provided the minimum separation between the frequencies is at least
 $4/n$ where $n$ is the number of samples in the line spectral signal. Under similar separation condition, numerical simulations suggest that \eqref{AST} achieves approximate frequency location in the noisy case. 
 
-\section{Related Work}
-\label{sec:prony-method}
-
-% \todo{Reduce Prony}
-% \todo{Prony, Music, Cadzow, Matrix Pencil only 1 para}
-% \todo{Discretization Malioutov and Basis Mismatch}
-% \todo{Candes}
-
-% This
-% technique is attributed to Prony in the eighteenth century.
-
-The classical methods of line spectral estimation, often called linear
-prediction methods, are built upon the seminal interpolation method of
-Prony~\cite{prony1795}. In the noiseless case, with as little as $n=2k$
-measurements, Prony's technique can identify the frequencies exactly, no matter
-how close the frequencies are. However, Prony's technique is known to be
-sensitive to noise due to instability of polynomial rooting~\cite{kahn92}.
-Following Prony, several methods have been employed to robustify polynomial
-rooting method including the Matrix Pencil algorithm~\cite{hua02}, which
-recasts the polynomial rooting as a generalized eigenvalue problem and cleverly
-uses extra observations to guard against noise. The MUSIC~\cite{music} and
-ESPRIT~\cite{esprit} algorithms exploit the low rank structure of the
-autocorrelation matrix.
-
-
-Cadzow~\cite{cadzow02} proposed a heuristic that improves over MUSIC by 
-exploiting the Toeplitz structure of the matric of moments by alternately
-projecting between the linear space of Toeplitz matrices and the space of rank
-$k$ matrices where $k$ is the desired model order.
-Cadzow's technique is very similar~\cite{ssa_special_issue} to a popular
-technique in time series literature~\cite{tsbook1,tsbook2} called Singular
-Spectrum Analysis~\cite{ssa}, which uses autocorrelation matrix instead
-of the matrix of moments for projection. Both these techniques may be viewed as
-instances of structured low rank approximation~\cite{chu2003structured} which
-exploit additional structure beyond low rank structure used in subspace based
-methods such as MUSIC and ESPRIT. Cadzow's method has been identified as a  fruitful preprocessing step for linear prediction methods~\cite{blu08}. A  survey of classical linear prediction methods can be found in~\cite{blu08,StoicaMoses} and an extensive list of references is given in~\cite{stoica93}.
-
-Most, if not all of the linear prediction methods need to estimate the model
-order by employing some heuristic and the performance of the algorithm is
-sensitive to the model order. In contrast, our algorithms AST and the Lasso
-based method, only need a rough estimate of the noise variance. In our experiments, we provide
-the true model order to Matrix Pencil, MUSIC and Cadzow methods, while we use
-the estimate of noise variance for AST and Lasso methods, and still compare favorably to the classical line spectral methods.
-
-In contrast to linear prediction methods, a number of authors
-~\cite{chen98spectrum,malioutov05,bourguignon2007irregular}
-have suggested using compressive sensing and viewing the frequency estimation
-as a sparse approximation problem. For instance,~\cite{malioutov05} notes that
-the Lasso based method has better empirical localization performance than the
-popular MUSIC algorithm. However, the theoretical analysis of this phenomenon
-is complicated because of the need to replace the continuous frequency space by
-an oversampled frequency grid. Compressive sensing based results (see, for
-instance,~\cite{duartescs}) need to carefully control the incoherence of their
-linear maps to apply off-the-shelf tools from compressed sensing. It is
-important to note that the performance of our algorithm improves as the grid
-size increases. But this seems to contradict conventional wisdom in compressed
-sensing because our design matrix $\Phi$ becomes more and more coherent, and
-limits how fine we can grid for the theoretical guarantees to hold.
-
-We circumvent the problems in the conventional compresssive sensing analysis by
-directly working in the continuous parameter space and hence step away from
-such notions as coherence, focussing on the geometry of the atomic set as the
-critical feature. By showing that the continuous approach is the limiting
-case of  the Lasso based methods using the convergence of the corresponding
-atomic norms, we justify denoising line spectral signals using Lasso on a
-large grid. Since the original submission of this manuscript,
-Cand\`es and Fernandez-Granda~\cite{CandesGranda} showed that our SDP
-formulation exactly recovers the correct frequencies in the noiseless case.
-
-To date, line spectral analysis may be broadly classified into two camps.
-\emph{Subspace methods}~\cite{music,esprit,cadzow05,ssa} build upon polynomial
-interpolation~\cite{prony1795} and exploit certain low rank structure in the
-spectrum estimation problem for denoising. Research on subspace approaches has
-yielded several standard algorithms that are widely deployed and shown to
-achieve Cram\'{e}r-Rao bound asymptotically~\cite{fri,cramer-subspace}.
-However, the sensitivity to noise and model order is not well understood, and
-there are few guarantees of how these algorithms perform given a limited number
-of noisy measurements. For a review of many of these classical approaches, see
-for example~\cite{StoicaMoses}.
-
-More recently, approaches based on convex optimization have gained favor and
-have been demonstrated to perform well on a variety of spectrum estimation
-tasks~\cite{malioutov05,bourguignon2007irregular,baraniuk2010model,zweig2003irregular}. These convex programming methods restrict the frequencies to lie on a
-finite grid of points and view line spectral signals as a sparse combination of
-single frequencies. While these methods are reported to have significantly
-better localization properties than subspace methods (see for
-example,~\cite{malioutov05}) and admit fast and robust algorithms, they have
-two significant drawbacks. First, while finer gridding may lead to better
-performance, very fine grids are often numerically unstable. Furthermore,
-traditional compressed sensing theory does not adequately characterize the
-performance of fine gridding in these algorithms as the dictionary becomes
-highly coherent.
-
-Some very recent work~\cite{btr12,cg_exact12,cg_noisy} bridges the gap between
-the performant discretized algorithms and continuous subspace approaches by
-developing a new theory of convex relaxations for infinite continuous
-dictionary of frequencies. Our work in~\cite{btr12} applies the atomic norm
-framework proposed by Chandrasekaran et al~\cite{crpw} to the line spectral
-estimation problem. There, we established stability results on the denoising
-error and demonstrated empirically that our algorithm compared favorably with
-both the classical and recent convex approaches which assume the frequencies
-are on an oversampled DFT grid. Our prior results made no assumption about the
-separation between frequencies. When the frequencies are well separated, the
-current work demonstrates that much faster convergence rates are achieved.
-
-Our work is closely related to recent results established by Cand\`es and
-Fernandez-Granda~\cite{cg_exact12} on exact recovery using convex methods and
-their recent work~\cite{cg_noisy} on exploiting the robustness of their dual
-polynomial construction to show super-resolution properties of convex methods.
-The total variation norm formulation used in~\cite{cg_noisy} is equivalent to
-the atomic norm specialized to the line spectral estimation problem.
-
-Robustness bounds were established in both our earlier work~\cite{btr12} and in
-the work of Cand\`es and Fernandez-Granda~\cite{cg_noisy}. In~\cite{btr12}, a
-slow convergence rate was established with no assumptions about the separation
-of frequencies in the true signal. In~\cite{cg_noisy}, the authors provide
-guarantees on the $L_1$ energy of error in the frequency domain in the case
-that the frequencies are well separated. The noise is assumed to be adversarial
-with a small $L_1$ spectral energy. In contrast, we show near minimax
-denoising error under Gaussian noise. It is also not clear that there is a
-computable formulation for the optimization problem analyzed
-in~\cite{cg_noisy}. While the guarantees the authors derive in~\cite{cg_noisy}
-are not comparable with our results, several of their mathematical
-constructions are used in our proofs here.
-
-Additional recent work derives conditions for approximate support recovery
-under the Gaussian noise model using the Beurling-Lasso ~\cite{azais}. There,
-the authors show that there is a true frequency in the neighborhood of every
-estimated frequency with large enough amplitude. We note that the
-Beurling-Lasso is equivalent to the atomic norm algorithm that we analyze in
-this chapter. A more recent paper by Fernandez-Granda{\cite{granda2}} improves
-this result by giving conditions on recoverability in terms of the true signal
-instead of the estimated signal and prove a theorem similar to
-Theorem~\ref{support}, but use a worst case $L_2$ bound on the noise samples.
-Here, we improve these recent results in our proof of Theorem~\ref{support},
-providing tighter guarantees under the Gaussian noise model.
- 
 \section{What is the best rate we can expect?}\label{sec:minimax}
 
 Using results about minimax achievable rates for linear models~
@@ -757,101 +639,7 @@ Then for any $m$th order trigonometric polynomial $X$, we have
 \leq \vnorm{X(f)}_\infty \left(\int_F{|\nu|(df)} + I_0 + I_1 + I_2\right)
 \]
 \end{lemma}
-
-Applying Lemma \ref{part1} to the error function, we get
-\begin{equation}
-\label{ebd}
-\vnorm{e}_2^2 \leq \vnorm{E(f)}_\infty 
-\left( \int_F{|\nu|(df)} + I_0 + I_1 + I_2\right)
-\end{equation}
-As a consequence of our choice of $\tau$ in \eq{tau}, we can show that $\vnorm{E(f)}_\infty \leq (1+2\eta^{-1})\tau$ with high probability. In fact, we have
-\begin{align*}
-\vnorm{E(f)}_\infty &= \sup_{f \in [0,1]}\left|\langle e, a(f) \rangle\right|\\
-&= \sup_{f \in [0,1]} \left| \langle x^\star - \hat{x}, a(f) \rangle\right|\\
-&\leq \sup_{f \in [0,1]} \left| \langle w, a(f) \rangle \right| +  \sup_{f \in [0,1]} \left| \langle y - \hat{x}, a(f) \rangle \right|\\
-&\leq \sup_{f \in [0,1]} \left| \langle w, a(f) \rangle \right| +  \tau\\
-\label{errbd} \numberthis &\leq (1 +2\eta^{-1})\tau \leq 3 \tau, \text{with high probability.}
-\end{align*}
-The second inequality follows from the optimality conditions for \eqref{atnorm-denoise}. It is shown in Appendix C of ~\cite{btr12} that the penultimate inequality holds with high probability.
-
-Therefore, to complete the proof, it suffices to show that the other terms on the right hand side of \eqref{ebd} are $O(\frac{k\tau}{n})$.  While there is no exact frequency recovery in the presence of noise, we can hope to get the frequencies approximately right. Hence, we expect that the integral in the far region can be well controlled and the local integrals of the difference measure in the near regions are also small due to cancellations. Next, we utilize the properties of the dual polynomial in Theorems~\ref{dual-stab} and another polynomial given in Theorem~\ref{dual-lin}  in Appendix \ref{apx:collection} to show that the zeroth and first moments of $\nu$ may be controlled in terms of the other two quantities in \eqref{ebd} to upper bound the error rate. The following lemma is similar to Lemmas 2.2 and 2.3 in~\cite{cg_noisy}, but we have made several modifications to adapt it to our signal and noise model. For completeness, we provide the proof in Appendix \ref{apx:pf:I0I1}. 
-
-\begin{lemma}
-\label{part2}
-There exists numeric constants $C_0$ and $C_1$ such that
-\begin{align*}
-I_0 &\leq C_0 \left(\frac{k \tau}{n} + I_2 + \int_F{|\nu|(df)}\right) \\
-I_1 &\leq C_1 \left(\frac{k \tau}{n} + I_2 + \int_F{|\nu|(df)}\right).
-\end{align*}
-\end{lemma}
-
-All that remains to complete the proof is an upper bound on $I_2$ and $\int_F{|\nu|(df)}$.  The key idea in establishing such a bound is deriving upper and lower bounds on the
-difference $\| P_{T^c} ( \nu) \|_{{\mathrm{TV}}} - \| P_T ( \nu) \|_{{\mathrm{TV}}}$
-between the total variation norms of $\nu$ on and off the support. The upper bound can be derived using optimality conditions. We lower bound $\| P_{T^c} ( \nu)
-\|_{{\mathrm{TV}}} - \| P_{T} ( \nu) \|_{{\mathrm{TV}}}$ using the fact that a constructed dual
-certificate $Q$ has unit magnitude for every element in the support
-$T$ of $P_T ( \nu)$ whence we have $\| P_T ( \nu) \|_{{\mathrm{TV}}} = \int_{\mathbb{T}}
-Q ( f) \nu ( d f)$. A critical element in deriving both the lower and upper bounds is that the dual polynomial $Q$ has quadratic drop in each near regions $N_j$ and is bounded away from one in the far region $F$. Finally, by combing these bounds and carefully controlling the regularization parameter, we get the desired result summarized in the following lemma. The details of the proof are fairly technical and we leave them to Appendix \ref{apx:pf:I2far}.
-
-\begin{lemma}
-Let $\tau = \eta\sigma \sqrt{n\log(n)}$. If $\eta>1$ is large enough, then there exists a numerical constant $C$ such that, with high probability
-\label{part3}
-\[
-\int_F{|\nu|(df)} + I_2 \leq \frac{C k \tau}{n}.
-\]
-\end{lemma}
-
-Putting together Lemmas \ref{part1}, \ref{part2} and \ref{part3}, we finally prove our main theorem:
-\begin{align*}
-\frac{1}{n}\vnorm{e}_2^2 
-&\leq \frac{\vnorm{E(f)}_\infty}{n} \left(\int_F{|\nu|(df)} + I_0 + I_1 + I_2\right)\\
-&\leq \frac{\vnorm{E(f)}_\infty}{n} \left(\frac{C_1 k \tau}{n} + C_2 \int_F{|\nu|(df)} + C_3 I_2\right)\\
-&\leq  \frac{\vnorm{E(f)}_\infty}{n} \frac{C k \tau}{n} \\
-& \leq \frac{C k \tau^2}{n^2}\\
-&= O\left(\sigma^2\frac{k \log(n)}{n}\right).
-\end{align*}
-The first three inequalities come from successive applications of Lemmas 1, 2 and 3 respectively. The fourth inequality follows from \eqref{errbd} and the fifth by our choice of $\tau$ according to Eq. \eq{tau}. This completes the proof of Theorem \ref{main}.
-
-
-
-\subsection{Proof of Theorem~\ref{support}}
-\label{sec:support}
-The first two statements in Theorem \ref{support} are direct consequences of Lemma~\ref{part3}. For (iii.), we follow~\cite{granda2} and  use the dual polynomial $Q_j^{\star} ( f) = \langle q_j^{\star}, a ( f)\rangle$ constructed in Lemma 2.2 of~\cite{granda2} which satisfies
-\begin{eqnarray*}
-  Q_j^{\star} ( f_j) & = & 1\\
-  | 1 - Q_j^{\star} ( f) | & \leq & n^2 C_1' ( f - f_j)^2, f \in N_j\\
-  | Q_j^{\star} ( f) | & \leq & n^2 C_1' ( f - f_{j'})^2, f \in N_{j'}, j' \neq
-  j\\
-  | Q_j^{\star} ( f) | & \leq & C_2', f \in F.
-\end{eqnarray*}
-We note that $c_j - \sum_{\hat{f}_l \in N_j} \hat{c}_l = \int_{N_j} \nu(df)$. Then, by applying triangle inequality several times,
-\begin{align*}
-\left| \int_{N_j}  \nu(df)\right|
-& \leq \left| \int_{N_j}  Q_j^\star (f) \nu(df)\right| + \left| \int_{N_j}  (1-Q_j^\star (f)) \nu(df)\right|\\
-& \leq \left| \int_0^1  Q_j^\star (f) \nu(df)\right| + \left| \int_{N_j^c}  Q_j^\star (f) \nu(df)\right| + \left| \int_{N_j}  (1-Q_j^\star (f)) \nu(df)\right|\\
-& \leq \left|\int_0^1  Q_j^\star (f) \nu(df)\right| + \left| \int_{F}  Q_j^\star (f) \nu(df)\right| \\
-&\qquad\qquad\qquad + \sum_{\substack{j' \neq j\\j'=1}}^k \int_{N_{j'}} \left| Q_j^\star (f)\right| |\nu|(df) +  \int_{N_j}  \left|1-Q_j^\star (f)\right| |\nu(df)|\,.
-\end{align*}
-
-We upper bound the first term using Lemma~\ref{l4} in Appendix \ref{apx:collection} which yields
-\[
-\left| \int^0_{1}  Q_j^\star (f) \nu(df)\right| \leq \frac{Ck \tau}{n}
-\]
-The other terms can be controlled using the properties of $Q_j^\star$:
-\begin{align*}
-\left| \int_{F}  Q_j^\star (f) \nu(df)\right| & \leq C_2' \int_{F} |\nu| (df)\\
-\sum_{\substack{j' \neq j\\j'=1}}^k \int_{N_{j'}} \left| Q_j^\star (f)\right| |\nu|(df) +  \int_{N_j}  \left|1-Q_j^\star (f)\right| |\nu|(df)
-& \leq
- C_1'\sum_{j'=1}^k \int_{N_{j'}} n^2 (f-f_{j'})^2 |\nu|(df) = C_1 I_2
-\end{align*}
-Using Lemma~\ref{part3}, both of the above are upper bounded by $\frac{C k \tau}{n}$. Now, by combining these upper bounds, we finally have
-\[
-\left| c_j - \sum_{l : \hat{f}_l \in N_j} \hat{c}_l \right| \leq \frac{C_3 k \tau}{n}
-\]
-This shows part (iii) of the theorem. Part (iv) can be obtained by combining parts (ii) and (iii).
-
-\section{Unsorted Appendices}
-\subsection{Proof of Lemma \ref{part1}}\label{apx:pf:taylor}
+\begin{proof}\label{apx:pf:taylor}
 We first split the domain of integration into the near and far regions.
 \begin{align}
 \left |\int_0^1 X(f) \nu(df)\right | 
@@ -882,164 +670,37 @@ As a consequence, we have
 & \leq \|X(f)\|_\infty \left(I_0^j + I_1^j + I_2^j\right).
 \end{align*}
 Substituting back into \eqref{Xfbd} yields the desired result.
-
-\subsection{Some useful lemmas}
-\label{apx:collection}
-In addition to Theorem~\ref{dual-stab}, we recall another result in~\cite{cg_noisy} where the authors show the existence of a 
-trigonometric polynomial $Q_1$ that is linear in each $N_j$ which is also an essential ingredient in our proof.
-
-\begin{theorem}[Lemma 2.7 in~\cite{cg_noisy}]
-\label{dual-lin}
-For any $f_1, \ldots, f_k$ satisfying \eqref{min-sep} and any sign vector $v \in \C^k$ with $|v_j|=1$, there exists a polynomial $Q_1 = \left<q_1, a(f)\right>$ for some $q_1 \in \C^n$ with the following properties: 
-\begin{enumerate}
-\item For every $f \in N_j,$ there exists a numerical constant $C_a^1$ such that
-\begin{equation}
-\label{ca1}
-|Q_1(f) - v_j(f-f_j)| \leq \frac{n}{2} C_a^1 (f-f_j)^2
-\end{equation}
-\item For $f \in F$, there exists a numerical constant $C_b^1$ such that
-\begin{equation}
-\label{cb1}
-|Q_1(f)| \leq \frac{C_b^1}{n}.
-\end{equation}
-\end{enumerate}
-\end{theorem}
-
-We will also need the following straightforward consequence of the constructions of the polynomials in Theorem \ref{dual-stab}, Theorem \ref{dual-lin}, and Section \ref{sec:support}.
-\begin{lemma}
-\label{l1}
-There exists a numerical constant $C$ such that the constructed $Q(f)$ in Theorem \ref{dual-stab}, $Q_1(f)$ in Theorem \ref{dual-lin}, and $Q_j^\star(f)$ in Section \ref{sec:support} satisfy respectively
-\begin{align}
-\|Q(f)\|_1 &:= \int_0^1{| Q(f)| df} \leq \frac{C k}{n}\label{QL1}\\
-\| Q_1(f)\|_1 &\leq \frac{C k}{n^2}\label{Q1L1}\\
-\|Q_j^\star\|_1 & \leq \frac{Ck}{n}\label{QjL1}.
-\end{align}
-\end{lemma}
-\begin{proof}
-We will give a detailed proof of \eqref{QL1}, and list the necessary modifications for proving \eqref{Q1L1} and \eqref{QjL1}. The dual polynomial $Q(f)$ constructed in \cite{cg_exact12} is of the
-form
-\begin{eqnarray}
-  Q \left( f \right) & = & \sum_{f_j \in T} \alpha_j K \left( f - f_j \right)
-  + \sum_{f_j \in T} \beta_j K' \left( f - f_j \right) \label{formofQ}
-\end{eqnarray}
-where $K \left( f \right)$ is the squared Fej\'er kernel (recall that $m = (n-1)/2$)
-\begin{eqnarray*}
-  K \left( f \right) & = & \left( \frac{\sin \left( \left( \frac{m}{2} + 1
-  \right) \pi f \right)}{\left( \frac{m}{2} + 1 \right) \sin \left( \pi f
-  \right)} \right)^4
-\end{eqnarray*}
- and for $n \geq 257$, the coefficients
-$\alpha \in \C^k$ and $\beta \in \C^k$ satisfy \cite[Lemma 2.2]{cg_exact12}
-\begin{eqnarray*}
-  \left\| \alpha \right\|_{\infty} & \leq & C_\alpha\\
-  \left\| \beta \right\|_{\infty} & \leq & \frac{C_\beta}{n} 
-\end{eqnarray*}
-for some numerical constants $C_\alpha$ and $C_\beta$. 
-Using \eqref{formofQ} and triangle inequality, we bound $\|Q(f)\|_1$ as follows: 
-\begin{eqnarray}
-  \|Q(f)\|_1 &=& \int_0^1 \left| Q \left( f \right) \right| d f\nonumber\\
-  &\leq & k \left\| \alpha \right\|_\infty \int_0^1 \left| K \left( f\right) \right| d f + k \left\| \beta \right\|_\infty \int_0^1 \left| K' \left( f\right) \right| d f\label{Qbdgeneral1}\\
-  & \leq & C_\alpha k \int_0^1 \left| K \left(f\right) \right| d f + \frac{C_\beta}{n} k \int_0^1 \left|K'(f)\right|d f \label{Q1bd},
- \end{eqnarray}
- 
-To continue, note that $\int_0^1 | K ( f) | d  f = \int_0^1 | G ( f) |^2 d
- f =: \|G(f)\|_2^2$ where $G ( f)$ is the Fej\'er kernel, since $K(f)$ is the squared
-Fej\'er kernel. We can write
-\begin{eqnarray}
-  G ( f)  =  \left( \frac{\sin \left( \pi \left( \frac{m}{2} + 1 \right) f
-  \right)}{\left( \frac{m}{2} + 1 \right) \sin ( \pi f)} \right)^2
-   =  \sum_{l = - m / 2}^{m / 2} g_l e^{- i 2 \pi f l}\label{expressionG}
-\end{eqnarray}
-where $g_l = \left( \frac{m}{2} + 1 - | l | \right) / \left( \frac{m}{2} + 1
-\right)^2$. Now, by using Parseval's identity, we obtain
-\begin{eqnarray}
- \int_0^1 |K(f)| df & = & \int_0^1 | G ( f) |^2 d f
-  =  \sum_{l = - m / 2}^{m / 2} | g_l |^2\nonumber\\
-  & = & \frac{1}{\left( \frac{m}{2} + 1 \right)^4} \left( \left( \frac{m}{2}
-  + 1 \right)^2 + 2 \sum_{l = 1}^{m / 2} \left( \frac{m}{2} + 1 - l \right)^2
-  \right)\nonumber\\
-  & = & \frac{1}{\left( \frac{m}{2} + 1 \right)^4} \left( \left( \frac{m}{2}
-  + 1 \right)^2 + 2 \sum_{l = 1}^{m / 2} l^2 \right)\nonumber\\
-  & \leq & \frac{C}{n}\label{bdKf}
-\end{eqnarray}
-for some numerical constant $C$ when $n = 2 m + 1 \geq 10$.
-
-Now let us turn our attention to $\int_0^1 | K' (
-f) | d  f$. Since $K ( f) = G ( f)^2$, we have
-\begin{eqnarray}
-  \int_0^1 | K' ( f) | d  f  =  2\int_0^1 | G ( f) G' ( f) | d
-   f
-   \leq  2\| G ( f) \|_2 \| G' ( f) \|_2\label{eq:holder-int}
-\end{eqnarray}
-We have already established that $\| G ( f) \|_2^2 \leq C / {n}$ and we
-will now show that $\| G' ( f) \|_2^2 \leq C' {n}$. Differentiating the
-expression for $G(f)$ in \eqref{expressionG}, we get
-\begin{eqnarray*}
-  G' ( f) & = & -2 \pi i \sum_{l = - m / 2}^{m / 2} l g_l e^{- i 2 \pi f l}
-\end{eqnarray*}
-Therefore, by applying Parseval's identity again, we get
-\begin{eqnarray*}
-  \| G' ( f) \|_2^2 
-  & = & 4 \pi^2 \sum_{l = - m / 2}^{m / 2} l^2 | g_l |^2\\
-  & \leq &  \pi^2 m^2 \sum_{l = - m / 2}^{m / 2} | g_l |^2\\
-  & \leq & C' n
-\end{eqnarray*}
-Plugging back into \eqref{eq:holder-int} yields
-\begin{align}
-\int_0^1 |K'(f)| df \leq C \label{bdK1f}
-\end{align}
-for some constant $C$. Combining \eqref{bdK1f} and \eqref{bdKf} with \eqref{Q1bd} gives the desired result in \eqref{QL1}.
-
-
-
-The dual polynomial $Q_1(f)$ is also of the form \eqref{formofQ} with coefficient vectors $\alpha_1$ and $\beta_1$, which satisfy \cite[Proof of Lemma 2.7]{cg_noisy}
-\begin{align*}
-\|\alpha_1\|_\infty \leq \frac{C_{\alpha_1}}{n},\\
-\|\beta_1\|_\infty \leq \frac{C_{\beta_1}}{n^2}.
-\end{align*}
-Combining the above two bounds with \eqref{Qbdgeneral1}, \eqref{bdK1f} and \eqref{bdKf} gives the desired result in \eqref{Q1L1}.
-
-The last polynomial $Q_j^\star$ also has the form \eqref{formofQ} with coefficient vectors $\alpha^\star$ and $\beta^\star$. According to \cite[Proof of Lemma 2.2]{granda2}, these coefficients satisfy
-\begin{align*}
-\|\alpha^\star\|_\infty \leq {C_{\alpha_\star}},\\
-\|\beta_\star\|_\infty \leq \frac{C_{\beta_\star}}{n},
-\end{align*}
-which yields \eqref{QjL1} following the same argument leading to \eqref{QL1}. 
-
-\end{proof}
-
-Using Lemma \ref{l1}, we can derive the estimates we need in the following lemma.
-\begin{lemma}
-\label{l4}
-Let $\nu = \hat{\mu} - \mu$ be the difference measure. Then, there exists numerical constant $C>0$ such that
-\begin{align}
-\label{qv}\left| \int_0^1 Q(f) \nu(df) \right| &\leq \frac{C k \tau}{n}\\
-\label{q1v}\left| \int_0^1 Q_1(f) \nu(df) \right| &\leq \frac{C k \tau}{n^2}\\
-\label{qjv} \left| \int_0^1 Q_j^\star(f) \nu(df) \right| & \leq \frac{Ck\tau}{n}.
-\end{align}
-\end{lemma}
-\begin{proof}
-Let $Q_0 = \langle q_0, a(f) \rangle $ be a general trigonometric polynomial associated with $q_0 \in \C^n$. Then,
-\begin{align*}
-\left|\int_0^1 Q_0(f) \nu(df) \right| 
-& = \left|\int_0^1 \langle q_0 , a(f) \rangle  \nu(df) \right|\\
-& = \left|\langle q_0,  \int_0^1  a(f)  \nu(df) \rangle\right|\\
-& = \left|\langle q_0, e \rangle\right|\\
-& = \left|\langle Q_0(f), E(f) \rangle\right|\\
-& \leq \vnorm{Q_0(f)}_1 \vnorm{E(f)}_\infty\,.
-\end{align*}
-Here we use Parseval's identity in the second to last step and H\"{o}lder's inequality in the last inequality. Then, the result follows by using Lemma~\ref{l1} and \eqref{errbd}.
 \end{proof}
 
 
-We also need the following consequence of the optimality condition of AST from~\cite[Lemma 2]{btr12}:
-\begin{prop}\label{pro:optimality}
-\begin{align}
-\tau \vnorm{\hat{x}}_\A \leq \tau \vnorm{x^\star}_\A + \langle w, \hat{x} - x^\star \rangle
-\end{align}
-\end{prop}
+Applying Lemma \ref{part1} to the error function, we get
+\begin{equation}
+\label{ebd}
+\vnorm{e}_2^2 \leq \vnorm{E(f)}_\infty 
+\left( \int_F{|\nu|(df)} + I_0 + I_1 + I_2\right)
+\end{equation}
+As a consequence of our choice of $\tau$ in \eq{tau}, we can show that $\vnorm{E(f)}_\infty \leq (1+2\eta^{-1})\tau$ with high probability. In fact, we have
+\begin{align*}
+\vnorm{E(f)}_\infty &= \sup_{f \in [0,1]}\left|\langle e, a(f) \rangle\right|\\
+&= \sup_{f \in [0,1]} \left| \langle x^\star - \hat{x}, a(f) \rangle\right|\\
+&\leq \sup_{f \in [0,1]} \left| \langle w, a(f) \rangle \right| +  \sup_{f \in [0,1]} \left| \langle y - \hat{x}, a(f) \rangle \right|\\
+&\leq \sup_{f \in [0,1]} \left| \langle w, a(f) \rangle \right| +  \tau\\
+\label{errbd} \numberthis &\leq (1 +2\eta^{-1})\tau \leq 3 \tau, \text{with high probability.}
+\end{align*}
+The second inequality follows from the optimality conditions for \eqref{atnorm-denoise}. It is shown in Appendix C of ~\cite{btr12} that the penultimate inequality holds with high probability.
 
-\subsection{Proof of Lemma \ref{part2}}\label{apx:pf:I0I1}
+Therefore, to complete the proof, it suffices to show that the other terms on the right hand side of \eqref{ebd} are $O(\frac{k\tau}{n})$.  While there is no exact frequency recovery in the presence of noise, we can hope to get the frequencies approximately right. Hence, we expect that the integral in the far region can be well controlled and the local integrals of the difference measure in the near regions are also small due to cancellations. Next, we utilize the properties of the dual polynomial in Theorems~\ref{dual-stab} and another polynomial given in Theorem~\ref{dual-lin}  in Appendix \ref{apx:collection} to show that the zeroth and first moments of $\nu$ may be controlled in terms of the other two quantities in \eqref{ebd} to upper bound the error rate. The following lemma is similar to Lemmas 2.2 and 2.3 in~\cite{cg_noisy}, but we have made several modifications to adapt it to our signal and noise model. For completeness, we provide the proof in Appendix \ref{apx:pf:I0I1}. 
+
+\begin{lemma}
+\label{part2}
+There exists numeric constants $C_0$ and $C_1$ such that
+\begin{align*}
+I_0 &\leq C_0 \left(\frac{k \tau}{n} + I_2 + \int_F{|\nu|(df)}\right) \\
+I_1 &\leq C_1 \left(\frac{k \tau}{n} + I_2 + \int_F{|\nu|(df)}\right).
+\end{align*}
+\end{lemma}
+\begin{proof}
+\label{apx:pf:I0I1}
 Consider the polar form
 \[
   \int_{N_j} \nu ( df)  =  \left| \int_{N_j} \nu ( df) \right| e^{i \theta_j} .
@@ -1085,10 +746,24 @@ Summing over $j=1,\ldots,k$ yields
 \end{align}
 }
 For the first inequality, we have used \eqref{ca1} and triangle inequality, and for the last inequality, we have used \eqref{q1v} and \eqref{cb1}. Equations \eqref{i0} and \eqref{i1} complete the proof.
+\end{proof}	
 
+All that remains to complete the proof is an upper bound on $I_2$ and $\int_F{|\nu|(df)}$.  The key idea in establishing such a bound is deriving upper and lower bounds on the
+difference $\| P_{T^c} ( \nu) \|_{{\mathrm{TV}}} - \| P_T ( \nu) \|_{{\mathrm{TV}}}$
+between the total variation norms of $\nu$ on and off the support. The upper bound can be derived using optimality conditions. We lower bound $\| P_{T^c} ( \nu)
+\|_{{\mathrm{TV}}} - \| P_{T} ( \nu) \|_{{\mathrm{TV}}}$ using the fact that a constructed dual
+certificate $Q$ has unit magnitude for every element in the support
+$T$ of $P_T ( \nu)$ whence we have $\| P_T ( \nu) \|_{{\mathrm{TV}}} = \int_{\mathbb{T}}
+Q ( f) \nu ( d f)$. A critical element in deriving both the lower and upper bounds is that the dual polynomial $Q$ has quadratic drop in each near regions $N_j$ and is bounded away from one in the far region $F$. Finally, by combing these bounds and carefully controlling the regularization parameter, we get the desired result summarized in the following lemma. The details of the proof are fairly technical and we leave them to Appendix \ref{apx:pf:I2far}.
 
-\subsection{Proof of Lemma \ref{part3}}
-\label{apx:pf:I2far}
+\begin{lemma}
+Let $\tau = \eta\sigma \sqrt{n\log(n)}$. If $\eta>1$ is large enough, then there exists a numerical constant $C$ such that, with high probability
+\label{part3}
+\[
+\int_F{|\nu|(df)} + I_2 \leq \frac{C k \tau}{n}.
+\]
+\end{lemma}
+\begin{proof}\label{apx:pf:I2far}
 Denote by $P_T(\nu)$ the projection of the difference measure $\nu$ on the support set $T = \{f_1, \ldots, f_k\}$ of $x^\star$ so that $P_T(\nu)$ is supported on $T$. Then, setting $Q(f)$ the polynomial in Theorem \ref{dual-stab} that interpolates the sign of $P_T( \nu)$, we have
 {
 \begin{align*}
@@ -1165,6 +840,196 @@ As a consequence of \eqref{eqn:lower} and \eqref{eqn:upper}, we get,
   C(1+\eta^{-1}) \frac{k \tau}{n} \geq  ( C_b - \eta^{-1} C)  \int_F{|\nu|(df)} + ( C_a - \eta^{-1} C)I_2
 \]
 whence the result follows for large enough $\eta.$
+\end{proof}
+
+Putting together Lemmas \ref{part1}, \ref{part2} and \ref{part3}, we finally prove our main theorem:
+\begin{align*}
+\frac{1}{n}\vnorm{e}_2^2 
+&\leq \frac{\vnorm{E(f)}_\infty}{n} \left(\int_F{|\nu|(df)} + I_0 + I_1 + I_2\right)\\
+&\leq \frac{\vnorm{E(f)}_\infty}{n} \left(\frac{C_1 k \tau}{n} + C_2 \int_F{|\nu|(df)} + C_3 I_2\right)\\
+&\leq  \frac{\vnorm{E(f)}_\infty}{n} \frac{C k \tau}{n} \\
+& \leq \frac{C k \tau^2}{n^2}\\
+&= O\left(\sigma^2\frac{k \log(n)}{n}\right).
+\end{align*}
+The first three inequalities come from successive applications of Lemmas 1, 2 and 3 respectively. The fourth inequality follows from \eqref{errbd} and the fifth by our choice of $\tau$ according to Eq. \eq{tau}. This completes the proof of Theorem \ref{main}.
+
+
+
+\subsection{Proof of Theorem~\ref{support}}
+\label{sec:support}
+The first two statements in Theorem \ref{support} are direct consequences of Lemma~\ref{part3}. For (iii.), we follow~\cite{granda2} and  use the dual polynomial $Q_j^{\star} ( f) = \langle q_j^{\star}, a ( f)\rangle$ constructed in Lemma 2.2 of~\cite{granda2} which satisfies
+\begin{eqnarray*}
+  Q_j^{\star} ( f_j) & = & 1\\
+  | 1 - Q_j^{\star} ( f) | & \leq & n^2 C_1' ( f - f_j)^2, f \in N_j\\
+  | Q_j^{\star} ( f) | & \leq & n^2 C_1' ( f - f_{j'})^2, f \in N_{j'}, j' \neq
+  j\\
+  | Q_j^{\star} ( f) | & \leq & C_2', f \in F.
+\end{eqnarray*}
+We note that $c_j - \sum_{\hat{f}_l \in N_j} \hat{c}_l = \int_{N_j} \nu(df)$. Then, by applying triangle inequality several times,
+\begin{align*}
+\left| \int_{N_j}  \nu(df)\right|
+& \leq \left| \int_{N_j}  Q_j^\star (f) \nu(df)\right| + \left| \int_{N_j}  (1-Q_j^\star (f)) \nu(df)\right|\\
+& \leq \left| \int_0^1  Q_j^\star (f) \nu(df)\right| + \left| \int_{N_j^c}  Q_j^\star (f) \nu(df)\right| + \left| \int_{N_j}  (1-Q_j^\star (f)) \nu(df)\right|\\
+& \leq \left|\int_0^1  Q_j^\star (f) \nu(df)\right| + \left| \int_{F}  Q_j^\star (f) \nu(df)\right| \\
+&\qquad\qquad\qquad + \sum_{\substack{j' \neq j\\j'=1}}^k \int_{N_{j'}} \left| Q_j^\star (f)\right| |\nu|(df) +  \int_{N_j}  \left|1-Q_j^\star (f)\right| |\nu(df)|\,.
+\end{align*}
+
+We upper bound the first term using Lemma~\ref{l4} in Appendix \ref{apx:collection} which yields
+\[
+\left| \int^0_{1}  Q_j^\star (f) \nu(df)\right| \leq \frac{Ck \tau}{n}
+\]
+The other terms can be controlled using the properties of $Q_j^\star$:
+\begin{align*}
+\left| \int_{F}  Q_j^\star (f) \nu(df)\right| & \leq C_2' \int_{F} |\nu| (df)\\
+\sum_{\substack{j' \neq j\\j'=1}}^k \int_{N_{j'}} \left| Q_j^\star (f)\right| |\nu|(df) +  \int_{N_j}  \left|1-Q_j^\star (f)\right| |\nu|(df)
+& \leq
+ C_1'\sum_{j'=1}^k \int_{N_{j'}} n^2 (f-f_{j'})^2 |\nu|(df) = C_1 I_2
+\end{align*}
+Using Lemma~\ref{part3}, both of the above are upper bounded by $\frac{C k \tau}{n}$. Now, by combining these upper bounds, we finally have
+\[
+\left| c_j - \sum_{l : \hat{f}_l \in N_j} \hat{c}_l \right| \leq \frac{C_3 k \tau}{n}
+\]
+This shows part (iii) of the theorem. Part (iv) can be obtained by combining parts (ii) and (iii).
+
+
+\section{Related Work}
+\label{sec:prony-method}
+
+% \todo{Reduce Prony}
+% \todo{Prony, Music, Cadzow, Matrix Pencil only 1 para}
+% \todo{Discretization Malioutov and Basis Mismatch}
+% \todo{Candes}
+
+% This
+% technique is attributed to Prony in the eighteenth century.
+
+The classical methods of line spectral estimation, often called linear
+prediction methods, are built upon the seminal interpolation method of
+Prony~\cite{prony1795}. In the noiseless case, with as little as $n=2k$
+measurements, Prony's technique can identify the frequencies exactly, no matter
+how close the frequencies are. However, Prony's technique is known to be
+sensitive to noise due to instability of polynomial rooting~\cite{kahn92}.
+Following Prony, several methods have been employed to robustify polynomial
+rooting method including the Matrix Pencil algorithm~\cite{hua02}, which
+recasts the polynomial rooting as a generalized eigenvalue problem and cleverly
+uses extra observations to guard against noise. The MUSIC~\cite{music} and
+ESPRIT~\cite{esprit} algorithms exploit the low rank structure of the
+autocorrelation matrix.
+
+
+Cadzow~\cite{cadzow02} proposed a heuristic that improves over MUSIC by 
+exploiting the Toeplitz structure of the matric of moments by alternately
+projecting between the linear space of Toeplitz matrices and the space of rank
+$k$ matrices where $k$ is the desired model order.
+Cadzow's technique is very similar~\cite{ssa_special_issue} to a popular
+technique in time series literature~\cite{tsbook1,tsbook2} called Singular
+Spectrum Analysis~\cite{ssa}, which uses autocorrelation matrix instead
+of the matrix of moments for projection. Both these techniques may be viewed as
+instances of structured low rank approximation~\cite{chu2003structured} which
+exploit additional structure beyond low rank structure used in subspace based
+methods such as MUSIC and ESPRIT. Cadzow's method has been identified as a  fruitful preprocessing step for linear prediction methods~\cite{blu08}. A  survey of classical linear prediction methods can be found in~\cite{blu08,StoicaMoses} and an extensive list of references is given in~\cite{stoica93}.
+
+Most, if not all of the linear prediction methods need to estimate the model
+order by employing some heuristic and the performance of the algorithm is
+sensitive to the model order. In contrast, our algorithms AST and the Lasso
+based method, only need a rough estimate of the noise variance. In our experiments, we provide
+the true model order to Matrix Pencil, MUSIC and Cadzow methods, while we use
+the estimate of noise variance for AST and Lasso methods, and still compare favorably to the classical line spectral methods.
+
+In contrast to linear prediction methods, a number of authors
+~\cite{chen98spectrum,malioutov05,bourguignon2007irregular}
+have suggested using compressive sensing and viewing the frequency estimation
+as a sparse approximation problem. For instance,~\cite{malioutov05} notes that
+the Lasso based method has better empirical localization performance than the
+popular MUSIC algorithm. However, the theoretical analysis of this phenomenon
+is complicated because of the need to replace the continuous frequency space by
+an oversampled frequency grid. Compressive sensing based results (see, for
+instance,~\cite{duartescs}) need to carefully control the incoherence of their
+linear maps to apply off-the-shelf tools from compressed sensing. It is
+important to note that the performance of our algorithm improves as the grid
+size increases. But this seems to contradict conventional wisdom in compressed
+sensing because our design matrix $\Phi$ becomes more and more coherent, and
+limits how fine we can grid for the theoretical guarantees to hold.
+
+We circumvent the problems in the conventional compresssive sensing analysis by
+directly working in the continuous parameter space and hence step away from
+such notions as coherence, focussing on the geometry of the atomic set as the
+critical feature. By showing that the continuous approach is the limiting
+case of  the Lasso based methods using the convergence of the corresponding
+atomic norms, we justify denoising line spectral signals using Lasso on a
+large grid. Since the original submission of this manuscript,
+Cand\`es and Fernandez-Granda~\cite{CandesGranda} showed that our SDP
+formulation exactly recovers the correct frequencies in the noiseless case.
+
+To date, line spectral analysis may be broadly classified into two camps.
+\emph{Subspace methods}~\cite{music,esprit,cadzow05,ssa} build upon polynomial
+interpolation~\cite{prony1795} and exploit certain low rank structure in the
+spectrum estimation problem for denoising. Research on subspace approaches has
+yielded several standard algorithms that are widely deployed and shown to
+achieve Cram\'{e}r-Rao bound asymptotically~\cite{fri,cramer-subspace}.
+However, the sensitivity to noise and model order is not well understood, and
+there are few guarantees of how these algorithms perform given a limited number
+of noisy measurements. For a review of many of these classical approaches, see
+for example~\cite{StoicaMoses}.
+
+More recently, approaches based on convex optimization have gained favor and
+have been demonstrated to perform well on a variety of spectrum estimation
+tasks~\cite{malioutov05,bourguignon2007irregular,baraniuk2010model,zweig2003irregular}. These convex programming methods restrict the frequencies to lie on a
+finite grid of points and view line spectral signals as a sparse combination of
+single frequencies. While these methods are reported to have significantly
+better localization properties than subspace methods (see for
+example,~\cite{malioutov05}) and admit fast and robust algorithms, they have
+two significant drawbacks. First, while finer gridding may lead to better
+performance, very fine grids are often numerically unstable. Furthermore,
+traditional compressed sensing theory does not adequately characterize the
+performance of fine gridding in these algorithms as the dictionary becomes
+highly coherent.
+
+Some very recent work~\cite{btr12,cg_exact12,cg_noisy} bridges the gap between
+the performant discretized algorithms and continuous subspace approaches by
+developing a new theory of convex relaxations for infinite continuous
+dictionary of frequencies. Our work in~\cite{btr12} applies the atomic norm
+framework proposed by Chandrasekaran et al~\cite{crpw} to the line spectral
+estimation problem. There, we established stability results on the denoising
+error and demonstrated empirically that our algorithm compared favorably with
+both the classical and recent convex approaches which assume the frequencies
+are on an oversampled DFT grid. Our prior results made no assumption about the
+separation between frequencies. When the frequencies are well separated, the
+current work demonstrates that much faster convergence rates are achieved.
+
+Our work is closely related to recent results established by Cand\`es and
+Fernandez-Granda~\cite{cg_exact12} on exact recovery using convex methods and
+their recent work~\cite{cg_noisy} on exploiting the robustness of their dual
+polynomial construction to show super-resolution properties of convex methods.
+The total variation norm formulation used in~\cite{cg_noisy} is equivalent to
+the atomic norm specialized to the line spectral estimation problem.
+
+Robustness bounds were established in both our earlier work~\cite{btr12} and in
+the work of Cand\`es and Fernandez-Granda~\cite{cg_noisy}. In~\cite{btr12}, a
+slow convergence rate was established with no assumptions about the separation
+of frequencies in the true signal. In~\cite{cg_noisy}, the authors provide
+guarantees on the $L_1$ energy of error in the frequency domain in the case
+that the frequencies are well separated. The noise is assumed to be adversarial
+with a small $L_1$ spectral energy. In contrast, we show near minimax
+denoising error under Gaussian noise. It is also not clear that there is a
+computable formulation for the optimization problem analyzed
+in~\cite{cg_noisy}. While the guarantees the authors derive in~\cite{cg_noisy}
+are not comparable with our results, several of their mathematical
+constructions are used in our proofs here.
+
+Additional recent work derives conditions for approximate support recovery
+under the Gaussian noise model using the Beurling-Lasso ~\cite{azais}. There,
+the authors show that there is a true frequency in the neighborhood of every
+estimated frequency with large enough amplitude. We note that the
+Beurling-Lasso is equivalent to the atomic norm algorithm that we analyze in
+this chapter. A more recent paper by Fernandez-Granda{\cite{granda2}} improves
+this result by giving conditions on recoverability in terms of the true signal
+instead of the estimated signal and prove a theorem similar to
+Theorem~\ref{support}, but use a worst case $L_2$ bound on the noise samples.
+Here, we improve these recent results in our proof of Theorem~\ref{support},
+providing tighter guarantees under the Gaussian noise model.
+ 
+
 
 \section{Experiments}
 \label{sec:experiments}
@@ -1438,3 +1303,167 @@ and frequency shifted versions of some known signal. It remains to be seen what
 new insights in statistical signal processing can be gleaned from our unified
 approach to denoising.
 
+\begin{subappendices} % (fold)
+	
+\section{Appendix}
+\label{apx:collection}
+
+In this section, we collect useful results from previous work which we use in
+our analysis. In addition to Theorem~\ref{dual-stab}, we recall another result
+in~\cite{cg_noisy} where the authors show the existence of a trigonometric
+polynomial $Q_1$ that is linear in each $N_j$ which is also an essential
+ingredient in our proof.
+
+\begin{theorem}[Lemma 2.7 in~\cite{cg_noisy}]
+\label{dual-lin}
+For any $f_1, \ldots, f_k$ satisfying \eqref{min-sep} and any sign vector $v \in \C^k$ with $|v_j|=1$, there exists a polynomial $Q_1 = \left<q_1, a(f)\right>$ for some $q_1 \in \C^n$ with the following properties: 
+\begin{enumerate}
+\item For every $f \in N_j,$ there exists a numerical constant $C_a^1$ such that
+\begin{equation}
+\label{ca1}
+|Q_1(f) - v_j(f-f_j)| \leq \frac{n}{2} C_a^1 (f-f_j)^2
+\end{equation}
+\item For $f \in F$, there exists a numerical constant $C_b^1$ such that
+\begin{equation}
+\label{cb1}
+|Q_1(f)| \leq \frac{C_b^1}{n}.
+\end{equation}
+\end{enumerate}
+\end{theorem}
+
+We will also need the following straightforward consequence of the constructions of the polynomials in Theorem \ref{dual-stab}, Theorem \ref{dual-lin}, and Section \ref{sec:support}.
+\begin{lemma}
+\label{l1}
+There exists a numerical constant $C$ such that the constructed $Q(f)$ in Theorem \ref{dual-stab}, $Q_1(f)$ in Theorem \ref{dual-lin}, and $Q_j^\star(f)$ in Section \ref{sec:support} satisfy respectively
+\begin{align}
+\|Q(f)\|_1 &:= \int_0^1{| Q(f)| df} \leq \frac{C k}{n}\label{QL1}\\
+\| Q_1(f)\|_1 &\leq \frac{C k}{n^2}\label{Q1L1}\\
+\|Q_j^\star\|_1 & \leq \frac{Ck}{n}\label{QjL1}.
+\end{align}
+\end{lemma}
+\begin{proof}
+We will give a detailed proof of \eqref{QL1}, and list the necessary modifications for proving \eqref{Q1L1} and \eqref{QjL1}. The dual polynomial $Q(f)$ constructed in \cite{cg_exact12} is of the
+form
+\begin{eqnarray}
+  Q \left( f \right) & = & \sum_{f_j \in T} \alpha_j K \left( f - f_j \right)
+  + \sum_{f_j \in T} \beta_j K' \left( f - f_j \right) \label{formofQ}
+\end{eqnarray}
+where $K \left( f \right)$ is the squared Fej\'er kernel (recall that $m = (n-1)/2$)
+\begin{eqnarray*}
+  K \left( f \right) & = & \left( \frac{\sin \left( \left( \frac{m}{2} + 1
+  \right) \pi f \right)}{\left( \frac{m}{2} + 1 \right) \sin \left( \pi f
+  \right)} \right)^4
+\end{eqnarray*}
+ and for $n \geq 257$, the coefficients
+$\alpha \in \C^k$ and $\beta \in \C^k$ satisfy \cite[Lemma 2.2]{cg_exact12}
+\begin{eqnarray*}
+  \left\| \alpha \right\|_{\infty} & \leq & C_\alpha\\
+  \left\| \beta \right\|_{\infty} & \leq & \frac{C_\beta}{n} 
+\end{eqnarray*}
+for some numerical constants $C_\alpha$ and $C_\beta$. 
+Using \eqref{formofQ} and triangle inequality, we bound $\|Q(f)\|_1$ as follows: 
+\begin{eqnarray}
+  \|Q(f)\|_1 &=& \int_0^1 \left| Q \left( f \right) \right| d f\nonumber\\
+  &\leq & k \left\| \alpha \right\|_\infty \int_0^1 \left| K \left( f\right) \right| d f + k \left\| \beta \right\|_\infty \int_0^1 \left| K' \left( f\right) \right| d f\label{Qbdgeneral1}\\
+  & \leq & C_\alpha k \int_0^1 \left| K \left(f\right) \right| d f + \frac{C_\beta}{n} k \int_0^1 \left|K'(f)\right|d f \label{Q1bd},
+ \end{eqnarray}
+ 
+To continue, note that $\int_0^1 | K ( f) | d  f = \int_0^1 | G ( f) |^2 d
+ f =: \|G(f)\|_2^2$ where $G ( f)$ is the Fej\'er kernel, since $K(f)$ is the squared
+Fej\'er kernel. We can write
+\begin{eqnarray}
+  G ( f)  =  \left( \frac{\sin \left( \pi \left( \frac{m}{2} + 1 \right) f
+  \right)}{\left( \frac{m}{2} + 1 \right) \sin ( \pi f)} \right)^2
+   =  \sum_{l = - m / 2}^{m / 2} g_l e^{- i 2 \pi f l}\label{expressionG}
+\end{eqnarray}
+where $g_l = \left( \frac{m}{2} + 1 - | l | \right) / \left( \frac{m}{2} + 1
+\right)^2$. Now, by using Parseval's identity, we obtain
+\begin{eqnarray}
+ \int_0^1 |K(f)| df & = & \int_0^1 | G ( f) |^2 d f
+  =  \sum_{l = - m / 2}^{m / 2} | g_l |^2\nonumber\\
+  & = & \frac{1}{\left( \frac{m}{2} + 1 \right)^4} \left( \left( \frac{m}{2}
+  + 1 \right)^2 + 2 \sum_{l = 1}^{m / 2} \left( \frac{m}{2} + 1 - l \right)^2
+  \right)\nonumber\\
+  & = & \frac{1}{\left( \frac{m}{2} + 1 \right)^4} \left( \left( \frac{m}{2}
+  + 1 \right)^2 + 2 \sum_{l = 1}^{m / 2} l^2 \right)\nonumber\\
+  & \leq & \frac{C}{n}\label{bdKf}
+\end{eqnarray}
+for some numerical constant $C$ when $n = 2 m + 1 \geq 10$.
+
+Now let us turn our attention to $\int_0^1 | K' (
+f) | d  f$. Since $K ( f) = G ( f)^2$, we have
+\begin{eqnarray}
+  \int_0^1 | K' ( f) | d  f  =  2\int_0^1 | G ( f) G' ( f) | d
+   f
+   \leq  2\| G ( f) \|_2 \| G' ( f) \|_2\label{eq:holder-int}
+\end{eqnarray}
+We have already established that $\| G ( f) \|_2^2 \leq C / {n}$ and we
+will now show that $\| G' ( f) \|_2^2 \leq C' {n}$. Differentiating the
+expression for $G(f)$ in \eqref{expressionG}, we get
+\begin{eqnarray*}
+  G' ( f) & = & -2 \pi i \sum_{l = - m / 2}^{m / 2} l g_l e^{- i 2 \pi f l}
+\end{eqnarray*}
+Therefore, by applying Parseval's identity again, we get
+\begin{eqnarray*}
+  \| G' ( f) \|_2^2 
+  & = & 4 \pi^2 \sum_{l = - m / 2}^{m / 2} l^2 | g_l |^2\\
+  & \leq &  \pi^2 m^2 \sum_{l = - m / 2}^{m / 2} | g_l |^2\\
+  & \leq & C' n
+\end{eqnarray*}
+Plugging back into \eqref{eq:holder-int} yields
+\begin{align}
+\int_0^1 |K'(f)| df \leq C \label{bdK1f}
+\end{align}
+for some constant $C$. Combining \eqref{bdK1f} and \eqref{bdKf} with \eqref{Q1bd} gives the desired result in \eqref{QL1}.
+
+
+
+The dual polynomial $Q_1(f)$ is also of the form \eqref{formofQ} with coefficient vectors $\alpha_1$ and $\beta_1$, which satisfy \cite[Proof of Lemma 2.7]{cg_noisy}
+\begin{align*}
+\|\alpha_1\|_\infty \leq \frac{C_{\alpha_1}}{n},\\
+\|\beta_1\|_\infty \leq \frac{C_{\beta_1}}{n^2}.
+\end{align*}
+Combining the above two bounds with \eqref{Qbdgeneral1}, \eqref{bdK1f} and \eqref{bdKf} gives the desired result in \eqref{Q1L1}.
+
+The last polynomial $Q_j^\star$ also has the form \eqref{formofQ} with coefficient vectors $\alpha^\star$ and $\beta^\star$. According to \cite[Proof of Lemma 2.2]{granda2}, these coefficients satisfy
+\begin{align*}
+\|\alpha^\star\|_\infty \leq {C_{\alpha_\star}},\\
+\|\beta_\star\|_\infty \leq \frac{C_{\beta_\star}}{n},
+\end{align*}
+which yields \eqref{QjL1} following the same argument leading to \eqref{QL1}. 
+
+\end{proof}
+
+Using Lemma \ref{l1}, we can derive the estimates we need in the following lemma.
+\begin{lemma}
+\label{l4}
+Let $\nu = \hat{\mu} - \mu$ be the difference measure. Then, there exists numerical constant $C>0$ such that
+\begin{align}
+\label{qv}\left| \int_0^1 Q(f) \nu(df) \right| &\leq \frac{C k \tau}{n}\\
+\label{q1v}\left| \int_0^1 Q_1(f) \nu(df) \right| &\leq \frac{C k \tau}{n^2}\\
+\label{qjv} \left| \int_0^1 Q_j^\star(f) \nu(df) \right| & \leq \frac{Ck\tau}{n}.
+\end{align}
+\end{lemma}
+\begin{proof}
+Let $Q_0 = \langle q_0, a(f) \rangle $ be a general trigonometric polynomial associated with $q_0 \in \C^n$. Then,
+\begin{align*}
+\left|\int_0^1 Q_0(f) \nu(df) \right| 
+& = \left|\int_0^1 \langle q_0 , a(f) \rangle  \nu(df) \right|\\
+& = \left|\langle q_0,  \int_0^1  a(f)  \nu(df) \rangle\right|\\
+& = \left|\langle q_0, e \rangle\right|\\
+& = \left|\langle Q_0(f), E(f) \rangle\right|\\
+& \leq \vnorm{Q_0(f)}_1 \vnorm{E(f)}_\infty\,.
+\end{align*}
+Here we use Parseval's identity in the second to last step and H\"{o}lder's inequality in the last inequality. Then, the result follows by using Lemma~\ref{l1} and \eqref{errbd}.
+\end{proof}
+
+
+We also need the following consequence of the optimality condition of AST from~\cite[Lemma 2]{btr12}:
+\begin{prop}\label{pro:optimality}
+\begin{align}
+\tau \vnorm{\hat{x}}_\A \leq \tau \vnorm{x^\star}_\A + \langle w, \hat{x} - x^\star \rangle
+\end{align}
+\end{prop}
+
+
+\end{subappendices}

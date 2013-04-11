@@ -586,8 +586,62 @@ Theorem \ref{cor:expected-mse}, and using \eqref{pni}, we get
 \todo{TODO: More Stuff}
 
 
-\subsection{DAST for Line Spectral Signals}
-\label{sec:comp-method}
+\subsection{Approximation of the Dual Atomic Norm}
+\label{proof:dual-norm-approximation}
+This section furnishes the proof that the atomic norms induced by $\A$ and a discretized version $\A_N$ are equivalent. Note that the dual atomic norm of $w$ is given by
+\begin{equation}
+  \label{eq:maximum-modulus}
+  \vnorm{w}_\A^* = \sqrt{n}\sup_{f \in [0,1]} \left| W_n(e^{i2\pi f}) \right|.
+\end{equation}
+i.e., the maximum modulus of the polynomial $W_n$ defined by
+\begin{equation}
+\label{eq:random-poly}
+W_n(e^{i2\pi f}) =\frac{1}{\sqrt{n}} \sum_{m=0}^{n-1}{w_m e^{-i 2 \pi m f}}.
+\end{equation}
+Treating $W_n$ as a function of $f$,  with a slight abuse of  notation, define
+\begin{equation*}
+\vnorm{W_n}_\infty := \sup_{f \in [0,1]} \left| W_n(e^{i2\pi f}) \right|.
+\end{equation*}
+We show that we can approximate the maximum modulus by evaluating $W_n$ in a
+uniform grid of $N$ points on the unit circle. To show that as $N$ becomes large,
+the approximation is close to the true value, we bound the derivative of $W_n$ 
+using Bernstein's inequality for polynomials.
+
+\begin{theorem}[Bernstein, See, for example ~\cite{schaeffer41}]
+Let $p_n$ be any polynomial of degree $n$ with complex coefficients. Then,
+\begin{equation*}
+ \sup_{|z|\leq 1} |p'(z)|  \leq n  \sup_{|z|\leq 1} |p(z)|.
+\end{equation*}
+\end{theorem}
+Note that for any $f_1, f_2 \in [0,1],$ we have
+\begin{align*}
+  \left|W_n(e^{i2\pi f_1})\right| - \left|W_n(e^{i2\pi f_2})\right|  &\leq   \left|e^{i2\pi f_1} - e^{i2\pi f_2}\right| \vnorm{W_n'}_\infty&&\\
+  &= 2|\sin(2\pi (f_1-f_2))| \vnorm{W_n'}_\infty\\
+  &\leq 4 \pi (f_1-f_2) \vnorm{W_n'}_\infty\label{diff}\\
+  & \leq 4 \pi n (f_1-f_2) \vnorm{W_n}_\infty,
+\end{align*}
+where the last inequality follows by Bernstein's theorem.
+Letting $s$ take any of the $N$ values $0,\tfrac{1}{N} \ldots, \tfrac{N-1}{N}$, we see that,
+\begin{equation*}
+\vnorm{W_n}_\infty \leq \max_{m=0,\ldots,N-1}\left| W_n\left(e^{i 2 \pi m/N}\right) \right| + \frac{2\pi n}{N}\vnorm{W_n}_\infty.
+\end{equation*}
+Since the maximum on the grid is a lower bound for maximum modulus of $W_n$, we have
+\begin{align}
+\max_{m=0,\ldots,N-1} \left| W_n\left(e^{i 2 \pi m/N}\right) \right| \leq \vnorm{W_n}_\infty \\
+\leq  \left(1-\frac{2\pi n}{N}\right)^{-1} \max_{m=0,\ldots,N-1} \left| W_n\left(e^{i 2 \pi m/N}\right) \right|\nonumber\\
+ \leq  \left(1+\frac{4\pi n}{N}\right) \max_{m=0,\ldots,N-1} \left| W_n\left(e^{i 2 \pi m/N}\right) \right|.
+\label{eq:grid-approx}
+\end{align}
+Thus, for every $w,$
+\begin{equation}
+\vnorm{w}_{\A_N}^* \leq  \vnorm{w}_\A^* \leq  \left(1-\frac{2\pi n}{N}\right)^{-1} \vnorm{w}_{\A_N}^*
+\end{equation}
+or equivalently, for every $x,$
+\begin{equation}
+ \left(1-\frac{2\pi n}{N}\right) \vnorm{x}_{\A_N} \leq  \vnorm{x}_\A \leq \vnorm{x}_{\A_N}
+\end{equation}
+
+\subsection{DAST for Line Spectral Signals}\label{sec:comp-method}
 
 To proceed, pick a uniform grid of $N$ frequencies and form $\A_N = \left\{
 a_{m/N,\phi} ~\middle|~ 0 \leq m \leq N-1 \right\} \subset \A $ and solve

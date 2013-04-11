@@ -212,7 +212,7 @@ Our second classical result due to Caratheodory and Toeplitz gives conditions
 under which one can find a discrete measure corresponding to a partially
 observed sequence of moments.
 
-\begin{theorem}[Caratheodory-Toeplitz theorem]
+\begin{theorem}[Caratheodory-Toeplitz theorem,~\cite{toeplitz1911theorie,caratheodory1911zusammenhang,caratheodory1911variabilitatsbereich}]
 \label{thm:caratheodory-toeplitz}
 	$x \in \C^n$ corresponds to the first $n$ trigonometric moments of a measure $\mu$ (i.e., $x \in \cone(\A_+)$) only if and only if $T x \succeq 0.$ Furthermore, if $k = \rank(T x)$, there exists positive numbers $c_1, \ldots, c_k$ and $f_1, \ldots, f_k \in \mathbb{T}$ such  that
 \[
@@ -229,7 +229,32 @@ Finally, when $k < n,$ there is a unique extension of $x$ to an infinite positiv
 This theorem can be proved using Herglotz theorem~\cite{herglotz} and the
 theorems on flat extensions of moment sequences studied in~\cite{Curto97}. We
 refer the interested reader to~\cite{grenander01} for an alternative algebraic
-proof of this theorem.
+proof of this theorem. A straightforward corollary of Caratheodory's theorem is the following Vandermonde Decomposition for positive definite Toeplitz matrices.
+
+\begin{corollary}[Vandermonde Decomposition]\label{lm:vand} Any positive semidefinite Toeplitz matrix $P \in \C^{n \times n}$ can be represented as
+  follows
+  \[
+    P  =  V D V^*,
+  \]
+  where
+  \[
+  \begin{aligned}
+    V & = \left[ {a} \left( f_1 \right) \cdots
+    {a} \left( f_r \right) \right]\,,\\
+    D & = \operatorname{diag} \left( \left[ d_1 \cdots d_r \right] \right)\,,
+  \end{aligned}
+  \]
+ $d_k$ are real positive numbers, and $r = \rank(P)$.
+\end{corollary}
+\begin{proof}
+Write $P$ as $T_n(x)$ for some $x \in \C^n$. By assumption, $T_n(x) \succeq 0$ and $\rank(T_n(x)) = r $. Therefore by Caratheodory-Toeplitz theorem, $x$ can be written as $\sum_{l=1}^r{d_l a(f_l)}$. Thus, 
+\begin{align*}
+	P = T_n(x) &= \sum_{l=1}^r{d_l T_n(a(f_l))}\\
+	&=\sum_{l=1}^r{d_l a(f_l) a(f_l)^*}\\
+	& = V D V^*,
+\end{align*}
+where $V$ and $D$ are defined as in the statement of the theorem.
+\end{proof}
 
 % section preliminaries (end)
 
@@ -310,9 +335,12 @@ In particular, $T (u)\succeq 0$.  Form a Vandermonde decomposition
 \[
 	T(u)= V D V^*
 \]
-as promised by Lemma~\ref{lm:vand}.  Since $V D V^* = \sum_k d_k a(f_k,0) a(f_k,0)^*$ and $\|a(f_k,0)\|_2=\sqrt{n}$, we have $\frac{1}{n}\trace(T (u)) = \trace(D)$.
+as promised by Lemma~\ref{lm:vand}. Since $V D V^* = \sum_k d_k a(f_k,0)
+a(f_k,0)^*$ and $\|a(f_k,0)\|_2=\sqrt{n}$, we have $\frac{1}{n}\tr(T (u)) =
+\tr(D)$.
 
-Using this Vandermonde decomposition and the matrix inequality~\eq{toep-psd}, it follows that $x$ is in the range of $V$, and hence
+Using this Vandermonde decomposition and the matrix inequality~\eq{toep-psd}, it
+follows that $x$ is in the range of $V$, and hence
 \[
 	x = \sum_k w_k a(f_k,0) = Vw
 \]
@@ -322,11 +350,11 @@ for some complex coefficient vector $w = [\cdots, w_k, \cdots]^T$.  Finally, by 
 \]
 Let $q$ be any vector such that $V^*q = \operatorname{sign}(w)$.  Such a vector exists because $V$ is full rank.  Then
 \[
-	\trace(D)= q^* V D V^*q \succeq t^{-1}q^* V w w^* V^*q = t^{-1} \left(\sum_k |w_k|\right)^2.
+	\tr(D)= q^* V D V^*q \succeq t^{-1}q^* V w w^* V^*q = t^{-1} \left(\sum_k |w_k|\right)^2.
 \]
-implying that $\trace(D) t \geq \left(\sum_k |w_k|\right)^2$.   By the arithmetic geometric mean inequality,
+implying that $\tr(D) t \geq \left(\sum_k |w_k|\right)^2$.   By the arithmetic geometric mean inequality,
 \[
-	\tfrac{1}{2n} \trace(T (u)) + \tfrac{1}{2} t = 	\tfrac{1}{2} \trace(D) + \tfrac{1}{2} t \geq \sqrt{\trace(D) t} \geq \sum_k |w_k| \geq \|x\|_\A
+	\tfrac{1}{2n} \tr(T (u)) + \tfrac{1}{2} t = 	\tfrac{1}{2} \tr(D) + \tfrac{1}{2} t \geq \sqrt{\tr(D) t} \geq \sum_k |w_k| \geq \|x\|_\A
 \]
 implying that $\mathrm{SDP}(x)\geq \|x\|_{\mathcal{A}}$ since the previous chain of inequalities hold for any choice of $u,t$ that are feasible.
 \end{proof}
@@ -338,7 +366,6 @@ implying that $\mathrm{SDP}(x)\geq \|x\|_{\mathcal{A}}$ since the previous chain
 \label{sec:sdp_for_trigonometric_polynomials}
 
 The dual problem to AST involves trigonometric polynomials instead of moments.
-
 \subsection{Positive Trigonometric Polynomials}
 
 \begin{definition}

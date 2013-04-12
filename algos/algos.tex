@@ -120,12 +120,13 @@ trigonometric moment is defined by
 
 By a simple reparametrization, the $m$th trigonometric moment may be described
 as complex moments $\int_\mathbb{T} z^m \mu(dz)$ when we regard $\mu$ as defined
-on the unit circle. In this section, we will review two classical results. The
-first, due to Herglotz gives a complete characterization of the infinite
-sequence of Trigonometric moments for positive measures. Before we state the
-theorem, we will need a bit of notation. Define the map $T_n:\mathbb{C}^n
-\rightarrow \mathbb{C}^{n\times n}$ which creates a Hermitian Toeplitz matrix
-out of its input, that is
+on the unit circle. In this section, we will review two classical results. 
+
+The first theorem, due to Herglotz gives a complete characterization of the
+infinite sequence of Trigonometric moments for positive measures. Before we
+state the theorem, we will need a bit of notation. Define the map
+$T_n:\mathbb{C}^n \rightarrow \mathbb{C}^{n\times n}$ which creates a Hermitian
+Toeplitz matrix out of its input, that is
 
 \[
 T_n(x)= \left[
@@ -135,7 +136,6 @@ x^*_2 & x_1  & \ldots & x_{n-1}\\
  x^*_n & x^*_{n-1}  & \ldots & x_1
  \end{array}\right]
 \]
-
 
 \begin{theorem}[Herglotz Theorem]\label{thm:herglotz}
 	The sequence of complex numbers $\{x_m\}_{m=-\infty}^{\infty}$ are
@@ -228,8 +228,9 @@ Finally, when $k < n,$ there is a unique extension of $x$ to an infinite positiv
 
 This theorem can be proved using Herglotz theorem~\cite{herglotz} and the
 theorems on flat extensions of moment sequences studied in~\cite{Curto97}. We
-refer the interested reader to~\cite{grenander01} for an alternative algebraic
-proof of this theorem. A straightforward corollary of Caratheodory's theorem is the following Vandermonde Decomposition for positive definite Toeplitz matrices.
+refer the interested reader to~\cite{grenander01} for an algebraic proof of this
+theorem. A straightforward corollary of Caratheodory's theorem is the following
+Vandermonde Decomposition for positive definite Toeplitz matrices.
 
 \begin{corollary}[Vandermonde Decomposition]\label{lm:vand} Any positive semidefinite Toeplitz matrix $P \in \C^{n \times n}$ can be represented as
   follows
@@ -536,52 +537,42 @@ to zero.
 To summarize, the update for $(t,u,x)$ requires averaging the diagonals of a
 matrix (which is equivalent to projecting a matrix onto the space of Toeplitz
 matrices), and hence operations that are $O(n)$. The update for $Z$ requires
-projecting onto the positive definite cone and requires $O(n^3)$ operations. The update for $\Lambda$ is simply
-addition of symmetric matrices.  
+projecting onto the positive definite cone and requires $O(n^3)$ operations. The
+update for $\Lambda$ is simply addition of symmetric matrices.
 
-Note that the dual solution $\hat{z}$ can be obtained as $\hat{z} = y - \hat{x}$ from the
-primal solution $\hat{x}$ obtained from ADMM by using
+Note that the dual solution $\hat{z}$ can be obtained as $\hat{z} = y - \hat{x}$
+from the primal solution $\hat{x}$ obtained from ADMM by using
 Lemma~\ref{lem:dual-problem}.
-
 
 \section{Discretization}
 
-When the number of samples is larger than a few hundred, the running time of our
-ADMM method is dominated by the cost of computing eigenvalues and is usually
-expensive~\cite{btr12}. For very large problems, we now propose using Lasso as
-an alternative to the semidefinite program~\eq{sdpdenoising}. Our justification for using the finite dimensional Lasso as an alternative to the general infinite atomic norm soft thresholding problem relies on approximation guarantees for epsilon-nets of the atomic sets.
+In general the atomic sets may not have a computable characterization. Even if
+there is an SDP characterization and an efficient implementation using
+techniques like ADMM, when the number of samples is larger than a few hundred,
+the running time of our ADMM method is dominated by the cost of computing
+eigenvalues and is usually expensive. This is not avoidable as there is no cheap
+way to find projections on the positive definite cone. For very large problems,
+we now propose using discretization and hence Lasso as an alternative to the
+semidefinite program~\eq{sdpdenoising}.
 
-\subsection{Expected MSE for Approximated Atomic Norms}
-\label{proof:expected-mse-approx}
+\subsection{Discretized Atomic Soft Thresholding} % (fold)
+\label{sub:discretized_atomic_soft_thresholding}
 
-We close this section by noting that it may sometimes be easier to solve
-\eqref{AST} on a different set $\widetilde{\A}$ (say, an $\epsilon$-net of
-$\A$ instead of $\A$. If for some $M>0,$
-\[
-M^{-1}\vnorm{x}_{\widetilde{\A}} \leq \vnorm{x}_{\A} \leq 
-\vnorm{x}_{\widetilde{\A}}
-\] 
-holds for every $x$, then Theorem $\ref{cor:expected-mse}$ still applies with a 
-constant factor $M$. We will need the following lemma.
+Suppose we solve AST~\eqref{AST} on a different set $\widetilde{\A}$ (say, an
+$\epsilon$-net of $\A$) instead of $\A$. If for some $M>0,$ \[
+M^{-1}\vnorm{x}_{\widetilde{\A}} \leq \vnorm{x}_{\A} \leq
+\vnorm{x}_{\widetilde{\A}} \] holds for every $x$, then Theorem
+$\ref{cor:expected-mse}$ still applies with a constant factor $M$. Our
+justification for using the finite dimensional Lasso as an alternative to the
+general infinite atomic norm soft thresholding problem relies on approximation
+guarantees for epsilon-nets of the atomic sets. To be precise, in the next
+section we see that $M$ approaches unity as $\epsilon \to 0.$ Thus, the solution
+to the discretized atomic soft thresholding (DAST) problem approaches the AST
+solution.
 
-\begin{lemma}
-${\vnorm{z}_{\A}^* \leq M\vnorm{z}_{\widetilde{\A}}^*}$ for every $z$ iff
-${M^{-1}\vnorm{x}_{\widetilde{\A}} \leq \vnorm{x}_{\A}}$ for every $z$.
-\end{lemma}
-\begin{proof}\belowdisplayskip=-12pt
-We will show the forward implication -- the converse will follow since the dual
-of the dual norm is again the primal norm. By \eqref{holder}, for any $x$, 
-there exists a $z$ with
-$\vnorm{z}_{\widetilde{\A}}^* \leq 1$ and ${\vabs{x}{z} =
-\vnorm{x}_{\widetilde{\A}}}$. So,
-\begin{align*}
-M^{-1}\vnorm{x}_{\widetilde{\A}} &= M^{-1}\vabs{x}{z} &&\\
-&\leq M^{-1}\vnorm{z}_{\A}^* \vnorm{x}_{\A} &&\text{by \eqref{holder}}\\
-&\leq \vnorm{x}_{\A} &&\text{by assumption.}
-\end{align*}
-\end{proof}
-Now, we can state the sufficient condition for the following proposition in
-terms of either the primal or the dual norm:
+The following proposition demonstrates that the universal guarantee in Theorem
+~\ref{cor:expected-mse} continues to hold with only a penalty of a small
+multiplicative constant when DAST is used in place of AST.
 \begin{prop}\label{prop:grid-approx-mse}
 Suppose 
 \begin{equation}
@@ -609,13 +600,165 @@ Theorem \ref{cor:expected-mse}, and using \eqref{pni}, we get
 \end{equation*}
 \end{proof}
 
-\todo{TODO: Semi-infinite Programming and LP Perturbations}
-\todo{TODO: More Stuff}
+% Using the results for approximated atomic norms, we can suggest the following
+% alternative to Atomic soft thresholding~\eqref{AST} and instead solve AST on a
+% uniform grid of $N$ atoms, where $N$ is the size of the $\epsilon$-net. We call
+% this Discretized Atomic Soft Thresholding or DAST. In the following, we will use
+% the notation $\A_N$ in place of $\A_\epsilon$ in order to explicitly
+% characterize the quality of approximation in terms of the grid size.
+% 
+% As the grid size increases, the solution to DAST converges to AST. In this section, we will show that
+% TODO: Would be nice to characterize AST convergence rate.
+% Now, we will turn our attention to how well the AST solution is approximated
+% when we replace $\A$ with $\A_N$. This can be characterized in terms of the
+% approximation of atomic norms using the optimality conditions of AST. Let
+% $\hat{x}_N$ and $\hat{x}$ be the solution to DAST and AST respectively. Then,
+% \begin{align}
+% \vnorm{\hat{x}_N - \hat{x}}_2^2 &=  \vabs{\hat{x}_N - \hat{x}}{(y - \hat{x}) - (y - \hat{x}_N)}\\
+% &=  \tau \vabs{\hat{x}_N - \hat{x}}{\hat{q} - \hat{q}_N}\\
+% &=  \tau \vabs{\hat{x}_N - \hat{x}}{\hat{q} - \hat{q}_N}
+% \end{align}
+
+% subsection discretized_atomic_soft_thresholding (end)
 
 
-\subsection{Approximation of the Dual Atomic Norm}
+\subsection{Approximated Atomic Norms} % (fold)
+\label{sub:approximated_atomic_norms}
+
+In this section, we will show that atomic norms can be approximated by choosing
+a large $\epsilon$-net of atoms instead of the original set of atoms. Our proof
+of approximation and characterization of the convergence depends upon using an
+Euclidean $\epsilon$ cover of the atomic set $\A$, and the equivalence between
+Euclidean and atomic norms in finite dimensions.
+
+If $\A \in F^n$, there exists $C$, possibly depending on $n$ such that
+$\vnorm{x}_\A \leq C \vnorm{x}_2$ for any choice of atomic set. When the atomic
+set is symmetric, it is often possible to find the optimal choice of $C$ by
+finding the minimum volume ellipsoid that circumscribes $\conv(\A)$, in the
+special case that the ellipsoid is a scaled version of the Euclidean ball. This
+is called the L\"{o}wner-John ellipsoid after Charles L\"{o}wner who discovered
+the uniqueness of the minimum volume circumscribing ellipsoid for any convex
+sets and Fritz John who proved the existence.
+
+Using the characterization of John, we have the following condition for
+Euclidean ball to be the minimum volume circumscribing ellipsoid of $\conv(\A).$
+
+\begin{theorem}\label{thm:john:ellipsoid}
+If there exists positive numbers $\lambda_1, \dots, \lambda_m >0$ and atoms
+$a_1, \dots, a_m$ for $m \geq n$ such that
+\[
+		\sum_{i=1}^m \lambda_i a_i = 0 \text{ and } I_n = \sum_{i=1}^m \lambda_i (a_i a_i^*),
+\]
+the Euclidean ball $B=\setof{x}{\vnorm{x}_2 \leq 1}$ is the unique minimum
+volume ellipsoid that circumscribes $\conv(\A)$. If in addition, $\A$ is
+centrosymmetric, for any $x$,
+\[
+	\vnorm{x}_2 \leq \vnorm{x}_\A  \leq \sqrt{n} \vnorm{x}_2 
+\]	
+\end{theorem}
+
+The conditions in the previous theorem hold for a number of interesting atomic
+set including Fourier measurements discussed in Chapter~\ref{chap:linespect},
+and one may argue that the minimum volume ellipsoid is often a Euclidean sphere.
+When the condition in Theorem~\ref{thm:john:ellipsoid} is satisfied, defining
+$\A_\epsilon$ as an $\epsilon$-net of $\A$, we can write
+\begin{align*}
+	\vnorm{z}_\A^* &= \sup_{x \in \A} \vabs{z}{x}\\
+	&\leq \sup_{\hat{x} \in \A_\epsilon} \vabs{z}{\hat{x}} + \inf_{\hat{x} \in \A_\epsilon} \vnorm{z}_\A^* \vnorm{x - \hat{x}}_\A\\
+	&\leq \sup_{\hat{x} \in \A_\epsilon} \vabs{z}{\hat{x}} +  \vnorm{z}_\A^* \sup_{\vnorm{w}_2 \leq \epsilon}{w}_\A\\
+	&\leq \vnorm{z}_{\A_\epsilon}^* +  \sqrt{n}\epsilon\vnorm{z}_\A^*,
+\end{align*}
+whence we get $\vnorm{z}_\A^* \leq
+(1-\sqrt{n}\epsilon)^{-1}\vnorm{z}_{\A_\epsilon}^*$. Also, since $\A_\epsilon
+\subset \A,$ by definition $\vnorm{z}_{\A_\epsilon}^* \leq \vnorm{z}_\A^*$.
+Combining these two, we have the following approximation
+\begin{equation}
+\label{eq:enet-approx-dual}	
+\vnorm{z}_{\A_\epsilon}^* \leq \vnorm{z}_\A^* \leq (1-\sqrt{n}\epsilon)^{-1}\vnorm{z}_{\A_\epsilon}^*.
+\end{equation}
+
+We will need the following lemma to restate the $\epsilon$ approximation in
+terms of the atomic norm, instead of dual.
+
+\begin{lemma}
+${\vnorm{z}_{\A}^* \leq M\vnorm{z}_{\widetilde{\A}}^*}$ for every $z$ iff
+${M^{-1}\vnorm{x}_{\widetilde{\A}} \leq \vnorm{x}_{\A}}$ for every $z$.
+\end{lemma}
+\begin{proof}\belowdisplayskip=-12pt
+We will show the forward implication -- the converse will follow since the dual
+of the dual norm is again the primal norm. By \eqref{holder}, for any $x$, 
+there exists a $z$ with
+$\vnorm{z}_{\widetilde{\A}}^* \leq 1$ and ${\vabs{x}{z} =
+\vnorm{x}_{\widetilde{\A}}}$. So,
+\begin{align*}
+M^{-1}\vnorm{x}_{\widetilde{\A}} &= M^{-1}\vabs{x}{z} &&\\
+&\leq M^{-1}\vnorm{z}_{\A}^* \vnorm{x}_{\A} &&\text{by \eqref{holder}}\\
+&\leq \vnorm{x}_{\A} &&\text{by assumption.}
+\end{align*}
+\end{proof}
+
+Now, we can write the approximation for atomic norm. For any $x,$
+\begin{equation}
+\label{eq:enet-approx}	
+(1-\sqrt{n}\epsilon)\vnorm{x}_{\A_\epsilon} \leq \vnorm{x}_\A \leq \vnorm{x}_{\A_\epsilon}.
+\end{equation}
+
+While this method is generic, simpler and sometimes stronger arguments may be possible for specific atomic sets. In succeeding sections, we use techniques similar to what we just outlined and characterize the atomic norm approximation for grids of the atomic set.
+
+% subsection approximated_atomic_norms (end)
+
+\subsection{DAST for Line Spectral Signals}\label{sec:comp-method}
+
+To proceed, pick a uniform grid of $N$ frequencies and form $\A_N = \left\{
+a_{m/N,\phi} ~\middle|~ 0 \leq m \leq N-1 \right\} \subset \A $ and solve
+\eqref{AST} on this grid. i.e., we solve the problem
+\begin{equation}
+	\label{epsprimal} \text{minimize }\frac{1}{2} \vnorm{x - y}_2^2 + \tau \vnorm{x}_{\A_N}. 
+\end{equation}
+
+To see why this is to our advantage, define $\Phi$ be the $n \times N$ Fourier
+matrix with $m$th column $a_{m/N,0}$. Then for any $x \in \C^n$ we have $\vnorm{x}_{\A_N} = \min\left\{ \vnorm{c}_1: x = \Phi c \right\}$.
+So, we solve
+\begin{equation}
+	\label{sparsa} \text{minimize }\frac{1}{2} \vnorm{\Phi c- y}_2^2 + \tau \vnorm{c}_1. 
+\end{equation}
+for the optimal point $\hat{c}$ and set $\hat{x}_N = \Phi \hat{c}$ or the first
+$n$ terms of the $N$ term discrete Fourier transform (DFT) of $\hat{c}$.
+Furthermore, $\Phi^* z$ is simply the $N$ term inverse DFT of $z \in \C^n$.
+This observation coupled with Fast Fourier Transform (FFT) algorithm for
+efficiently computing DFTs gives a fast method to solve \eqref{epsprimal},
+using standard compressed sensing software for $\ell_2-\ell_1$ minimization,
+for example, SparSA~\cite{wright09}.
+
+Because of the relatively simple structure of the atomic set, the optimal
+solution $\hat{x}$ for \eqref{epsprimal} can be made arbitrarily close to
+\eqref{eq:sdpdenoising} by picking $N$ a constant factor larger than $n$. In
+fact, the following section furnishes the proof that the atomic norms induced by $\A$ and a discretized version $\A_N$ are equivalent.
+
+Due to the efficiency of the FFT, the discretized approach has a much lower
+algorithmic complexity than either Cadzow's alternating projections method or
+the ADMM method described in the extended technical report~\cite{btr12}, which
+each require computing an eigenvalue decomposition at each iteration. Indeed,
+fast solvers for~\eqref{sparsa} converge to an $\epsilon$ optimal solution in no
+more than $1/\sqrt{\epsilon}$ iterations. Each iteration requires a
+multiplication by $\Phi$ and a simple ``shrinkage'' step. Multiplication by
+$\Phi$ or $\Phi^*$ requires $O(N\log N)$ time and the shrinkage operation can be
+performed in time $O(N)$.
+
+As we discuss below, this fast form of basis pursuit has been proposed by
+several authors. However, analyzing this method with tools from compressed
+sensing has proven daunting because the matrix $\Phi$ is nowhere near a
+restricted isometry. Indeed, as $N$ tends to infinity, the columns become more
+and more coherent. However, common sense says that a larger grid should give
+better performance, for both denoising and frequency localization! Indeed, by
+appealing to the atomic norm framework, we are able to show exactly this point:
+the larger one makes $N$, the closer one approximates the desired atomic norm
+soft thresholding problem. Moreover, we do not have to choose $N$ to be too
+large in order to achieve nearly the same performance as the AST.
+
+\subsubsection{Approximation of the Dual Atomic Norm}
 \label{proof:dual-norm-approximation}
-This section furnishes the proof that the atomic norms induced by $\A$ and a discretized version $\A_N$ are equivalent. Note that the dual atomic norm of $w$ is given by
+Note that the dual atomic norm of $w$ is given by
 \begin{equation}
   \label{eq:maximum-modulus}
   \vnorm{w}_\A^* = \sqrt{n}\sup_{f \in [0,1]} \left| W_n(e^{i2\pi f}) \right|.
@@ -668,34 +811,6 @@ or equivalently, for every $x,$
  \left(1-\frac{2\pi n}{N}\right) \vnorm{x}_{\A_N} \leq  \vnorm{x}_\A \leq \vnorm{x}_{\A_N}
 \end{equation}
 
-\subsection{DAST for Line Spectral Signals}\label{sec:comp-method}
-
-To proceed, pick a uniform grid of $N$ frequencies and form $\A_N = \left\{
-a_{m/N,\phi} ~\middle|~ 0 \leq m \leq N-1 \right\} \subset \A $ and solve
-\eqref{AST} on this grid. i.e., we solve the problem
-\begin{equation}
-	\label{epsprimal} \text{minimize }\frac{1}{2} \vnorm{x - y}_2^2 + \tau \vnorm{x}_{\A_N}. 
-\end{equation}
-
-To see why this is to our advantage, define $\Phi$ be the $n \times N$ Fourier
-matrix with $m$th column $a_{m/N,0}$. Then for any $x \in \C^n$ we have $\vnorm{x}_{\A_N} = \min\left\{ \vnorm{c}_1: x = \Phi c \right\}$.
-So, we solve
-\begin{equation}
-	\label{sparsa} \text{minimize }\frac{1}{2} \vnorm{\Phi c- y}_2^2 + \tau \vnorm{c}_1. 
-\end{equation}
-for the optimal point $\hat{c}$ and set $\hat{x}_N = \Phi \hat{c}$ or the first
-$n$ terms of the $N$ term discrete Fourier transform (DFT) of $\hat{c}$.
-Furthermore, $\Phi^* z$ is simply the $N$ term inverse DFT of $z \in \C^n$.
-This observation coupled with Fast Fourier Transform (FFT) algorithm for
-efficiently computing DFTs gives a fast method to solve \eqref{epsprimal},
-using standard compressed sensing software for $\ell_2-\ell_1$ minimization,
-for example, SparSA~\cite{wright09}.
-
-Because of the relatively simple structure of the atomic set, the optimal
-solution $\hat{x}$ for \eqref{epsprimal} can be made arbitrarily close to
-\eqref{eq:sdpdenoising} by picking $N$ a constant factor larger than $n$. In
-fact, we show that the atomic norms on $\A$ and $\A_N$ are equivalent (See
-Appendix \ref{proof:dual-norm-approximation}):
 \begin{equation}
  \left(1-\frac{2\pi n}{N}\right) \vnorm{x}_{\A_N} \leq  \vnorm{x}_\A \leq \vnorm{x}_{\A_N}, \forall x \in \C^n
 \end{equation}
@@ -715,74 +830,12 @@ O\left(
 \end{align*}
 }
 
-Due to the efficiency of the FFT, the discretized approach
-has a much lower algorithmic complexity than either Cadzow's alternating
-projections method or the ADMM method described in  the extended technical report~\cite{btr12},
-which each require computing an eigenvalue decomposition at
-each iteration. Indeed, fast solvers for~\eqref{sparsa} converge to an
-$\epsilon$ optimal solution in no more than $1/\sqrt{\epsilon}$ iterations.
-Each iteration requires a multiplication by $\Phi$ and a simple ``shrinkage''
-step. Multiplication by $\Phi$ or $\Phi^*$ requires $O(N\log N)$ time and the
-shrinkage operation can be performed in time $O(N)$.
 
-As we discuss below, this fast form of basis pursuit has been proposed by
-several authors. However, analyzing this method with tools from compressed
-sensing has proven daunting because the matrix $\Phi$ is nowhere near a
-restricted isometry. Indeed, as $N$ tends to infinity, the columns become more
-and more coherent. However, common sense says that a larger grid should give
-better performance, for both denoising and frequency localization! Indeed, by appealing to the atomic norm framework, we are
-able to show exactly this point: the larger one makes $N$, the closer one
-approximates the desired atomic norm soft thresholding problem. Moreover, we do
-not have to choose $N$ to be too large in order to achieve nearly the same
-performance as the AST.
+\subsection{DAST for System Identification} % (fold)
+\label{sec:dast_for_system_identification}
+The following proposition asserts that we can approximate this finite dimensional atomic norm via a sufficiently fine discretization of the unit disk.
 
-\subsection{DAST for System ID}\label{sec:computation}
-
-From here on, let us assume that the $G_\star$ that we seek to estimate has all of its poles of magnitude at most $\rho$  ( we will call $\rho$ the \emph{stability radius}, and treat it as a known parameter).  Let $\D_\rho$ denote the set of all complex numbers with norm at most $\rho$.  Note that if $G_\star$ has stability radius $\rho$ then
-\[
-	\|G\|_{\cA}:=\inf\left\{ \sum_{w\in \D_\rho} |c_w|~:~G(z) = \sum_{w\in \D_\rho} \frac{c_w (1-|w|^2)}{z-w}\right\}\,.
-\]
-That is, we can restrict our set of atoms to only be those single pole systems with stability radius equal to $\rho$.  For the remainder of this manuscript, we assume that $\cA$ only consists of such single pole systems.
-
-In what follows, we focus our attention on linear measurement maps.  Let $\cL_i: \cH \mapsto \C $ be a linear functional that serves as a measurement operator for the system $G(z)$.  Many maps of interest can be phrased as linear functionals of the transfer function,
-\begin{enumerate}
-	\item Samples of the frequency response $\mathcal{L}_k(G):=G(e^{i\theta_k})$ for $k=1,\ldots, n$.  From a control theoretic perspective, this measurement operator corresponds to measuring the gain and phase of the linear system at different frequencies.
-	\item Samples of the impulse response, $\mathcal{L}_k(G):=g_{i_k}$ for $k=1,\ldots, n$ and $i_k \in [1,\infty)$.
-	\item Convolutions of the impulse response with a pseudorandom signal $u_k$: $\mathcal{L}_k(G):=\sum_{j=1}^{\infty} g_j u_{k-j}$.
-\end{enumerate}
-
-In all of these cases, we consider the problem
-\begin{equation}\label{eq:atomic-norm-lin-inverse}
-	\minimize_{G} \tfrac{1}{2} \sum_{i=1}^n |\cL_i(G) - y_i |^2 + \mu \|G\|_{\cA}\,.
-\end{equation}
-This problem is equivalent to the constrained, semi-infinite programming problem
-\[
-	\begin{array}{ll}
-	\minimize_{x,G} & \tfrac{1}{2}\sum_{k=1}^n |x_k - y_k |^2 + \mu \sum_{w\in \D_\rho} |c_w|\\
-	\st & x_k = \cL_k(G)~~\mbox{for}~i=1,\ldots, n\\
-	& G = \sum_{w\in \D_\rho} \frac{c_w(1-|w|^2)}{z-w}
-	\end{array}
-\]
-Eliminating the equality constraint gives yet another equivalent formulation
-\begin{equation}\label{eq:atomic-norm-lin-inverse-finite-dim}
-	\begin{array}{ll}
-	\minimize_{x} & \tfrac{1}{2}\sum_{k=1}^n |x_k - y_k |^2 + \mu \sum_{w\in \D_\rho} |c_w|\\
-	\st & x_k = \sum_{w\in \D_\rho} c_w \cL_k\left(\frac{1-|w|^2}{z-w}\right)~~\mbox{for}~i=1,\ldots, n\,.
-	\end{array}
-\end{equation}
-Note that in this final formulation, our decision variable is $x$, a finite dimensional vector, and $c_w$, the coefficients of the atomic decomposition.  The infinite dimensional variable $G$ has been eliminated.  Let us define a norm on $\R^n$ based on the formulation~\eq{atomic-norm-lin-inverse-finite-dim}
-\[
-	\|x\|_{\cL(\cA)} = \inf \left\{ \sum_{w\in \D_\rho} |c_w| ~:~ x_i = \sum_{w\in\D_\rho} c_w\mathcal{L}_i\left(\frac{1-|w|^2}{z-w} \right)\right\}\,.
-\]
-Then we see that problem~\eq{atomic-norm-lin-inverse} is equivalent to the denoising problem
-\begin{equation}\label{eq:finite-dim-ast}
-	\minimize_{x} \tfrac{1}{2}\|x-y\|_2^2 + \mu \|x\|_{\cL(\cA)}\,.
-\end{equation}
-Note that the first term is simply the squared Euclidean distance between $y$ and $x$ in $\R^n$.  The second term is an atomic norm on $\R^n$ induced by the linear map of the set of transfer functions via the measurement operator $\cL$.  In order to tractably solve~\eq{atomic-norm-lin-inverse}, we thus only need focus on computational schemes for computing or approximating $\|x\|_{\cL(\cA)}$.  The following proposition asserts that we can approximate this finite dimensional atomic norm via a sufficiently fine discretization of the unit disk.
-
-
-
-\begin{prop}\label{prop:grid}
+\begin{prop}\label{prop:algos:grid}
 Let $\D_\rho^{(\epsilon)}$ be a finite subset of the unit disc such that for any $w \in \D_\rho$ there exists a $v \in \D_\rho^{(\epsilon)}$ satisfying $|w-v| \leq \epsilon$.  Define
 \[
 	\|x\|_{\cL(\cA_\epsilon)} = \inf\left\{ \sum_{w\in \D_{\rho}^{(\epsilon)}} |c_w| ~:~ x_i = \sum_{w\in\D_{\rho}^{(\epsilon)}} c_w\mathcal{L}_i\left(\frac{1-|w|^2}{z-w} \right)\right\}\,.
@@ -799,7 +852,7 @@ When we replace $\|x\|_{\cL(\cA)}$ with its discretized counterpart $\|x\|_{\cL(
 	\minimize_{x} \tfrac{1}{2}\|x-y\|_2^2 + \mu \|x\|_{\cL(\cA_\epsilon)}
 \]
 is equivalent to
-\begin{equation}\label{eq:DAST}
+\begin{equation}\label{eq:algos:DAST}
 	\minimize_{c}  \tfrac{1}{2}\|Mc-y\|_2^2 + \mu \sum_{w\in \D_\rho^{(\epsilon)}} |c_w|
 \end{equation}
 where
@@ -807,10 +860,9 @@ where
 	M_{ij} = \mathcal{L}_i \left(\tfrac{1-|w_j|^2}{z-w_j}\right)
 \]
 and $j$ indexes the set $\D_{\rho}^{(\epsilon)}$. That is $M$ is an $n \times
-|\D_\rho^{(\epsilon)}|$ matrix. Problem~\eq{DAST} is a weighted $\ell_1$
+|\D_\rho^{(\epsilon)}|$ matrix. Problem~\eq{algos:DAST} is a weighted $\ell_1$
 regularization problem with real or complex data depending on specific problem.
-We call~\eq{DAST} \emph{Discretized Atomic Soft Thresholding} (DAST), as coined
-in~\cite{btr12}.
+We call~\eq{algos:DAST} \emph{Discretized Atomic Soft Thresholding} (DAST), as coined in~\cite{btr12}.
 
 The DAST problem can be solved very efficiently with a variety of off-the-shelf
 tools including SPARSA~\cite{wright09}, FPC~\cite{Hale08} or even more general
@@ -819,3 +871,76 @@ approximate solution to problem~\eq{atomic-norm-lin-inverse}, and, as we will
 see, yields a statistically consistent estimate provided the parameter
 $\epsilon$ is adjusted to meet the desired numerical accuracy.
 
+\begin{proof}\label{pf:prop-grid}
+First note that for any atomic sets $\cA \subset \cA'$, $\|x\|_{\cA'} \leq \|x\|_{\cA}$.  The harder part of this proposition is the lower bound.  To proceed, we use the dual norm. 
+
+Let $\D_\rho^{(\tau)}$ be a subset of $\D_\rho$ such that for every $a \in \D_\rho$, there exists an $\hat{a}\in \D_\rho^{(\tau)}$ satisfying $|a-\hat{a}|\leq \tau$.  For each $a \in \D_\rho$, we will actually denote $\hat{a}$ as the closest point in $\D_\rho^{(\tau)}$ to $a$.
+
+Now observe that 
+\begin{align*}
+	  \| \cL(\varphi_{\hat{a}}-\varphi_a)\|_{\cL(\cA)} \leq  \| \varphi_{\hat{a}}-\varphi_a\|_{\cA}
+	  \leq \frac{8}{\pi} \|\Gamma_{\varphi_{\hat{a}}}- \Gamma_{\varphi_a}\|_1 \leq \frac{16 \rho \tau}{\pi (1-\rho)}\,.
+\end{align*}
+Here, the first inequality follows from our reasoning in Section~\ref{sec:computation}.  The second inequality is Theorem~\ref{thm:hankel-nuclearity}, and the final inequality is by~\eq{hankel-op-bound}.
+
+We then can compute
+\begin{align*}
+\|z\|_{\cL(\cA)}^* &= \sup_{a \in \D_\rho} \langle \cL(\varphi_a),z \rangle\\
+&= \sup_{a \in \D_\rho} \langle \cL(\varphi_{\hat{a}}), z \rangle + \langle \cL(\varphi_{a}-\varphi_{\hat{a}}), z\rangle \\
+&\leq\sup_{a \in \D_\rho^{(\tau)}} \langle \cL(\varphi_{\hat{a}}), z \rangle +\sup_{a \in \D_\rho}\langle \cL(\varphi_a-\varphi_{\hat{a}}), z\rangle \\
+&= \|z\|_{\cL(\cA_\tau)}^*+ \sup_{a \in \D_\rho}\langle \cL(\varphi_a-\varphi_{\hat{a}}), z\rangle \\
+&\leq \|z\|_{\cL(\cA_\tau)}^*+ \sup_{a \in \D_\rho}  \| \cL(\varphi_{\hat{a}}-\varphi_a)\|_{\cL(\cA)} \|z\|_{\cL(\cA)}^*\\
+&\leq \|z\|_{\cL(\cA_\tau)}^*+ \frac{16\rho\tau}{\pi(1-\rho)} \|z\|_{\cL(\cA)}^*\,.
+\end{align*}
+Rearranging both sides of this inequality gives
+\[
+	\|z\|_{\cL(\cA)}^* \leq C_\tau^{-1} \|z\|_{\cL(\cA_\tau)}^*
+\]
+with $C_\tau =  1-\tfrac{16\rho\tau}{\pi(1-\rho)}$, completing the proof.
+\end{proof}
+
+\begin{lemma} For any $a,b \in \D_\rho$,
+\begin{equation}\label{eq:hankel-op-bound}
+	\|\Gamma_{\varphi_a}-\Gamma_{\varphi_b}\|_1 \leq \frac{2\rho}{1-\rho} |a-b|\,.
+\end{equation}
+\end{lemma}
+\begin{proof}
+	The Hankel operator for $\varphi_a(z)$ is given by the semi-infinite, rank one matrix
+	\[
+		(1-|a|^2)\left[\begin{array}{ccccc}
+			1 & a & a^2 & a^3 & \cdots\\
+			a & a^2 & a^3 & a^4 & \cdots\\
+			a^2 & a^3 & a^4 & a^5 & \cdots\\
+			\vdots & \ddots
+		\end{array}\right] = (1-|a|^2) \left[\begin{array}{c} 1 \\ a\\ a^2\\a^3 \\ \vdots \end{array}\right]
+		\left[\begin{array}{c} 1 \\ a\\ a^2\\a^3 \\ \vdots \end{array}\right]^T\,.
+	\]
+Let $\zeta_a = \sqrt{1-|a|^2} \left[\begin{array}{cccccc} 1 & a & a^2 & a^3 & \cdots \end{array}\right]^T$.  Note that $\zeta_a \in \ell_2$ with norm equal to $1$.  Also note that we have
+\begin{equation}\label{eq:zeta-dot}
+	\langle \zeta_a, \zeta_b \rangle =  \frac{\sqrt{1-|a|^2}\sqrt{1-|b|^2}}{1-\bar{a}b}\,.
+\end{equation}
+Then we have
+\begin{subequations}
+\begin{align}
+\nonumber	\|\Gamma_{\varphi_a}-\Gamma_{\varphi_b}\|_1 &= \| \zeta_a \zeta_a^T - \zeta_b \zeta_b^T\|_1\\
+	& =  \| \zeta_a (\zeta_a-\zeta_b)^T +  (\zeta_a-\zeta_b) \zeta_b^T\|_1\\
+	\label{eq:tri-ineq} &\leq \| \zeta_a (\zeta_a-\zeta_b)^T \|_1 + \| (\zeta_a-\zeta_b) \zeta_b^T\|_1\\
+	\label{eq:nuc-2-l2} &= 2 \| \zeta_a-\zeta_b\|_{\ell_2}\\
+\label{eq:l2-dist-formula}	&=2 \sqrt{2}\sqrt{1 - \mathfrak{Re} \frac{\sqrt{1-|a|^2}\sqrt{1-|b|^2}}{1-\bar{a}b}}\\
+	\nonumber&\leq \frac{2 \rho}{1-\rho} |a-b|
+\end{align}
+\end{subequations}
+Here,~\eq{tri-ineq}  is the triangle inequality.~\eq{nuc-2-l2} follows because the nuclear norm of a rank one operator is equal to the product of the $\ell_2$ norm of the factors.~\eq{l2-dist-formula} follows from~\eq{zeta-dot}.  The final inequality follows from analyzing the taylor series of the preceding expression.
+\end{proof}
+
+% section dast_for_system_identification (end)
+
+% \begin{subappendices}
+% 
+% \section{Proof of Caratheodory's Theorem} % (fold)
+% \label{pf:caratheodory}
+% 
+% 
+% 
+% % section caratheodory (end)	
+% \end{subappendices}

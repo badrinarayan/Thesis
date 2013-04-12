@@ -248,19 +248,19 @@ approaches, and the discretized algorithm is much faster on large problems.
 
 \subsubsection{Organization of this chapter}
 \todo{TODO: Change this organization}
-We proceed as follows. In Section~\ref{sec:prony-method}, we begin by
-contextualizing our result in the canon of line spectral estimation. We
-emphasize the advantages and shortcomings of prior art, and describe the methods
-on which our analysis is built upon. We then in Section~\ref{sec:atomic-norms}
-describe the semidefinite programming approach to line spectral estimation,
-originally introduced in~\cite{btr12}, and explain how it relates to other
-recent spectrum estimation algorithms. We present minimax lower-bounds for line
-spectral estimation in Section~\ref{sec:minimax}. We then provide the proofs of
-our main results in Section~\ref{sec:proofs}. Finally, in
-Section~\ref{sec:experiments}, we empirically demonstrate that the semidefinite
-programming approach outperforms MUSIC~\cite{music} and Cadzow's
-technique~\cite{cadzow05} in terms of the localization metrics defined by parts
-(i), (ii) and (iii) of Theorem~\ref{support}.
+% We proceed as follows. In Section~\ref{sec:denoise-trig-moments}, we begin by
+% contextualizing our result in the canon of line spectral estimation. We
+% emphasize the advantages and shortcomings of prior art, and describe the methods
+% on which our analysis is built upon. We then in Section~\ref{sec:atomic-norms}
+% describe the semidefinite programming approach to line spectral estimation,
+% originally introduced in~\cite{btr12}, and explain how it relates to other
+% recent spectrum estimation algorithms. We present minimax lower-bounds for line
+% spectral estimation in Section~\ref{sec:minimax}. We then provide the proofs of
+% our main results in Section~\ref{sec:proofs}. Finally, in
+% Section~\ref{sec:experiments}, we empirically demonstrate that the semidefinite
+% programming approach outperforms MUSIC~\cite{music} and Cadzow's
+% technique~\cite{cadzow05} in terms of the localization metrics defined by parts
+% (i), (ii) and (iii) of Theorem~\ref{support}.
 
 \section{Denoising Line Spectral Signals}
 \label{sec:denoise-trig-moments} 
@@ -429,13 +429,14 @@ Consequently the number $N(\mathbb{T}_k, \rho, \epsilon)$ of $\epsilon$ balls ne
  & \leq 24 \int_0^1 \sqrt{\log(1/\epsilon)} d\epsilon = 12 \sqrt{\pi}. \label{dudley}
 \end{align}
 Thus, from \eqref{dudley} and \eqref{balance}, we have
-\begin{align}
+\begin{align*}
 \E\left[\sup_{f \in \mathbb{T}} W_f \right] & \leq  \sqrt{\log(N)} +  \frac{ 16 \pi^{3/2} n} { N}
-\end{align}
+\end{align*}
+
 
 Substituting $N = 16 n \sqrt{\pi^3 \log(n)},$ we get
 \[
-	\E\left[\sup_{f \in \mathbb{T}} W_f \right] \leq \left( 1 + \frac{1}{\log(n)} \right)\sqrt{\log(n) + \log(16 \pi^3/2 \log(n))}
+	\E\left[\sup_{f \in \mathbb{T}} W_f \right] \leq \left( 1 + \frac{1}{\log(n)} \right)\sqrt{\log(n) + \log(16 \pi^{3/2} \log(n))}
 \]
 \subsection{Lower Bound}
 
@@ -661,7 +662,7 @@ regularization.
 \subsection{Near optimal MSE}
 
 In this section, we will prove Theorem~\ref{main}. Let $\hat{\mu}$ be the
-representing measure for the solution $\hat{x}$ of \eqref{atnorm-denoise} with
+representing measure for the solution $\hat{x}$ of \eqref{AST} with
 minimum total variation norm, that is,
 \[
 \hat{x} = \int_0^1 a(f) \hat{\mu}(df)
@@ -749,7 +750,7 @@ As a consequence of our choice of $\tau$ in \eq{tau}, we can show that $\vnorm{E
 &\leq \sup_{f \in [0,1]} \left| \langle w, a(f) \rangle \right| +  \tau\\
 \label{errbd} \numberthis &\leq (1 +2\eta^{-1})\tau \leq 3 \tau, \text{with high probability.}
 \end{align*}
-The second inequality follows from the optimality conditions for \eqref{atnorm-denoise}. It is shown in Appendix C of ~\cite{btr12} that the penultimate inequality holds with high probability.
+The second inequality follows from the optimality conditions for \eqref{AST}. It is shown in Appendix C of ~\cite{btr12} that the penultimate inequality holds with high probability.
 
 Therefore, to complete the proof, it suffices to show that the other terms on the right hand side of \eqref{ebd} are $O(\frac{k\tau}{n})$.  While there is no exact frequency recovery in the presence of noise, we can hope to get the frequencies approximately right. Hence, we expect that the integral in the far region can be well controlled and the local integrals of the difference measure in the near regions are also small due to cancellations. Next, we utilize the properties of the dual polynomial in Theorems~\ref{dual-stab} and another polynomial given in Theorem~\ref{dual-lin}  in Appendix \ref{apx:collection} to show that the zeroth and first moments of $\nu$ may be controlled in terms of the other two quantities in \eqref{ebd} to upper bound the error rate. The following lemma is similar to Lemmas 2.2 and 2.3 in~\cite{cg_noisy}, but we have made several modifications to adapt it to our signal and noise model. For completeness, we provide the proof in Appendix \ref{apx:pf:I0I1}. 
 
@@ -1104,8 +1105,6 @@ providing tighter guarantees under the Gaussian noise model.
 \section{Experiments}
 \label{sec:experiments}
 
-\todo{TODO: Add in Experiments from Minimax Paper}
-
 We compared the performance of AST, the discretized Lasso approximation, the
 Matrix Pencil, MUSIC and Cadzow's method, both in terms of the mean squared
 estimation error as in Theorem~\ref{main} and frequency localization. For our
@@ -1352,7 +1351,7 @@ Additionally, it is not clear if our localization bounds in
 Theorem~\ref{support} have the optimal dependence on the number of sinusoids
 $k$. For instance, we expect that the condition on signal amplitudes for
 approximate support recovery should not depend on $k$, by comparison with
-similar guarantees that have been established for Lasso~\cite{nearideal}. We
+similar guarantees that have been established for Lasso~\cite{coherence}. We
 additionally conjecture that for a large enough regularization parameter, there
 will be no spurious recovered frequencies in the solution. That is, there
 should be no non-zero coefficients in the ``far region'' $F$ in

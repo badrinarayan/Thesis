@@ -6,10 +6,10 @@ and massive storage capabilities, we now have a dizzying amount of high
 dimensional data to analyze. The task of the data scientist is to infer a simple
 model to describe the data. Fortunately, many naturally occurring phenomena
 often have a simple structure. This allows us to efficiently represent them
-using a few atoms or features, even if they are observed in a high ambient
-dimension. The challenge is to exploit the simplicity of these objects and
-recover them robustly from limited linear measurements. This can be a formidable
-task even for simple instances of the problem.
+using a few building blocks or features, even if they are observed in a high
+ambient dimension. The challenge is to exploit the simplicity of these objects
+and recover them robustly from limited linear measurements. This can be a
+formidable task even for simple instances of the problem.
 
 For example, imagine a data series composed of $n$ measurements that can be
 described by a linear model, in terms of a large number $p \gg n$ of potential
@@ -51,7 +51,7 @@ This was introduced in statistics as a sparsity inducing regularization
 in~\cite{tibshirani96} and in Signal Processing as a means of exact and robust
 decomposition by~\cite{chen98} and subsequently studied by Donoho and his
 coworkers~\cite{donoho:huo,spark}. Since the seminal publications of
-~\cite{CRT06,meinshausen:variable-selection}, which rigorously established the exact recovery and model selection properties the study of convex penalties for
+~\cite{CRT06,meinshausen:variable-selection}, which rigorously established the exact recovery and model selection properties, the study of convex penalties for
 feature selection has been a subject of intense research. This theory was
 extended to other high dimensional structures including group sparse
 vectors\cite{group:lasso}, low rank matrices~\cite{recht07} and cut

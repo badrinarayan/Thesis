@@ -68,7 +68,20 @@ estimation with nonnegative amplitudes, or alternatively valid trigonometric
 moments of a positive measure on the torus $\mathbb{T}$. 
 
 We provide semidefinite characterizations of the atomic sets in Section~\ref{sec:sdp_for_trigonometric_moments}. As a straightforward consequence of classical result, we can write down a semidefinite
-characterization of $\conv(\A_+)$:
+characterization of $\conv(\A_+)$. Before we
+state our results, we will need a bit of notation. Define the map
+$T_n:\mathbb{C}^n \rightarrow \mathbb{C}^{n\times n}$ which creates a Hermitian
+Toeplitz matrix out of its input, that is
+
+\[
+T_n(x)= \left[
+\begin{array}{ccccc} x_1 & x_2 & \ldots & x_n\\ 
+x^*_2 & x_1  & \ldots & x_{n-1}\\
+ \vdots & \vdots & \ddots & \vdots\\
+ x^*_n & x^*_{n-1}  & \ldots & x_1
+ \end{array}\right]
+\]
+We may suppress the subscript in $T_n$ unless we wish to explicitly characterize the dependence on $n$ and write it as $T(x)$ or $T x$. 
 \begin{theorem}
 \label{thm:positive-linespect-sdp}
 Suppose $x = (x_0 \cdots x_{n-1})^T \in \C^n.$ Then, 
@@ -143,20 +156,7 @@ as complex moments $\int_\mathbb{T} z^m \mu(dz)$ when we regard $\mu$ as defined
 on the unit circle. In this section, we will review two classical results. 
 
 The first theorem, due to Herglotz gives a complete characterization of the
-infinite sequence of Trigonometric moments for positive measures. Before we
-state the theorem, we will need a bit of notation. Define the map
-$T_n:\mathbb{C}^n \rightarrow \mathbb{C}^{n\times n}$ which creates a Hermitian
-Toeplitz matrix out of its input, that is
-
-\[
-T_n(x)= \left[
-\begin{array}{ccccc} x_1 & x_2 & \ldots & x_n\\ 
-x^*_2 & x_1  & \ldots & x_{n-1}\\
- \vdots & \vdots & \ddots & \vdots\\
- x^*_n & x^*_{n-1}  & \ldots & x_1
- \end{array}\right]
-\]
-
+infinite sequence of Trigonometric moments for positive measures. 
 \begin{theorem}[Herglotz Theorem]\label{thm:herglotz}
 	The sequence of complex numbers $\{x_m\}_{m=-\infty}^{\infty}$ are
 trigonometric moments of a positive Borel measure $\mu$ on $\mathbb{T}$ if and

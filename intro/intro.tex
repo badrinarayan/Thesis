@@ -23,36 +23,36 @@ task of choosing the ``right'' model for the data can be cast as a combinatorial
 \emph{feature selection} problem with the objective of finding the smallest
 subset of features that describe the data well. This is called the ``small n,
 large p'' problem in statistics and such datasets are ubiquitous - For example,
-biologists want to characterize samples in terms of a small subset of a large
-number of genes from limited measurements. Machine learning practitioners want
-to infer the active features from a large feature space with a relatively small
-number of measurements.
+a biologist might want to identify the active genes by looking at only a few
+samples of a microarray experiment which simultaneously measures thousands of
+genes. Machine learning practitioners might want to infer the active features
+from a large feature space with a relatively small number of measurements.
 
-A \naive{} algorithm would explore all the possible subsets of features till we
-find a solution. There does not appear to be an efficient algorithm for this as
-there are an exponential number of subsets to choose from. In fact, this
-selection problem is provably \textsc{NP-Hard}\footnote{Informally, this means
-that it is at least as hard as a large number of well known problems in
-complexity theory, widely believed to have no algorithm that can solve them in a
-time proportional to any polynomial function of the number of
-observations.}~\cite{Natarajan95}. This does not however preclude the
-possibility of designing efficient algorithms that work on \emph{most}
-instances. In fact, there is now a large body of literature on the theoretical
-understanding of the surprising success of convex relaxation methods in
-efficiently solving the sparse recovery problem most of the time.
+A \naive{} algorithm would explore all the possible subsets of features in
+increasing order of size till we find a solution. There does not appear to be an
+efficient algorithm for this as there are an exponential number of subsets to
+choose from. In fact, this selection problem is provably
+\textsc{NP-Hard}\footnote{Informally, this means that it is at least as hard as
+a large number of well known problems in complexity theory, widely believed to
+have no algorithm that can solve them in a time proportional to any polynomial
+function of the number of observations.}~\cite{Natarajan95}. This does not
+however preclude the possibility of designing efficient algorithms that work on
+\emph{most} instances. In fact, there is now a large body of literature on the
+theoretical understanding of the surprising success of convex relaxation methods
+in efficiently solving the sparse recovery problem most of the time.
 
-The idea of using the $\ell_1$ norm of the feature weights (instead of the hard
-combinatorial problem of minimizing sparsity of feature weights) as a convex
-heuristic for model or feature selection, and the robustness of $\ell_1$
-penalties to outliers and noise was known to several early practitioners in
-Geophysics and
+Instead of the hard combinatorial problem of directly minimizing sparsity of the
+feature weights, the idea of using the $\ell_1$ norm of the feature weights as a
+convex proxy was known to several early practitioners in Geophysics and
 seismology~\cite{claerbout:robust,taylor:deconvolution,levy:spike-train,santosa}.
-This was introduced in statistics as a sparsity inducing regularization
-in~\cite{tibshirani96} and in Signal Processing as a means of exact and robust
-decomposition by~\cite{chen98} and subsequently studied by Donoho and his
-coworkers~\cite{donoho:huo,spark}. Since the seminal publications of
-~\cite{CRT06,meinshausen:variable-selection}, which rigorously established the exact recovery and model selection properties, the study of convex penalties for
-feature selection has been a subject of intense research. This theory was
+The authors were also aware of the robustness of $\ell_1$ regularization to
+outliers and noise This was introduced in statistics as a sparsity inducing
+regularization in~\cite{tibshirani96} and in Signal Processing as a means of
+exact and robust decomposition by~\cite{chen98} and subsequently studied by
+Donoho and his coworkers~\cite{donoho:huo,spark}. Since the seminal publications
+of ~\cite{CRT06,meinshausen:variable-selection}, which rigorously established
+the exact recovery and model selection properties, the study of convex penalties
+for feature selection has been a subject of intense research. This theory was
 extended to other high dimensional structures including group sparse
 vectors\cite{group:lasso}, low rank matrices~\cite{recht07} and cut
 matrices~\cite{cut:goemans}.

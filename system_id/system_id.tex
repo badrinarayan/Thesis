@@ -55,7 +55,7 @@ with the norms
 respectively.  $\ell_2([a,b])$ will denote the set of square summable sequences on the integers in $[a, b]$.
 
 \section{Atomic Decompositions of Transfer Functions}\label{sec:atomic-def}
-We restrict our attention to SISO systems in this manuscript, as this will simplify the presentation.  However, we will describe in the discussion how to extend our techniques to MIMO systems.  Suppose we wish to estimate a SISO, LTI system with transfer function $G_\star(z)$ from a finite collection of measurements $y=\Phi(G_\star)$.  The set of all transfer functions is an infinite dimensional space, so reconstructing $G_\star$ from this data is ill-posed.  In order to make it well posed, a common regularization approach constructs a penalty function $\operatorname{pen}(\cdot)$ that encourages ``low-complexity'' models and solves the optimization problem
+We restrict our attention to SISO systems, as this will simplify the presentation.  However, we will describe in the discussion how to extend our techniques to MIMO systems.  Suppose we wish to estimate a SISO, LTI system with transfer function $G_\star(z)$ from a finite collection of measurements $y=\Phi(G_\star)$.  The set of all transfer functions is an infinite dimensional space, so reconstructing $G_\star$ from this data is ill-posed.  In order to make it well posed, a common regularization approach constructs a penalty function $\operatorname{pen}(\cdot)$ that encourages ``low-complexity'' models and solves the optimization problem
 \begin{equation}\label{eq:regularized}
 	\minimize_G~\|\Phi(G)-y\|_2^2 + \mu \operatorname{pen}(G) \,.
 \end{equation}

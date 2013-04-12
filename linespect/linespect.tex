@@ -42,7 +42,7 @@ Specializing the denoising results of the previous chapter to the line spectral
 estimation, we provide mean-squared-error estimates for denoising line spectra
 with the atomic norm. The denoising algorithm amounts to soft thresholding the
 noise corrupted measurements in the atomic norm and we thus refer to the problem
-as \emph{Atomic norm Soft Thresholding} (AST). 
+as \emph{Atomic norm Soft Thresholding} (AST). Furthermore, we show that AST achieves near minimax rates for estimating line spectral signals when the frequencies are reasonably well separated. We also give bounds on how well we can localize the frequencies using our technique.
 
 We show in Chapter~\ref{chap:algos}, via an appeal to the theory of positive
 polynomials, that AST for line spectrum estimation can be solved using
@@ -50,7 +50,7 @@ semidefinite programming (SDP)~\cite{Megretski03}, and we provide a reasonably
 fast method for solving this SDP via the Alternating Direction Method of
 Multipliers (ADMM)~\cite{BertsekasParallelBook,admm2011}. Our ADMM
 implementation can solve instances with a thousand observations in a few
-minutes.
+minutes. 
 
 While the SDP based AST algorithm can be thought of as solving an infinite
 dimensional Lasso problem, the computational complexity can be prohibitive for
@@ -247,9 +247,9 @@ AST and the discretized Lasso algorithms obtain lower MSE compared to previous
 approaches, and the discretized algorithm is much faster on large problems.
 
 \subsubsection{Organization of this chapter}
-\todo{TODO: Change this organization}
-% We proceed as follows. In Section~\ref{sec:denoise-trig-moments}, we begin by
-% contextualizing our result in the canon of line spectral estimation. We
+% \todo{TODO: Change this organization}
+We proceed as follows. In Section~\ref{sec:denoise-trig-moments}, we describe how we can approach line spectral estimation using the framework of atomic norms. Then, in Section~\ref{sec:frequency-localize}, we describe how we can localize the frequencies using the dual problem. We discuss the choice of the regularization parameter in~\ref{subsec:parameter}. As discussed in Chapter~\ref{chap:ast}, an optimal value of the regularization parameter is To this end, we derive nonasymptotic upper and lower bounds for the Gaussian width of the atomic set for line spectral estimation. Then
+% Then, we contextualize our result in the canon of line spectral estimation. We
 % emphasize the advantages and shortcomings of prior art, and describe the methods
 % on which our analysis is built upon. We then in Section~\ref{sec:atomic-norms}
 % describe the semidefinite programming approach to line spectral estimation,
@@ -345,13 +345,14 @@ only if
 \[
 	 |\langle \hat{z}, a_{f,\phi} \rangle| =\left|\ \sum_{l=0}^{n-1} \hat{z}_l e^{-i 2\pi l f} \right| = \tau
 \]
-That is, $f$ is in the support of $\hat{x}$ if and only if it is a point of maximum modulus for the dual polynomial. Thus, the support
-may be determined by finding frequencies $f$ where the dual polynomial attains magnitude $\tau$. 
+That is, $f$ is in the support of $\hat{x}$ if and only if it is a point of
+maximum modulus for the dual polynomial. Thus, the support may be determined by
+finding frequencies $f$ where the dual polynomial attains magnitude $\tau$.
 
-Figure~\ref{fig:dual_poly_localize} shows the dual
-polynomial for $\eqref{eq:linespect:ast}$ with $n = 64$ samples and $k = 6$
- randomly chosen frequencies. The regularization
-parameter $\tau$ is chosen as described in Section \ref{subsec:parameter}.
+Figure~\ref{fig:dual_poly_localize} shows the dual polynomial for
+$\eqref{eq:linespect:ast}$ with $n = 64$ samples and $k = 6$ randomly chosen
+frequencies. The regularization parameter $\tau$ is chosen as described in
+Section \ref{subsec:parameter}.
 
 \section{Choosing the regularization parameter}\label{subsec:parameter}
 The choice of the regularization parameter is dictated by the noise model and
@@ -373,7 +374,7 @@ noise for $n > 3$:
 
 We show these computations in detail in the following section.
 
-\section{Estimation of Gaussian Width}
+\subsection{Estimation of Gaussian Width}
 \label{proof:dual-norm-bounds}
 
 This section derives non-asymptotic upper and lower bounds on the expected dual norm of gaussian noise vectors, which are asymptotically tight upto $\log\log$ factors. Recall that the dual atomic norm of $w$ is given by $\sqrt{n}\sup_{f \in [0,1]}|W_f|$ where

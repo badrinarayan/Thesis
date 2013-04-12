@@ -259,11 +259,12 @@ to derive the mean squared error rate that holds for all signals in
 Section~\ref{sec:universal-mse}. We present minimax lower bounds show the best
 rate that can be achieved for well separated signals in~\ref{sec:minimax}. We
 then provide the proofs of Theorem~\ref{main} showing near minimax MSE and
-Theorem~\ref{support} showing frequency localization guarantees
-in~\ref{sec:proofs}. Then, we contextualize our result in the canon of line
-spectral estimation and emphasize the advantages and shortcomings of prior art.
-Finally, in Section~\ref{sec:experiments}, we empirically demonstrate that the
-semidefinite programming approach outperforms MUSIC~\cite{music} and Cadzow's
+Theorem~\ref{support} showing frequency localization guarantees in
+Section~\ref{sec:proofs}. Then, in Section~\ref{sec:prony-method} we
+contextualize our result in the canon of line spectral estimation and emphasize
+the advantages and shortcomings of prior art. Finally, in
+Section~\ref{sec:experiments}, we empirically demonstrate that the semidefinite
+programming approach outperforms MUSIC~\cite{music} and Cadzow's
 technique~\cite{cadzow05}, both in terms of the MSE as guaranteed by
 Theorem~\ref{main} and in terms of the localization metrics defined by parts
 (i), (ii) and (iii) of Theorem~\ref{support}.
@@ -369,17 +370,16 @@ finding frequencies $f$ where the dual polynomial attains magnitude $\tau$.
 
 Figure~\ref{fig:dual_poly_localize} shows the dual polynomial for
 $\eqref{eq:linespect:ast}$ with $n = 64$ samples and $k = 6$ randomly chosen
-frequencies. The regularization parameter $\tau$ is chosen as described in
-Section \ref{subsec:parameter}.
+frequencies. In the next section, we show how to pick T=he regularization parameter $\tau$.
 
 \section{Choosing the regularization parameter}\label{subsec:parameter}
-The choice of the regularization parameter is dictated by the noise model and
-we show the optimal choice for white gaussian noise samples in our analysis. As
+The choice of the regularization parameter is dictated by the noise model and we
+derive the optimal choice for white gaussian noise samples in our analysis. As
 noted in Theorem~\ref{cor:expected-mse}, the optimal choice of the
-regularization parameter depends on the dual norm of the noise.  A simple
-lower bound on the expected dual norm occurs when we consider the maximum
-value of $n$ uniformly spaced points in the unit circle. Using the result of
-\cite{lr76}, the lower bound whenever $n \geq 5$ is
+regularization parameter depends on the dual norm of the noise. A simple lower
+bound on the expected dual norm occurs when we consider the maximum value of $n$
+uniformly spaced points in the unit circle. Using the result of \cite{lr76}, the
+lower bound whenever $n \geq 5$ is
 \[
 \sigma\sqrt{n\log(n) - \tfrac{n}{2} \log(4\pi\log(n))}\,.
 \]
@@ -418,45 +418,52 @@ Let us use a $1/N$-net of the torus $\mathbb{T}$ to estimate the expectation of
 $\sup_{f \in \mathbb{T}} {W_f}$. Define
 
 \begin{equation*}
-\mathbb{T}_ = \left\{t \in \mathbb{T} ~ \middle| ~ \abs{t-k/N} \leq 1/N \right\}.
+\mathbb{T} = \left\{t \in \mathbb{T} ~ \middle| ~ \abs{t-k/N} \leq 1/N \right\}.
 \end{equation*}
 
 We have
 \begin{align}
-\nonumber\E\left[\sup_{f \in T} W_f \right] & \leq \E\left[\sup_{1 \leq k \leq N} W_{k/N} \right] + \E\left[\sup_{f \in \mathbb{T}_k} \left(W_{f} - W_{k/N}\right) \right]\\
-& \leq \sqrt{\log(N)} + \frac{2 \pi n}{\sqrt{3}N} \E\left[\sup_{f \in \mathbb{T}_k} Y_f \right]\label{balance}
+\nonumber\E\left[\sup_{f \in T} |W_f| \right] & \leq \E\left[\sup_{1 \leq k \leq N} |W_{k/N}| \right] + \E\left[\sup_{f \in \mathbb{T}_k} \left|W_{f} - W_{k/N}\right| \right]\\
+& \leq \sqrt{\log(N)} + \frac{2 \pi n}{\sqrt{3}N} \E\left[\sup_{f \in \mathbb{T}_k} |Y_f| \right]\label{balance}
 \end{align}
 where 
 \begin{equation}
 Y_f = \frac{\sqrt{3} N  \left(W_f - W_{k/N}\right)}{4 \pi n}.
 \end{equation}
-We will now use Dudley's integral inequality to bound $\E\left[\sup_{f \in \mathbb{T}_k} Y_f \right]$. To proceed, note that the distance between indices $t$ and $s$ in $\mathbb{T}_k$ is given by
+We will now use Dudley's integral inequality (See, for example
+\cite{ledoux2011probability}) to bound $\E\left[\sup_{f \in \mathbb{T}_k} |Y_f|
+\right]$. To proceed, let us compute the pseudometric $\rho$ of the Gaussian
+process $\set{W_f}_f$ induced on the index set. For indices $t$ and $s$ in
+$\mathbb{T}_k$,
 \begin{align*}
 \rho^2(t,s) & := \E \abs{Y_t - Y_s}^2\\
 & = \frac{3 N^2}{8 \pi^2 n^2} \E \abs{X_t - X_s}^2\\
 & = \frac{3 N^2}{2 \pi^2 n^3} \sum_{k=0}^{n-1}{\sin^2(\pi k (t - s))}\\
 & \leq N^2 (t-s)^2.
 \end{align*}
-
-Thus, the diameter of the set $\mathbb{T}_k$
+Thus, the diameter of the index set $\mathbb{T}_k$ with respect to $\rho$
 \begin{align*}
-\diam_\rho(\mathbb{T}_k) &:= \sup_{t,s  \in \mathbb{T}_k}\rho(t,s) = 1\\
+\diam_\rho(\mathbb{T}_k) &:= \sup_{t,s  \in \mathbb{T}_k}\rho(t,s) = 1.
 \end{align*}
 Consequently the number $N(\mathbb{T}_k, \rho, \epsilon)$ of $\epsilon$ balls needed to cover $T_k$ under this metric $\rho$ is $1/\epsilon$. Now, by the application Dudley's integral inequality, we have
 \begin{align}
-\E\left[\sup_{t \in \mathbb{T}_k} Y_f \right] & \leq 24 \int_0^{\diam_\rho(T_k)} \sqrt{N(\mathbb{T}_k, \rho, \epsilon)} d\epsilon\\
+\E\left[\sup_{t \in \mathbb{T}_k} |Y_f| \right] & \leq 24 \int_0^{\diam_\rho(T_k)} \sqrt{N(\mathbb{T}_k, \rho, \epsilon)} d\epsilon\\
  & \leq 24 \int_0^1 \sqrt{\log(1/\epsilon)} d\epsilon = 12 \sqrt{\pi}. \label{dudley}
 \end{align}
 Thus, from \eqref{dudley} and \eqref{balance}, we have
 \begin{align*}
-\E\left[\sup_{f \in \mathbb{T}} W_f \right] & \leq  \sqrt{\log(N)} +  \frac{ 16 \pi^{3/2} n} { N}
+\E\left[\sup_{f \in \mathbb{T}} |W_f| \right] & \leq  \sqrt{\log(N)} +  \frac{ 16 \pi^{3/2} n} { N}
 \end{align*}
-
 
 Substituting $N = 16 n \sqrt{\pi^3 \log(n)},$ we get
 \[
 	\E\left[\sup_{f \in \mathbb{T}} W_f \right] \leq \left( 1 + \frac{1}{\log(n)} \right)\sqrt{\log(n) + \log(16 \pi^{3/2} \log(n))}
 \]
+By the concentration to mean of the Gaussian process, we have
+\begin{equation}
+\label{eq:gaussian-concentration}
+\sup_{f \in \mathbb{T}} |\vabs{w}{a(f)}| \leq 2\E\left[\sup_{f \in \mathbb{T}} |W_f| \right]
+\end{equation} with high probability.
 \subsection{Lower Bound}
 
 The covariance function of $W_f$ is
@@ -506,18 +513,20 @@ Combining this result with the upper bound, we have shown that the lower bound i
 \section{Universal Mean Squared Error Guarantee} % (fold)
 \label{sec:universal-mse}
 
-We can set the regularization parameter $\tau$ equal to an upper bound on the
-expected dual atomic norm, i.e.,
+We can set the regularization parameter $\tau$ greater than the upper bound on the expected dual atomic norm, i.e., we let $\eta \in [1,\infty]$ and pick
 \begin{equation}
 \label{eq:tau}
-\tau = \sigma\left(1  +  \frac{1}{\log(n)}\right)\sqrt{n \log(n) + n\log(4\pi\log(n))}.
+\tau = \sigma\eta\left(1  +  \frac{1}{\log(n)}\right)\sqrt{n \log(n) + n\log(16\pi^{3/2}\log(n))}.
 \end{equation}
-and apply Theorem \ref{cor:expected-mse} to guarantee Mean-Squared Error
-consistency of AST for Line spectral Estimation. Doing so yields the asymptotic
-result in Theorem \ref{thm:expmsels}. However, as noted in
-Section~\ref{sec:convergence-rate}, faster convergence rates may be possible
-under some conditions.
-
+The application of Theorem \ref{cor:expected-mse} with the choice $\eta = 1$to
+guarantee Mean-Squared Error consistency of AST for Line spectral Estimation.
+Doing so yields the asymptotic result in Theorem \ref{thm:expmsels}. However, as
+noted in Section~\ref{sec:convergence-rate}, faster convergence rates may be
+possible under some conditions, whenever $\eta > 1.$ Due to concentration to mean~\eqref{eq:gaussian-concentration}, whenever $\eta > 1,$ with overwhelming probability,
+\begin{equation}
+\label{eq:tau2}
+\sup_{f \in \mathbb{T}} \left|\vabs{w}{a(f)}\right| \leq 2\eta^{-1}\tau.
+\end{equation}
 A recent result by Candes and Fernandez-Granda~\cite{CandesGranda} establishes
 that in the noiseless case, the frequencies localized by the dual polynomial are
 exact provided the minimum separation between the frequencies is at least $4/n$
@@ -534,8 +543,6 @@ it may be impossible to achieve robust recovery if frequencies can be close to
 each other.
 
 % section universal-mse (end)
-
-
 \section{What is the best rate we can expect?}\label{sec:minimax}
 
 Using results about minimax achievable rates for linear models~
@@ -647,11 +654,13 @@ achieves the atomic norm is the sparsest decomposition by explicitly
 constructing a dual certificate~\cite{dualcert} of optimality, whenever the
 composing frequencies $f_1, \ldots, f_k$ satisfy a minimum separation
 condition~\eqref{min-sep}. In the rest of the chapter, we always make the
-technical assumption that $n > 256$.
+technical assumption that $n > 256$. The following is just a restatement of Definition~\ref{def:dual-certificate} for trigonometric moments:
 
 \begin{definition}[Dual Certificate]
 \label{dual-cert}
-A vector $q \in \C^n$ is called a dual certificate for $x^\star$ if for the corresponding trigonometric polynomial $Q(f) := \langle q, a(f) \rangle$, we have
+A vector $q \in \C^n$ is called a dual certificate for the decomposition \[
+x^\star = \sum_{l=1}^k c_l a(f_l)
+\] if for the corresponding trigonometric polynomial $Q(f) := \langle q, a(f) \rangle$, we have
 $$Q(f_l) = \operatorname{sign}(c_l), l = 1, \ldots, k$$  and $$|Q(f)| < 1$$ whenever $f\not\in \{ f_1, \ldots, f_k\}$.
 \end{definition}
 The authors of ~\cite{cg_exact12} not only explicitly constructed 
@@ -675,10 +684,9 @@ the polynomial $Q(f)$ behaves like a quadratic and there exist constants $C_a, C
 \end{enumerate}
 \end{theorem}
 
-We use results in~\cite{cg_noisy} and~\cite{btr12} (reproduced in Appendix D for
-convenience) and borrow several ideas from the proofs in~\cite{cg_noisy}, with
-nontrivial modifications to establish the error rate of atomic norm
-regularization.
+We use results in~\cite{cg_noisy} and~\cite{btr12} and borrow several ideas from
+the proofs in~\cite{cg_noisy}, with nontrivial modifications to establish the
+error rate of atomic norm regularization.
 
 \subsection{Near optimal MSE}
 
@@ -694,20 +702,18 @@ vector by $e = x^\star - \hat{x}$. Then, the difference measure $\nu = \mu -
 \hat{\mu}$ is a representing measure for $e$. We first express the denoising
 error $\vnorm{e}_2^2$ as the integral of the error function $E(f) = \langle e,
 a(f) \rangle,$ against the difference measure $\nu$:
-
 \begin{align*}
 \vnorm{e}_2^2 &= \langle e, e \rangle\\
 & = \left\langle e, \int_0^1 a(f) \nu(df) \right\rangle\\
 & =  \int_0^1  \left\langle e,a(f) \right\rangle \nu(df)\\
 & = \int_0^1 E(f) \nu(df).
 \end{align*}
-
-
-Using a Taylor series approximation in each of 
-the near regions $N_j$, we first show that the denoising error (or in general any 
-integral of a trigonometric polynomial against the difference measure) can be controlled in terms 
-of an integral in the far region $F$ and the zeroth, first, and second 
-moments of the difference measure in the near regions.  The precise result is presented in the following lemma, whose proof is given in Appendix \ref{apx:pf:taylor}.
+Using a Taylor series approximation in each of the near regions $N_j$, we first
+show that the denoising error (or in general any integral of a trigonometric
+polynomial against the difference measure) can be controlled in terms of an
+integral in the far region $F$ and the zeroth, first, and second moments of the
+difference measure in the near regions. The precise result is presented in the
+following lemma:
 \begin{lemma}
 \label{part1}
 Define
@@ -771,10 +777,21 @@ As a consequence of our choice of $\tau$ in \eq{tau}, we can show that $\vnorm{E
 &\leq \sup_{f \in [0,1]} \left| \langle w, a(f) \rangle \right| +  \tau\\
 \label{errbd} \numberthis &\leq (1 +2\eta^{-1})\tau \leq 3 \tau, \text{with high probability.}
 \end{align*}
-The second inequality follows from the optimality conditions for \eqref{AST}. It is shown in Appendix C of ~\cite{btr12} that the penultimate inequality holds with high probability.
+The second inequality follows from the optimality conditions for \eqref{AST} and
+the penultimate inequality is from \eqref{eq:tau2}.
 
-Therefore, to complete the proof, it suffices to show that the other terms on the right hand side of \eqref{ebd} are $O(\frac{k\tau}{n})$.  While there is no exact frequency recovery in the presence of noise, we can hope to get the frequencies approximately right. Hence, we expect that the integral in the far region can be well controlled and the local integrals of the difference measure in the near regions are also small due to cancellations. Next, we utilize the properties of the dual polynomial in Theorems~\ref{dual-stab} and another polynomial given in Theorem~\ref{dual-lin}  in Appendix \ref{apx:collection} to show that the zeroth and first moments of $\nu$ may be controlled in terms of the other two quantities in \eqref{ebd} to upper bound the error rate. The following lemma is similar to Lemmas 2.2 and 2.3 in~\cite{cg_noisy}, but we have made several modifications to adapt it to our signal and noise model. For completeness, we provide the proof in Appendix \ref{apx:pf:I0I1}. 
-
+Therefore, to complete the proof, it suffices to show that the other terms on
+the right hand side of \eqref{ebd} are $O(\frac{k\tau}{n})$. While there is no
+exact frequency recovery in the presence of noise, we can hope to get the
+frequencies approximately right. Hence, we expect that the integral in the far
+region can be well controlled and the local integrals of the difference measure
+in the near regions are also small due to cancellations. Next, we utilize the
+properties of the dual polynomial in Theorems~\ref{dual-stab} and another
+polynomial given in Theorem~\ref{dual-lin} in Appendix \ref{apx:collection} to
+show that the zeroth and first moments of $\nu$ may be controlled in terms of
+the other two quantities in \eqref{ebd} to upper bound the error rate. The
+following lemma is similar to Lemmas 2.2 and 2.3 in~\cite{cg_noisy}, but we have
+made several modifications to adapt it to our signal and noise model.
 \begin{lemma}
 \label{part2}
 There exists numeric constants $C_0$ and $C_1$ such that
@@ -838,8 +855,7 @@ between the total variation norms of $\nu$ on and off the support. The upper bou
 \|_{{\mathrm{TV}}} - \| P_{T} ( \nu) \|_{{\mathrm{TV}}}$ using the fact that a constructed dual
 certificate $Q$ has unit magnitude for every element in the support
 $T$ of $P_T ( \nu)$ whence we have $\| P_T ( \nu) \|_{{\mathrm{TV}}} = \int_{\mathbb{T}}
-Q ( f) \nu ( d f)$. A critical element in deriving both the lower and upper bounds is that the dual polynomial $Q$ has quadratic drop in each near regions $N_j$ and is bounded away from one in the far region $F$. Finally, by combing these bounds and carefully controlling the regularization parameter, we get the desired result summarized in the following lemma. The details of the proof are fairly technical and we leave them to Appendix \ref{apx:pf:I2far}.
-
+Q ( f) \nu ( d f)$. A critical element in deriving both the lower and upper bounds is that the dual polynomial $Q$ has quadratic drop in each near regions $N_j$ and is bounded away from one in the far region $F$. Finally, by combing these bounds and carefully controlling the regularization parameter, we get the desired result summarized in the following lemma. 
 \begin{lemma}
 Let $\tau = \eta\sigma \sqrt{n\log(n)}$. If $\eta>1$ is large enough, then there exists a numerical constant $C$ such that, with high probability
 \label{part3}
@@ -908,7 +924,10 @@ Using Lemma~\ref{part1},
 \label{w-expand}& \leq 2\eta^{-1} \tau \left(\frac{C k \tau}{n} + I_0 + I_1 + I_2\right)\nonumber \\
  & \leq C \eta^{-1} \tau \left(\frac{k\tau}{n} + I_2 + \int_F |\nu|(df) \right)
 \end{align}
-with high probability, where for the penultimate inequality we used our choice of $\tau$ and $\vnorm{\left\langle w,  a(f)  \right\rangle}_\infty \leq 2\eta^{-1} \tau$ with high probability, a fact shown in Appendix C of ~\cite{btr12}. 
+with high probability, where for the penultimate inequality we used our choice
+of $\tau$ and $\vnorm{\left\langle w, a(f) \right\rangle}_\infty \leq 2\eta^{-1}
+\tau$ with high probability from \eqref{eq:tau2}.
+
 Substituting \eqref{w-expand} in \eqref{opt-cond}, we get
 \begin{align*}
 & \vnorm{\mu}_{\mathrm{TV}} + C \eta^{-1} \tau \left(\frac{k\tau}{n} + I_2 + \int_F |\nu|(df) \right)\\
@@ -1053,16 +1072,16 @@ large grid. Since the original submission of this manuscript,
 Cand\`es and Fernandez-Granda~\cite{CandesGranda} showed that our SDP
 formulation exactly recovers the correct frequencies in the noiseless case.
 
-To date, line spectral analysis may be broadly classified into two camps.
-\emph{Subspace methods}~\cite{music,esprit,cadzow05,ssa} build upon polynomial
-interpolation~\cite{prony1795} and exploit certain low rank structure in the
-spectrum estimation problem for denoising. Research on subspace approaches has
-yielded several standard algorithms that are widely deployed and shown to
-achieve Cram\'{e}r-Rao bound asymptotically~\cite{fri,cramer-subspace}.
-However, the sensitivity to noise and model order is not well understood, and
-there are few guarantees of how these algorithms perform given a limited number
-of noisy measurements. For a review of many of these classical approaches, see
-for example~\cite{StoicaMoses}.
+% To date, line spectral analysis may be broadly classified into two camps.
+% \emph{Subspace methods}~\cite{music,esprit,cadzow05,ssa} build upon polynomial
+% interpolation~\cite{prony1795} and exploit certain low rank structure in the
+% spectrum estimation problem for denoising. Research on subspace approaches has
+% yielded several standard algorithms that are widely deployed and shown to
+% achieve Cram\'{e}r-Rao bound asymptotically~\cite{fri,cramer-subspace}.
+% However, the sensitivity to noise and model order is not well understood, and
+% there are few guarantees of how these algorithms perform given a limited number
+% of noisy measurements. For a review of many of these classical approaches, see
+% for example~\cite{StoicaMoses}.
 
 More recently, approaches based on convex optimization have gained favor and
 have been demonstrated to perform well on a variety of spectrum estimation
@@ -1121,11 +1140,8 @@ Theorem~\ref{support}, but use a worst case $L_2$ bound on the noise samples.
 Here, we improve these recent results in our proof of Theorem~\ref{support},
 providing tighter guarantees under the Gaussian noise model.
  
-
-
 \section{Experiments}
 \label{sec:experiments}
-
 We compared the performance of AST, the discretized Lasso approximation, the
 Matrix Pencil, MUSIC and Cadzow's method, both in terms of the mean squared
 estimation error as in Theorem~\ref{main} and frequency localization. For our
@@ -1402,7 +1418,9 @@ ingredient in our proof.
 
 \begin{theorem}[Lemma 2.7 in~\cite{cg_noisy}]
 \label{dual-lin}
-For any $f_1, \ldots, f_k$ satisfying \eqref{min-sep} and any sign vector $v \in \C^k$ with $|v_j|=1$, there exists a polynomial $Q_1 = \left<q_1, a(f)\right>$ for some $q_1 \in \C^n$ with the following properties: 
+For any $f_1, \ldots, f_k$ satisfying \eqref{min-sep} and any sign vector $v \in
+\C^k$ with $|v_j|=1$, there exists a polynomial $Q_1 = \left<q_1, a(f)\right>$
+for some $q_1 \in \C^n$ with the following properties:
 \begin{enumerate}
 \item For every $f \in N_j,$ there exists a numerical constant $C_a^1$ such that
 \begin{equation}

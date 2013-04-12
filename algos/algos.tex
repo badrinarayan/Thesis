@@ -2,12 +2,12 @@
 \chapter{Algorithms}
 \label{chap:algos}
 
-As alluded to in Chapter 1, the problems of atomic norm decomposition and
-regularization have linear and quadratic objectives can be efficiently computed
-provided there is an efficient way to test membership in the constraint sets.
-The constraint sets of the primal and dual problems are the sublevel sets of the
-atomic and the dual atomic norm. Therefore, it is sufficient to develop
-efficient characterizations of the atomic norm ball.
+The problems of atomic norm decomposition and regularization have linear and
+quadratic objectives can be efficiently be optimized, provided there is an
+efficient way to test membership in the constraint sets. The constraint sets of
+the primal and dual problems are the sublevel sets of the atomic and the dual
+atomic norm. Therefore, it is sufficient to develop efficient characterizations
+of the atomic norm ball.
 
 For the special case of Fourier measurements, the atomic norm ball has
 semidefinite characterizations which we derive in this chapter. The positive
@@ -63,16 +63,17 @@ corresponding to a phase-symmetric trigonometric moment curve. The unit norm
 ball of the atomic sets are precisely the convex hulls of the atomic sets. In
 Section~\ref{sec:preliminaries}, we will look at these sets. We first show the
 classical characterization of the conical hull of $\A_+$, called the moment
-cone, corresponds to allowable observations for the the case of line spectral
-estimation with nonnegative amplitudes, or alternatively valid trigonometric
-moments of a positive measure on the torus $\mathbb{T}$. 
+cone, which corresponds to allowable observations for the the case of line
+spectral estimation with nonnegative amplitudes, or alternatively valid
+trigonometric moments of a positive measure on the torus $\mathbb{T}$.
 
-We provide semidefinite characterizations of the atomic sets in Section~\ref{sec:sdp_for_trigonometric_moments}. As a straightforward consequence of classical result, we can write down a semidefinite
-characterization of $\conv(\A_+)$. Before we
-state our results, we will need a bit of notation. Define the map
-$T_n:\mathbb{C}^n \rightarrow \mathbb{C}^{n\times n}$ which creates a Hermitian
-Toeplitz matrix out of its input, that is
-
+We provide semidefinite characterizations of the atomic sets in
+Section~\ref{sec:sdp_for_trigonometric_moments}. As a straightforward
+consequence of classical result, we can write down a semidefinite
+characterization of $\conv(\A_+)$. Before we state our results, we will need a
+bit of notation. Define the map $T_n:\mathbb{C}^n \rightarrow
+\mathbb{C}^{n\times n}$ which creates a Hermitian Toeplitz matrix out of its
+input, that is
 \[
 T_n(x)= \left[
 \begin{array}{ccccc} x_1 & x_2 & \ldots & x_n\\ 
@@ -81,7 +82,7 @@ x^*_2 & x_1  & \ldots & x_{n-1}\\
  x^*_n & x^*_{n-1}  & \ldots & x_1
  \end{array}\right]
 \]
-We may suppress the subscript in $T_n$ unless we wish to explicitly characterize the dependence on $n$ and write it as $T(x)$ or $T x$. 
+In the following, we sometimes suppress the subscript in $T_n$ unless we wish to explicitly characterize the dependence on $n$ and write it as $T(x)$ or $T x$. 
 \begin{theorem}
 \label{thm:positive-linespect-sdp}
 Suppose $x = (x_0 \cdots x_{n-1})^T \in \C^n.$ Then, 
@@ -92,12 +93,10 @@ Suppose $x = (x_0 \cdots x_{n-1})^T \in \C^n.$ Then,
 		\end{cases}
 	\]
 \end{theorem}
-
-However, The semidefinite characterization of $\conv{\A}$ requires some
-computation.The characterization of moment cone allows us to describe the convex
-hull of the general atomic moments~$\conv(\A)$ and we will derive the following
-semidefinite characterization:
-
+The semidefinite characterization of $\conv(\A)$ requires some computation.The
+characterization of moment cone allows us to describe the convex hull of the
+general atomic moments~$\conv(\A)$ and we will derive the following semidefinite
+characterization:
 \begin{theorem}\label{thm:sdp-char}
 	For $x\in \C^n$,
 	\begin{equation}
@@ -109,7 +108,10 @@ x^* & t
 	\end{equation}
 \end{theorem}
 
-The characterization of atomic norm ball of $\A$ can also be derived by working on the dual problem. In fact, for any $x,$ the optimization problem
+The characterization of atomic norm ball of $\A$ can also be derived by working
+on the dual problem, as we shall show in
+Section~\ref{sec:sdp_for_trigonometric_polynomials}. In fact, for any $x,$ the
+optimization problem
 \begin{equation}
 	\label{eq:dual-form-atomic-norm}
 	\begin{aligned}
@@ -126,13 +128,14 @@ is the dual characterization which has an optimum value $\vnorm{x}_\A$. For the 
 is the set of complex trigonometric polynomials with a maximum modulus of $1$
 and is characterized by the Bounded Real Lemma. 
 
-When there are no efficient characterization, we may resort to a discretized
+When there are no efficient characterizations, we may resort to a discretized
 approach which may be thought of as an approximation to the atomic norm defined
 by equation~\eqref{eq:dual-form-atomic-norm} by relaxing the semi-infinite
-program to a finite set of inequalities. We show convergence rates for this
-approximation for the line spectral estimation problem and the system
-identification problem. In these case, the atomic soft thresholding problem can
-be approximated by solving a Lasso problem on an overcomplete grid.
+program to a finite set of inequalities. In section ~\ref{sec:discretization},
+We show convergence rates of this approximation for the line spectral estimation
+problem and the system identification problem. In these case, the atomic soft
+thresholding problem can be approximated by solving a Lasso problem on an
+overcomplete grid.
 
 % subsection main_results (end)
 
@@ -554,7 +557,8 @@ Note that the dual solution $\hat{z}$ can be obtained as $\hat{z} = y - \hat{x}$
 from the primal solution $\hat{x}$ obtained from ADMM by using
 Lemma~\ref{lem:dual-problem}.
 
-\section{Discretization}
+\section{Discretization} %(fold)
+\label{sec:discretization}
 
 In general the atomic sets may not have a computable characterization. Even if
 there is an SDP characterization and an efficient implementation using
@@ -943,14 +947,4 @@ Then we have
 Here,~\eq{tri-ineq}  is the triangle inequality.~\eq{nuc-2-l2} follows because the nuclear norm of a rank one operator is equal to the product of the $\ell_2$ norm of the factors.~\eq{l2-dist-formula} follows from~\eq{zeta-dot}.  The final inequality follows from analyzing the taylor series of the preceding expression.
 \end{proof}
 
-% section dast_for_system_identification (end)
-
-% \begin{subappendices}
-% 
-% \section{Proof of Caratheodory's Theorem} % (fold)
-% \label{pf:caratheodory}
-% 
-% 
-% 
-% % section caratheodory (end)	
-% \end{subappendices}
+% section discretization (end)

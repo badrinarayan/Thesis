@@ -247,10 +247,28 @@ AST and the discretized Lasso algorithms obtain lower MSE compared to previous
 approaches, and the discretized algorithm is much faster on large problems.
 
 \subsubsection{Organization of this chapter}
-% \todo{TODO: Change this organization}
-We proceed as follows. In Section~\ref{sec:denoise-trig-moments}, we describe how we can approach line spectral estimation using the framework of atomic norms. Then, in Section~\ref{sec:frequency-localize}, we describe how we can localize the frequencies using the dual problem. We discuss the choice of the regularization parameter in~\ref{subsec:parameter}. As discussed in Chapter~\ref{chap:ast}, an optimal value of the regularization parameter is To this end, we derive nonasymptotic upper and lower bounds for the Gaussian width of the atomic set for line spectral estimation. Then
-% Then, we contextualize our result in the canon of line spectral estimation. We
-% emphasize the advantages and shortcomings of prior art, and describe the methods
+
+We proceed as follows. In Section~\ref{sec:denoise-trig-moments}, we describe
+how we can approach line spectral estimation using the framework of atomic
+norms. Then, in Section~\ref{sec:frequency-localize}, we describe how we can
+localize the frequencies using the dual problem. We discuss the choice of the
+regularization parameter in~\ref{subsec:parameter} and to this end, we derive
+nonasymptotic upper and lower bounds for the Gaussian width of the atomic set
+for line spectral estimation. We specialize the results of the previous chapter
+to derive the mean squared error rate that holds for all signals in
+Section~\ref{sec:universal-mse}. We present minimax lower bounds show the best
+rate that can be achieved for well separated signals in~\ref{sec:minimax}. We
+then provide the proofs of Theorem~\ref{main} showing near minimax MSE and
+Theorem~\ref{support} showing frequency localization guarantees
+in~\ref{sec:proofs}. Then, we contextualize our result in the canon of line
+spectral estimation and emphasize the advantages and shortcomings of prior art.
+Finally, in Section~\ref{sec:experiments}, we empirically demonstrate that the
+semidefinite programming approach outperforms MUSIC~\cite{music} and Cadzow's
+technique~\cite{cadzow05}, both in terms of the MSE as guaranteed by
+Theorem~\ref{main} and in terms of the localization metrics defined by parts
+(i), (ii) and (iii) of Theorem~\ref{support}.
+
+%, and describe the methods
 % on which our analysis is built upon. We then in Section~\ref{sec:atomic-norms}
 % describe the semidefinite programming approach to line spectral estimation,
 % originally introduced in~\cite{btr12}, and explain how it relates to other
@@ -485,7 +503,8 @@ Combining this result with the upper bound, we have shown that the lower bound i
 % Plugging in $N = 4\pi n \log(n)$ and using \eq{maximum-modulus} and
 % \eq{grid-approx} establishes a tight upper bound.
 
-\section{Universal Mean Squared Error Guarantee}
+\section{Universal Mean Squared Error Guarantee} % (fold)
+\label{sec:universal-mse}
 
 We can set the regularization parameter $\tau$ equal to an upper bound on the
 expected dual atomic norm, i.e.,
@@ -514,6 +533,7 @@ measurement operator which samples line spectral signals is highly coherent and
 it may be impossible to achieve robust recovery if frequencies can be close to
 each other.
 
+% section universal-mse (end)
 
 
 \section{What is the best rate we can expect?}\label{sec:minimax}

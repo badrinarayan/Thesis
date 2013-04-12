@@ -619,7 +619,8 @@ equation. Specific constants will be highlighted by accents or subscripts.
 We describe the preliminaries and notations, and restate some recent results we
 used before sketching the proof of Theorems \ref{main} and \ref{support}.
 
-\subsection{Preliminaries}
+\subsection{Preliminaries} % (fold)
+\label{sub:linespect:measures}
 The sample $x^\star_j$ may be regarded as the $j$th trigonometric moment of 
 the discrete measure $\mu$ given by \eqref{mu}:
 \begin{eqnarray*}
@@ -638,9 +639,20 @@ or equivalently in terms of a corresponding \emph{representing measure} $\mu$ gi
 \[
 x^\star = \int_0^1 a(f) \mu(df)
 \]
-There is a one-one correspondence between atomic decompositions and representing measures. Note that there are infinite atomic decompositions of $x^\star$ and also infinite corresponding representing measures. However, since every collection of $n$ atoms is linearly independent, $\A$ forms a full spark frame~\cite{spark} and therefore the problem of finding the sparsest decomposition of $x^\star$ is well-posed if there is a decomposition which is at least $n/2$ sparse.
+There is a one-one correspondence between atomic decompositions and representing
+measures. Note that there are infinite atomic decompositions of $x^\star$ and
+also infinite corresponding representing measures. However, since every
+collection of $n$ atoms is linearly independent, $\A$ forms a full spark
+frame~\cite{spark} and therefore the problem of finding the sparsest
+decomposition of $x^\star$ is well-posed if there is a decomposition which is at
+least $n/2$ sparse.
 
-The atomic norm of a vector $z$ defined in \eqref{def-atnorm} is the minimum total variation norm~\cite{cs_otg,tvnorm} $\vnorm{\mu}_{\mathrm{TV}}$ of all representing measures $\mu$ of $z$. So, minimizing the total variation norm is the same as finding a decomposition that achieves the atomic norm.
+The atomic norm of a vector $z$ defined in \eqref{def-atnorm} is the minimum
+total variation norm~\cite{cs_otg,tvnorm} $\vnorm{\mu}_{\mathrm{TV}}$ of all
+representing measures $\mu$ of $z$. So, minimizing the total variation norm is
+the same as finding a decomposition that achieves the atomic norm.
+
+% subsection linespect:measures (end)
 
 \subsection{Dual Certificate and Exact Recovery}
 

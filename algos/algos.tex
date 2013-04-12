@@ -3,7 +3,7 @@
 \label{chap:algos}
 
 The problems of atomic norm decomposition and regularization have linear and
-quadratic objectives can be efficiently be optimized, provided there is an
+quadratic objectives, and can be efficiently be optimized provided there is an
 efficient way to test membership in the constraint sets. The constraint sets of
 the primal and dual problems are the sublevel sets of the atomic and the dual
 atomic norm. Therefore, it is sufficient to develop efficient characterizations
@@ -24,24 +24,27 @@ and this essentially reduces to solving a Lasso problem on an overcomplete grid.
 Our proofs for discretized atomic soft thresholding (DAST) demonstrate why Lasso
 is often successful even for off-grid data.
 
-
 \subsection*{Summary and Organization of this chapter} % (fold)
 \label{sub:main_results}
 Our goal in this chapter is to develop an algorithm to solve the Atomic Soft
-Thresholding (AST) problem:
+Thresholding (AST) problem, defined in Chapter~\ref{chap:ast}:
 \begin{align}
 \begin{split}
 \minimize_x & \frac{1}{2}\vnorm{y-x}_2^2 + \tau \vnorm{x}_\A,
 \end{split}	
 \end{align}
-and its dual:
+and its corresponding dual problem:
 \begin{align}
 \begin{split}
 \maximize_x & \frac{1}{2}\left(\vnorm{y}_2^2 - \vnorm{y-\tau q}_2^2\right)\\
 \text{subject to } & \vnorm{q}_\A^* \leq 1. 
 \end{split}
 \end{align}
-To this end, we will develop computable characterizations of the atomic norm and its dual. First, let us recall the definition of the trigonometric monomial $a(f),$ defined in Chapter~\ref{chap:linespect} which form the basic atoms for Line Spectral Estimation:
+For certain atomic sets, we can compute the atomic norms efficiently. We will
+develop computable characterizations of the atomic norm and its dual for line
+spectral atomic sets defined in Chapter~\ref{chap:linespect}. First, let us
+recall the definition of the trigonometric monomial $a(f),$ which form the basic
+atoms for Line Spectral Estimation:
 {\footnotesize
 \[
 a(f) = \begin{pmatrix}
@@ -61,19 +64,17 @@ The first set $\A_+$ is a one dimensional manifold called the trigonometric
 moment curve and the second set $\A$ is the two dimensional manifold
 corresponding to a phase-symmetric trigonometric moment curve. The unit norm
 ball of the atomic sets are precisely the convex hulls of the atomic sets. In
-Section~\ref{sec:preliminaries}, we will look at these sets. We first show the
-classical characterization of the conical hull of $\A_+$, called the moment
-cone, which corresponds to allowable observations for the the case of line
-spectral estimation with nonnegative amplitudes, or alternatively valid
+Section~\ref{sec:preliminaries}, we will look at these sets. We first describe
+the classical characterization of the conical hull of $\A_+$ which is called the moment cone. This corresponds to allowable observations for the the case of line
+spectral estimation with nonnegative amplitudes, or in other words, valid
 trigonometric moments of a positive measure on the torus $\mathbb{T}$.
 
-We provide semidefinite characterizations of the atomic sets in
-Section~\ref{sec:sdp_for_trigonometric_moments}. As a straightforward
-consequence of classical result, we can write down a semidefinite
-characterization of $\conv(\A_+)$. Before we state our results, we will need a
-bit of notation. Define the map $T_n:\mathbb{C}^n \rightarrow
-\mathbb{C}^{n\times n}$ which creates a Hermitian Toeplitz matrix out of its
-input, that is
+Based on these classical results, we derive semidefinite characterizations of
+the atomic sets in Section~\ref{sec:sdp_for_trigonometric_moments}. As a
+straightforward consequence, we can write down a semidefinite characterization
+of $\conv(\A_+)$. Before we state our results, we will need a bit of notation.
+Define the map $T_n:\mathbb{C}^n \rightarrow \mathbb{C}^{n\times n}$ which
+creates a Hermitian Toeplitz matrix out of its input, that is
 \[
 T_n(x)= \left[
 \begin{array}{ccccc} x_1 & x_2 & \ldots & x_n\\ 
@@ -83,7 +84,7 @@ x^*_2 & x_1  & \ldots & x_{n-1}\\
  \end{array}\right]
 \]
 In the following, we sometimes suppress the subscript in $T_n$ unless we wish to explicitly characterize the dependence on $n$ and write it as $T(x)$ or $T x$. 
-\begin{theorem}
+\begin{theorem}[SDP for Positive Trigonometric Moments]
 \label{thm:positive-linespect-sdp}
 Suppose $x = (x_0 \cdots x_{n-1})^T \in \C^n.$ Then, 
 	\[
@@ -93,11 +94,11 @@ Suppose $x = (x_0 \cdots x_{n-1})^T \in \C^n.$ Then,
 		\end{cases}
 	\]
 \end{theorem}
-The semidefinite characterization of $\conv(\A)$ requires some computation.The
-characterization of moment cone allows us to describe the convex hull of the
-general atomic moments~$\conv(\A)$ and we will derive the following semidefinite
-characterization:
-\begin{theorem}\label{thm:sdp-char}
+In contrast to $\conv(\A_+)$, the semidefinite characterization of $\conv(\A)$
+requires some computation.The characterization of moment cone allows us to
+describe the convex hull of the general atomic moments~$\conv(\A)$ and we will
+derive the following semidefinite characterization:
+\begin{theorem}[SDP for General Trigonometric Moments]\label{thm:sdp-char}
 	For $x\in \C^n$,
 	\begin{equation}
 	\label{eq:atomic_sdp}
@@ -125,25 +126,26 @@ is the dual characterization which has an optimum value $\vnorm{x}_\A$. For the 
 	= \setof{q \in \C^n}{\sup_{a \in \A}\vabs{q}{a} \leq 1} \\
 	&= \setof{q \in \C^n}{\sum_{j=0}^{n-1}{|q_j \exp(i 2\pi j f)|} \leq 1, \text{ for all } f \in \mathbb{T}}
 \end{align}
-is the set of complex trigonometric polynomials with a maximum modulus of $1$
-and is characterized by the Bounded Real Lemma. 
+corresponds precisely to the set of complex trigonometric polynomials with a
+maximum modulus of $1$ and is characterized by the Bounded Real Lemma.
 
 When there are no efficient characterizations, we may resort to a discretized
 approach which may be thought of as an approximation to the atomic norm defined
-by equation~\eqref{eq:dual-form-atomic-norm} by relaxing the semi-infinite
-program to a finite set of inequalities. In section ~\ref{sec:discretization},
-We show convergence rates of this approximation for the line spectral estimation
-problem and the system identification problem. In these case, the atomic soft
-thresholding problem can be approximated by solving a Lasso problem on an
-overcomplete grid.
+by equation~\eqref{eq:dual-form-atomic-norm} by relaxing the infinite linear
+constraints in the semi-infinite program to a finite set of inequalities. In
+section ~\ref{sec:discretization}, We show convergence rates of this
+approximation for the line spectral estimation problem and the system
+identification problem. In these case, the atomic soft thresholding problem can
+be approximated by solving a Lasso problem on an overcomplete grid.
 
 % subsection main_results (end)
 
 \section{Preliminaries} % (fold)
 \label{sec:preliminaries}
 
-The observations in a line spectral estimation problem may be regarded as
-trigonometric moments of a measure. 
+As described in section~\ref{sub:linespect:measures}, the observations in a
+spectral estimation problem may be regarded as trigonometric moments of a
+measure on the torus $\mathbb{T} = [0,1].$
 
 \begin{definition}[Trigonometric Moments]
 Given a measure $\mu$ defined on the torus $\mathbb{T}$, the $m$th
@@ -154,18 +156,18 @@ trigonometric moment is defined by
 \end{equation}
 \end{definition}
 
-By a simple reparametrization, the $m$th trigonometric moment may be described
-as complex moments $\int_\mathbb{T} z^m \mu(dz)$ when we regard $\mu$ as defined
-on the unit circle. In this section, we will review two classical results. 
+By a simple reparametrization, the $m$th trigonometric moment may also be
+described as complex moments $\int_\mathbb{T} z^m \mu(dz)$ when we regard $\mu$
+as a measure supported on the unit circle in the complex plane. In this section,
+we will review two classical results, for trigonometric moments due to \emph{positive measures}.
 
 The first theorem, due to Herglotz gives a complete characterization of the
-infinite sequence of Trigonometric moments for positive measures. 
+infinite sequence of Trigonometric moments for positive measures. Since the proof is not too long, we provide it here.
 \begin{theorem}[Herglotz Theorem]\label{thm:herglotz}
 	The sequence of complex numbers $\{x_m\}_{m=-\infty}^{\infty}$ are
 trigonometric moments of a positive Borel measure $\mu$ on $\mathbb{T}$ if and
 only if the sequence $\{x_m\}_{m=-\infty}^{\infty}$ is positive definite.
 \end{theorem}
-
 \begin{proof}
 
 A sequence $\set{x_m}$ is positive definite if for every $n \in \N$, and every
@@ -176,7 +178,6 @@ this condition as $T_n x \succeq 0$ for every $n \in \N.$
 Suppose indeed the set $\set{x_m}$ is a sequence of trigonometric moments
 corresponding to some measure $\mu > 0$ on $\mathbb{T}.$ Then, for any $n \in
 \N,$
-
 \begin{align*}
 	\sum_{k,l=1}^n x_{k-l} c_k c_l^* &= \sum_{k,l=1}^n c_k c_l^* \int \exp(i 2 \pi (k-l) t ) \mu (dt)\\
 	&= \int \left(\sum_{k=1}^n c_k \exp(i 2 \pi k t) \right) \left(\sum_{k=1}^n c_l \exp(i 2 \pi l t) \right)^* \mu (dt) \\
@@ -208,13 +209,13 @@ are tight and therefore by Helly selection theorem, there exists a subsequence
 $\mu_{n_k}$ which converges weakly to a measure $\mu$ on $\mathbb{T}.$ Finally, using~\ref{eq:moment-sequence-limit} we conclude that $\set{x_k}$ is the sequence of moments for the measure $\mu.$
 \end{proof}
 
-We are interested in \emph{discrete} positive measures, i.e., measures composed
-of a finite number of atoms at $f_1, \ldots, f_l$, so we can write
-
+Herglotz theorem characterizes arbitrary positive measures on the torus.
+However, for line spectral estimation, we are interested in \emph{discrete}
+positive measures, i.e., measures composed of a finite number of atoms at $f_1,
+\ldots, f_l$, so we can write
 \[
 \mu(f) = \sum_{l=1}^k c_l \xi_{f_l}
 \]
-
 where $\xi_f$ denotes the point measure at $f$ and $\set{c_l} > 0$ are the
 amplitudes. The first $n$ moments of such a measure concentrated on $k$ atoms
 corresponds to a $k$ simple combination of atomic moment sequences $a(f).$ In
@@ -224,20 +225,19 @@ fact,
 	x_m &= \int_\mathbb{T} e^{i 2 \pi k f} \sum_{l=1}^k c_l \xi_{f_l}(d f)\\
 	&= \sum_{l=1}^k c_l e^{i 2 \pi f_l m}.
 \end{align*}
-
-Then the moment vector
+So, the corresponding moment vector
 $x = \begin{pmatrix}x_0 & \cdots & x_{n-1}\end{pmatrix} \in \C^n$ is given by
 \[
 x = \sum_{l=1}^k c_l a(f_l)
 \]
-
-Our second classical result due to Caratheodory and Toeplitz gives conditions
-under which one can find a discrete measure corresponding to a partially
-observed sequence of moments.
+is a simple combination of line spectral atoms. To see when such simple moment
+vectors actually correspond to a partially observed sequence of moments of a
+positive discrete measure, we will now review a second classical result due to
+Caratheodory and Toeplitz.
 
 \begin{theorem}[Caratheodory-Toeplitz theorem,~\cite{toeplitz1911theorie,caratheodory1911zusammenhang,caratheodory1911variabilitatsbereich}]
 \label{thm:caratheodory-toeplitz}
-	$x \in \C^n$ corresponds to the first $n$ trigonometric moments of a measure $\mu$ (i.e., $x \in \cone(\A_+)$) only if and only if $T x \succeq 0.$ Furthermore, if $k = \rank(T x)$, there exists positive numbers $c_1, \ldots, c_k$ and $f_1, \ldots, f_k \in \mathbb{T}$ such  that
+	$x \in \C^n$ corresponds to the first $n$ trigonometric moments of a measure $\mu$ (i.e., $x \in \cone(\A_+)$) if and only if $T x \succeq 0.$ Furthermore, if $k = \rank(T x)$, there exists positive numbers $c_1, \ldots, c_k$ and $f_1, \ldots, f_k \in \mathbb{T}$ such  that
 \[
 	\mu = \sum_{l=1}^k c_l \delta(f - f_l)
 \]
@@ -252,8 +252,12 @@ Finally, when $k < n,$ there is a unique extension of $x$ to an infinite positiv
 This theorem can be proved using Herglotz theorem~\cite{herglotz} and the
 theorems on flat extensions of moment sequences studied in~\cite{Curto97}. We
 refer the interested reader to~\cite{grenander01} for an algebraic proof of this
-theorem. A straightforward corollary of Caratheodory's theorem is the following
-Vandermonde Decomposition for positive definite Toeplitz matrices.
+theorem. This theorem guarantees the existence of a unique discrete measure
+under easily verifiable conditions. Due to this guarantee, it is possible to
+write a set of recurrence relations connecting the moments and algebraically
+solve for the atoms of this measure, as demonstrated by Prony~\cite{prony1795}.
+A straightforward corollary of Caratheodory's theorem is the following
+Vandermonde Decomposition for positive definite Toeplitz matrices, which we will use in our proofs.
 
 \begin{corollary}[Vandermonde Decomposition]\label{lm:vand} Any positive semidefinite Toeplitz matrix $P \in \C^{n \times n}$ can be represented as
   follows
@@ -302,14 +306,21 @@ where $V$ and $D$ are defined as in the statement of the theorem.
 \subsection{Positive Trigonometric Moments} % (fold)
 \label{sub:positive_trigonometric_moments}
 
-As a consequence of the Caratheodory's characterization of the moment cone , we can  prove the  characterization of the the convex hull of $\A_+$, given by Theorem~\ref{thm:positive-linespect-sdp}.
+As a consequence of the Caratheodory's characterization of the moment cone, we
+can prove the characterization of the the convex hull of $\A_+$, as given by
+Theorem~\ref{thm:positive-linespect-sdp}.
 
-If $T x \succeq 0$, then there exists an atomic decomposition $x = \sum_l c_l a(f_l)$ by Caratheodory-Toeplitz theorem since it is in the conical hull of the atomic set $\A_+$. Since we have an invariant $x_0 = \sum_l c_l$ for any such decomposition, we have that
+If $T x \succeq 0$, then there exists an atomic decomposition $x = \sum_l c_l
+a(f_l)$ by Caratheodory-Toeplitz theorem since it is in the conical hull of the
+atomic set $\A_+$. Since we have an invariant $x_0 = \sum_l c_l$ for any such
+decomposition, we have that
 \[
 \vnorm{x}_{\A_{+}}  = \inf\setof{\sum_l{c_l}}{x = \sum_l c_l} = x_0.
 \]
-On the other hand, if $Tx \not\succeq 0$, $x \not\in \cone(\A_+)$ and thus $\vnorm{x}_{\A_{+}} = +\infty$.
-
+On the other hand, if $Tx \not\succeq 0$, $x \not\in \cone(\A_+)$ and thus
+$\vnorm{x}_{\A_{+}} = +\infty$. In other words, whenever $x$ is a valid
+(partial) sequence of trigonometric moments, the atomic norm is $x_0$.
+Otherwise, it is unbounded by definition.
 
 % subsection positive_trigonometric_moments (end)
 

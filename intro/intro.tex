@@ -90,7 +90,7 @@ to Prony's technique. Surprisingly, using convex methods that we shall discuss
 in this thesis, we can empirically outperform these classical techniques and
 also theoretically show near minimax optimal performance of our algorithms.
 
-Another foundational problems in Signals and Systems theory is that of inferring
+Another foundational problem in Signals and Systems theory is that of inferring
 a linear system from observed measurements. We show that we can robustly recover
 a low order system from a limited set of noisy measurements, using the convex
 methods discussed in the thesis. We will see that it compares favorably in terms
@@ -104,11 +104,11 @@ and see how it unifies many linear inverse problems in high dimensional
 statistics. We extend this framework and introduce a general regularized
 estimator using the atomic norm penalty which we call Atomic Norm Soft
 Thresholding (AST). This may be thought of as an infinite dimensional version of
-the \textsc{Lasso}. We establish universal properties of the estimator and
-indicate when accelerated convergence rates are possible. The choice of the
-regularization parameter for AST depends upon extremal properties of the dual
-atomic norm of noise, and we examine general techniques for estimating the
-regularization parameter.
+the Lasso~\cite{tibshirani96}. We establish universal properties of the
+estimator and indicate when accelerated convergence rates are possible. The
+choice of the regularization parameter for AST depends upon extremal properties
+of the dual atomic norm of noise, and we examine general techniques for
+estimating the regularization parameter.
 
 In Chapter~\ref{chap:linespect}, we apply our atomic norm soft thresholding
 estimator to denoise line spectral signals. We show consistency of estimation
@@ -122,11 +122,11 @@ the signal we wish to recover is composed of relatively incoherent frequencies,
 it is possible to recover it robustly.
 
 We also show that the frequencies localized by AST tend to be near the true
-frequencies. We also show with extensive experiments that our proposal
-outperforms classical line spectral estimation algorithms.
+frequencies. With extensive experiments, we demonstrate that our proposal
+outperforms several classical line spectral estimation algorithms.
 
-We turn our attention to the System Identification problem in
-Chapter~\ref{chap:sysid} and show how our technique can be adapted for this
+We then turn our attention to the System Identification problem in
+Chapter~\ref{chap:sysid} and show how our techniques can be adapted for this
 problem. We describe a general regularization problem for different kinds of
 linear measurements of the system. For the special case of frequency samples, we
 are able to derive finite sample guarantees on the $\mathcal{H}^2$ prediction

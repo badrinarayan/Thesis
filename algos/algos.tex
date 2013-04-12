@@ -27,8 +27,21 @@ is often successful even for off-grid data.
 
 \subsection*{Summary and Organization of this chapter} % (fold)
 \label{sub:main_results}
-
-Recall the definition of the trigonometric monomial $a(f),$ 
+Our goal in this chapter is to develop an algorithm to solve the Atomic Soft
+Thresholding (AST) problem:
+\begin{align}
+\begin{split}
+\minimize_x & \frac{1}{2}\vnorm{y-x}_2^2 + \tau \vnorm{x}_\A,
+\end{split}	
+\end{align}
+and its dual:
+\begin{align}
+\begin{split}
+\maximize_x & \frac{1}{2}\left(\vnorm{y}_2^2 - \vnorm{y-\tau q}_2^2\right)\\
+\text{subject to } & \vnorm{q}_\A^* \leq 1. 
+\end{split}
+\end{align}
+To this end, we will develop computable characterizations of the atomic norm and its dual. First, let us recall the definition of the trigonometric monomial $a(f),$ defined in Chapter~\ref{chap:linespect} which form the basic atoms for Line Spectral Estimation:
 {\footnotesize
 \[
 a(f) = \begin{pmatrix}
@@ -39,31 +52,38 @@ a(f) = \begin{pmatrix}
 \end{pmatrix}
 \]
 }
-as defined in Chapter~\ref{chap:linespect}, which form the basic atoms for Line
-Spectral Estimation. The first part of this chapter gives a computable algebraic characterization of the atomic norm balls of the following atomic sets derived from these atoms:
+The first part of this chapter gives a computable algebraic characterization of the atomic norm balls of the following atomic sets derived from these atoms:
 \begin{align}
 \A_+ &= \setof{a(f)}{f \in \mathbb{T}}\\
 \A   &= \setof{a(f) \exp(i 2\pi \phi)}{f, \phi \in \mathbb{T}}
 \end{align}
-
 The first set $\A_+$ is a one dimensional manifold called the trigonometric
 moment curve and the second set $\A$ is the two dimensional manifold
 corresponding to a phase-symmetric trigonometric moment curve. The unit norm
-ball of the atomic sets are precisely the convex hulls of the atomic sets. In 
-Section~\ref{sec:preliminaries}, we will look at these sets.
-
-In Section~\ref{sub:positive_trigonometric_moments}, we look the classical
-characterization of the conical hull of $\A_+$, called the moment cone,
-corresponds to allowable observations for the the case of line spectral
+ball of the atomic sets are precisely the convex hulls of the atomic sets. In
+Section~\ref{sec:preliminaries}, we will look at these sets. We first show the
+classical characterization of the conical hull of $\A_+$, called the moment
+cone, corresponds to allowable observations for the the case of line spectral
 estimation with nonnegative amplitudes, or alternatively valid trigonometric
-moments of a positive measure on the torus $\mathbb{T}$. As a straightforward
-consequence, we can write down a semidefinite characterization of
-$\vnorm{\cdot}_{\A_+}$ can be written: 
+moments of a positive measure on the torus $\mathbb{T}$. 
 
-The semidefinite characterization of $\conv{\A}$ requires some computation.The
-characterization of moment cone allows us to describe the convex hull of the
-general atomic moments~$\conv{\A}$ and we will derive the following semidefinite
-characterization in Section~\ref{sub:general_trigonometric_moments}.
+We provide semidefinite characterizations of the atomic sets in Section~\ref{sec:sdp_for_trigonometric_moments}. As a straightforward consequence of classical result, we can write down a semidefinite
+characterization of $\conv(\A_+)$:
+\begin{theorem}
+\label{thm:positive-linespect-sdp}
+Suppose $x = (x_0 \cdots x_{n-1})^T \in \C^n.$ Then, 
+	\[
+		\vnorm{x}_{\A_{+}} = \begin{cases}
+			x_0, & T x \succeq 0,\\
+			+\infty, & \text{otherwise.}
+		\end{cases}
+	\]
+\end{theorem}
+
+However, The semidefinite characterization of $\conv{\A}$ requires some
+computation.The characterization of moment cone allows us to describe the convex
+hull of the general atomic moments~$\conv(\A)$ and we will derive the following
+semidefinite characterization:
 
 \begin{theorem}\label{thm:sdp-char}
 	For $x\in \C^n$,
@@ -279,24 +299,14 @@ where $V$ and $D$ are defined as in the statement of the theorem.
 \subsection{Positive Trigonometric Moments} % (fold)
 \label{sub:positive_trigonometric_moments}
 
-As a consequence of the Caratheodory's characterization of the moment cone , we have a simple characterization of the the convex hull of $\A_+$.
+As a consequence of the Caratheodory's characterization of the moment cone , we can easily prove the  characterizion of the the convex hull of $\A_+$, given by Theorem~\ref{thm:positive-linespect-sdp}.
 
-\begin{theorem}
-Suppose $x = (x_0 \cdots x_{n-1})^T \in \C^n.$ Then, 
-	\[
-		\vnorm{x}_{\A_{+}} = \begin{cases}
-			x_0, & T x \succeq 0,\\
-			+\infty, & \text{otherwise.}
-		\end{cases}
-	\]
-\end{theorem}
-\begin{proof}
 If $T x \succeq 0$, then there exists an atomic decomposition $x = \sum_l c_l a(f_l)$ by Caratheodory-Toeplitz theorem since it is in the conical hull of the atomic set $\A_+$. Since we have an invariant $x_0 = \sum_l c_l$ for any such decomposition, we have that
 \[
 \vnorm{x}_{\A_{+}}  = \inf\setof{\sum_l{c_l}}{x = \sum_l c_l} = x_0.
 \]
 On the other hand, if $Tx \not\succeq 0$, $x \not\in \cone(\A_+)$ and thus $\vnorm{x}_{\A_{+}} = +\infty$.
-\end{proof}
+
 
 % subsection positive_trigonometric_moments (end)
 

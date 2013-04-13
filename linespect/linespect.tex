@@ -54,12 +54,10 @@ can localize the frequencies using our technique.
 We specialize the results of the abstract denoising problem in the previous
 chapter to line spectral estimation in Section~\ref{sec:denoise-trig-moments}.
 Consider the continuous time signal $x^\star(t), t\in \R$ with a line spectrum composed of $k$ unknown frequencies $\omega_1^\star, \ldots, \omega_k^\star$ bandlimited to $[-W,W]$. Then the Nyquist samples of the signal are given by
-
 \begin{equation}
 \label{eq:signal}
  x^\star_m := x^\star\left(\tfrac{m}{2W}\right) = \sum_{l=1}^k c_l^\star e^{i 2 \pi m f_l^\star}, m = 0, \ldots, n-1
 \end{equation}
-
 where $c_1^\star, \ldots, c_k^\star$ are unknown \emph{complex} coefficients and
 $f_l^\star = \tfrac{\omega_l^\star}{2W}$ for $l = 1, \ldots, k$ are the
 normalized frequencies. By swapping the roles of frequency and time or space,
@@ -68,12 +66,9 @@ superresolution imaging where we aim to localize temporal events or spatial
 targets from noisy, low-frequency measurements~\cite{cg_exact12,cg_noisy}.So,
 the vector $x^\star = [x^\star_0 ~ \cdots ~ x^\star_{n-1}]^T \in \C^n$ can be
 written as a non-negative linear combination of $k$ points from the set of atoms
-
-{\small
 \[
 \A = \left\{e^{i 2\pi \phi}[1 ~ e^{i2\pi f} ~ \cdots ~ e^{i2\pi (n-1) f}]^T,\, f \in [0,1], \phi \in [0,1] \right\}.
-\]} 
-
+\] 
 The set $\A$ can be viewed as an infinite dictionary indexed by the continuously
 varying parameters $f$ and $\phi$. When the number of observations, $n$, is much
 greater than $k$, $x^\star$ is $k$-sparse and thus line spectral estimation in
@@ -102,13 +97,16 @@ x^\star}_2^2 \lesssim \sigma\sqrt{\frac{\log(n)}{n}}\sum_{l=1}^k |c_l^\star|. \]
 It is instructive to compare this to the trivial estimator $\hat{x} = y$ which
 has a per-element MSE of $\sigma^2$. In contrast, Theorem~\ref{thm:expmsels}
 guarantees that AST produces a consistent estimate when $k =
-o(\sqrt{n/\log(n)})$. While this rate holds for any line spectral signal, AST
-can perform considerably better when the frequencies are well separated.
+o\left(\sqrt{n/\log(n)}\right)$. While this rate holds for any line spectral
+signal, AST can perform considerably better when the frequencies are well
+separated.
 
 \begin{theorem}
 \label{main}
-Suppose the line spectral signal $x^\star$ is given by \eqref{eq:signal}
-and we observe $n$ noisy consecutive samples $y_j = x^\star_j + w_j$ where $w_j$ is i.i.d. complex Gaussian with variance $\sigma^2$. If the frequencies  $\{f_l\}_{l=1}^k$ in $x^\star$ satisfy a minimum separation condition
+Suppose the line spectral signal $x^\star$ is given by \eqref{eq:signal} and we
+observe $n$ noisy consecutive samples $y_j = x^\star_j + w_j$ where $w_j$ is
+i.i.d. complex Gaussian with variance $\sigma^2$. If the frequencies
+$\{f_l\}_{l=1}^k$ in $x^\star$ satisfy a minimum separation condition
 \begin{equation}
 \label{min-sep}
 \min_{p\neq q}d(f_p,f_q) > 4/n
@@ -268,9 +266,10 @@ for $-m \leq j \leq m$, where $w_j \sim \mathcal{C}\mathcal{N}(0,\sigma^2)$ is
 i.i.d. circularly symmetric complex Gaussian noise. 
 
 We can model the line spectral observations $x^\star = [x_{-m}^\star,
-\ldots,x_{m}^\star]^T \in \C^n$ as a sparse combination of ``atoms'' $a(f)$ 
-which correspond to observations due to single frequencies. The atomic set in this case consists of samples of individual sinusoids, $a_{f,\phi} \in \C^n$, given by
-
+\ldots,x_{m}^\star]^T \in \C^n$ as a sparse combination of atoms $a(f)$ 
+which correspond to observations due to single frequencies. The atomic set in
+this case consists of samples of individual sinusoids, $a_{f,\phi} \in \C^n$,
+given by
 \begin{equation}
 \label{eq:trig-atoms} a_{f,\phi} = e^{i2\pi \phi}\begin{bmatrix}1 ~ e^{i2\pi f} ~
 \cdots ~ e^{i2\pi(n-1)f} \end{bmatrix}^T\,.
@@ -292,7 +291,6 @@ unit circle by the polynomial $\zeta \mapsto \sum_{l=0}^{n-1} v_l \zeta^l$.
 Thus, in what follows, we will frequently refer to the \emph{dual polynomial} as
 the polynomial whose coefficients are given by the dual optimal solution of the
 AST problem defined in \eqref{AST}, reproduced here for convenience:
-
 \begin{equation}
 \label{eq:linespect:ast}
 \mathop{\textrm{minimize}}_x \frac{1}{2} \vnorm{x - y}_2^2 + \tau \vnorm{x}_\A.
@@ -470,16 +468,14 @@ Combining this result with the upper bound, we have shown that the lower bound i
 \section{Universal Mean Squared Error Guarantee} % (fold)
 \label{sec:universal-mse}
 
-We can set the regularization parameter $\tau$ greater than the upper bound on the expected dual atomic norm, i.e., we let $\eta \in [1,\infty]$ and pick
+We can set the regularization parameter $\tau$ greater than the upper bound on the expected dual atomic norm, i.e., we pick $\eta \in [1,\infty]$ and let
 \begin{equation}
 \label{eq:tau}
 \tau = \sigma\eta\left(1  +  \frac{1}{\log(n)}\right)\sqrt{n \log(n) + n\log(16\pi^{3/2}\log(n))}.
 \end{equation}
-The application of Theorem \ref{cor:expected-mse} with the choice $\eta = 1$to
-guarantee Mean-Squared Error consistency of AST for Line spectral Estimation.
-Doing so yields the asymptotic result in Theorem \ref{thm:expmsels}. However, as
-noted in Section~\ref{sec:convergence-rate}, faster convergence rates may be
-possible under some conditions, whenever $\eta > 1.$ Due to concentration to mean~\eqref{eq:gaussian-concentration}, whenever $\eta > 1,$ with overwhelming probability,
+The application of Theorem \ref{cor:expected-mse} with the choice $\eta = 1$ 
+guarantees Mean-Squared Error consistency of AST for Line spectral Estimation.
+This choice of $\tau$ then yields the asymptotic result in Theorem \ref{thm:expmsels}. However, as noted in Section~\ref{sec:convergence-rate}, faster convergence rates may be possible under some conditions, whenever $\eta > 1.$ Due to concentration to mean~\eqref{eq:gaussian-concentration}, whenever $\eta > 1,$ with overwhelming probability,
 \begin{equation}
 \label{eq:tau2}
 \sup_{f \in \mathbb{T}} \left|\vabs{w}{a(f)}\right| \leq 2\eta^{-1}\tau.
@@ -1155,170 +1151,4 @@ on frequency localization are possible.
 % importance to develop specialized atomic-norm denoising algorithms for control
 % theoretic problems. Such an approach could yield novel statistical bounds for
 % estimation of rational functions and $\mathcal{H}_\infty$-norm approximations.
-
-\begin{subappendices} % (fold)
 	
-\section{Appendix}
-\label{apx:collection}
-
-In this section, we collect useful results from previous work which we use in
-our analysis. In addition to Theorem~\ref{dual-stab}, we recall another result
-in~\cite{cg_noisy} where the authors show the existence of a trigonometric
-polynomial $Q_1$ that is linear in each $N_j$ which is also an essential
-ingredient in our proof.
-
-\begin{theorem}[Lemma 2.7 in~\cite{cg_noisy}]
-\label{dual-lin}
-For any $f_1, \ldots, f_k$ satisfying \eqref{min-sep} and any sign vector $v \in
-\C^k$ with $|v_j|=1$, there exists a polynomial $Q_1 = \left<q_1, a(f)\right>$
-for some $q_1 \in \C^n$ with the following properties:
-\begin{enumerate}
-\item For every $f \in N_j,$ there exists a numerical constant $C_a^1$ such that
-\begin{equation}
-\label{ca1}
-|Q_1(f) - v_j(f-f_j)| \leq \frac{n}{2} C_a^1 (f-f_j)^2
-\end{equation}
-\item For $f \in F$, there exists a numerical constant $C_b^1$ such that
-\begin{equation}
-\label{cb1}
-|Q_1(f)| \leq \frac{C_b^1}{n}.
-\end{equation}
-\end{enumerate}
-\end{theorem}
-
-We will also need the following straightforward consequence of the constructions of the polynomials in Theorem \ref{dual-stab}, Theorem \ref{dual-lin}, and Section \ref{sec:support}.
-\begin{lemma}
-\label{l1}
-There exists a numerical constant $C$ such that the constructed $Q(f)$ in Theorem \ref{dual-stab}, $Q_1(f)$ in Theorem \ref{dual-lin}, and $Q_j^\star(f)$ in Section \ref{sec:support} satisfy respectively
-\begin{align}
-\|Q(f)\|_1 &:= \int_0^1{| Q(f)| df} \leq \frac{C k}{n}\label{QL1}\\
-\| Q_1(f)\|_1 &\leq \frac{C k}{n^2}\label{Q1L1}\\
-\|Q_j^\star\|_1 & \leq \frac{Ck}{n}\label{QjL1}.
-\end{align}
-\end{lemma}
-\begin{proof}
-We will give a detailed proof of \eqref{QL1}, and list the necessary modifications for proving \eqref{Q1L1} and \eqref{QjL1}. The dual polynomial $Q(f)$ constructed in \cite{cg_exact12} is of the
-form
-\begin{eqnarray}
-  Q \left( f \right) & = & \sum_{f_j \in T} \alpha_j K \left( f - f_j \right)
-  + \sum_{f_j \in T} \beta_j K' \left( f - f_j \right) \label{formofQ}
-\end{eqnarray}
-where $K \left( f \right)$ is the squared Fej\'er kernel (recall that $m = (n-1)/2$)
-\begin{eqnarray*}
-  K \left( f \right) & = & \left( \frac{\sin \left( \left( \frac{m}{2} + 1
-  \right) \pi f \right)}{\left( \frac{m}{2} + 1 \right) \sin \left( \pi f
-  \right)} \right)^4
-\end{eqnarray*}
- and for $n \geq 257$, the coefficients
-$\alpha \in \C^k$ and $\beta \in \C^k$ satisfy \cite[Lemma 2.2]{cg_exact12}
-\begin{eqnarray*}
-  \left\| \alpha \right\|_{\infty} & \leq & C_\alpha\\
-  \left\| \beta \right\|_{\infty} & \leq & \frac{C_\beta}{n} 
-\end{eqnarray*}
-for some numerical constants $C_\alpha$ and $C_\beta$. 
-Using \eqref{formofQ} and triangle inequality, we bound $\|Q(f)\|_1$ as follows: 
-\begin{eqnarray}
-  \|Q(f)\|_1 &=& \int_0^1 \left| Q \left( f \right) \right| d f\nonumber\\
-  &\leq & k \left\| \alpha \right\|_\infty \int_0^1 \left| K \left( f\right) \right| d f + k \left\| \beta \right\|_\infty \int_0^1 \left| K' \left( f\right) \right| d f\label{Qbdgeneral1}\\
-  & \leq & C_\alpha k \int_0^1 \left| K \left(f\right) \right| d f + \frac{C_\beta}{n} k \int_0^1 \left|K'(f)\right|d f \label{Q1bd},
- \end{eqnarray}
- 
-To continue, note that $\int_0^1 | K ( f) | d  f = \int_0^1 | G ( f) |^2 d
- f =: \|G(f)\|_2^2$ where $G ( f)$ is the Fej\'er kernel, since $K(f)$ is the squared
-Fej\'er kernel. We can write
-\begin{eqnarray}
-  G ( f)  =  \left( \frac{\sin \left( \pi \left( \frac{m}{2} + 1 \right) f
-  \right)}{\left( \frac{m}{2} + 1 \right) \sin ( \pi f)} \right)^2
-   =  \sum_{l = - m / 2}^{m / 2} g_l e^{- i 2 \pi f l}\label{expressionG}
-\end{eqnarray}
-where $g_l = \left( \frac{m}{2} + 1 - | l | \right) / \left( \frac{m}{2} + 1
-\right)^2$. Now, by using Parseval's identity, we obtain
-\begin{eqnarray}
- \int_0^1 |K(f)| df & = & \int_0^1 | G ( f) |^2 d f
-  =  \sum_{l = - m / 2}^{m / 2} | g_l |^2\nonumber\\
-  & = & \frac{1}{\left( \frac{m}{2} + 1 \right)^4} \left( \left( \frac{m}{2}
-  + 1 \right)^2 + 2 \sum_{l = 1}^{m / 2} \left( \frac{m}{2} + 1 - l \right)^2
-  \right)\nonumber\\
-  & = & \frac{1}{\left( \frac{m}{2} + 1 \right)^4} \left( \left( \frac{m}{2}
-  + 1 \right)^2 + 2 \sum_{l = 1}^{m / 2} l^2 \right)\nonumber\\
-  & \leq & \frac{C}{n}\label{bdKf}
-\end{eqnarray}
-for some numerical constant $C$ when $n = 2 m + 1 \geq 10$.
-
-Now let us turn our attention to $\int_0^1 | K' (
-f) | d  f$. Since $K ( f) = G ( f)^2$, we have
-\begin{eqnarray}
-  \int_0^1 | K' ( f) | d  f  =  2\int_0^1 | G ( f) G' ( f) | d
-   f
-   \leq  2\| G ( f) \|_2 \| G' ( f) \|_2\label{eq:holder-int}
-\end{eqnarray}
-We have already established that $\| G ( f) \|_2^2 \leq C / {n}$ and we
-will now show that $\| G' ( f) \|_2^2 \leq C' {n}$. Differentiating the
-expression for $G(f)$ in \eqref{expressionG}, we get
-\begin{eqnarray*}
-  G' ( f) & = & -2 \pi i \sum_{l = - m / 2}^{m / 2} l g_l e^{- i 2 \pi f l}
-\end{eqnarray*}
-Therefore, by applying Parseval's identity again, we get
-\begin{eqnarray*}
-  \| G' ( f) \|_2^2 
-  & = & 4 \pi^2 \sum_{l = - m / 2}^{m / 2} l^2 | g_l |^2\\
-  & \leq &  \pi^2 m^2 \sum_{l = - m / 2}^{m / 2} | g_l |^2\\
-  & \leq & C' n
-\end{eqnarray*}
-Plugging back into \eqref{eq:holder-int} yields
-\begin{align}
-\int_0^1 |K'(f)| df \leq C \label{bdK1f}
-\end{align}
-for some constant $C$. Combining \eqref{bdK1f} and \eqref{bdKf} with \eqref{Q1bd} gives the desired result in \eqref{QL1}.
-
-
-
-The dual polynomial $Q_1(f)$ is also of the form \eqref{formofQ} with coefficient vectors $\alpha_1$ and $\beta_1$, which satisfy \cite[Proof of Lemma 2.7]{cg_noisy}
-\begin{align*}
-\|\alpha_1\|_\infty \leq \frac{C_{\alpha_1}}{n},\\
-\|\beta_1\|_\infty \leq \frac{C_{\beta_1}}{n^2}.
-\end{align*}
-Combining the above two bounds with \eqref{Qbdgeneral1}, \eqref{bdK1f} and \eqref{bdKf} gives the desired result in \eqref{Q1L1}.
-
-The last polynomial $Q_j^\star$ also has the form \eqref{formofQ} with coefficient vectors $\alpha^\star$ and $\beta^\star$. According to \cite[Proof of Lemma 2.2]{granda2}, these coefficients satisfy
-\begin{align*}
-\|\alpha^\star\|_\infty \leq {C_{\alpha_\star}},\\
-\|\beta_\star\|_\infty \leq \frac{C_{\beta_\star}}{n},
-\end{align*}
-which yields \eqref{QjL1} following the same argument leading to \eqref{QL1}. 
-
-\end{proof}
-
-Using Lemma \ref{l1}, we can derive the estimates we need in the following lemma.
-\begin{lemma}
-\label{l4}
-Let $\nu = \hat{\mu} - \mu$ be the difference measure. Then, there exists numerical constant $C>0$ such that
-\begin{align}
-\label{qv}\left| \int_0^1 Q(f) \nu(df) \right| &\leq \frac{C k \tau}{n}\\
-\label{q1v}\left| \int_0^1 Q_1(f) \nu(df) \right| &\leq \frac{C k \tau}{n^2}\\
-\label{qjv} \left| \int_0^1 Q_j^\star(f) \nu(df) \right| & \leq \frac{Ck\tau}{n}.
-\end{align}
-\end{lemma}
-\begin{proof}
-Let $Q_0 = \langle q_0, a(f) \rangle $ be a general trigonometric polynomial associated with $q_0 \in \C^n$. Then,
-\begin{align*}
-\left|\int_0^1 Q_0(f) \nu(df) \right| 
-& = \left|\int_0^1 \langle q_0 , a(f) \rangle  \nu(df) \right|\\
-& = \left|\langle q_0,  \int_0^1  a(f)  \nu(df) \rangle\right|\\
-& = \left|\langle q_0, e \rangle\right|\\
-& = \left|\langle Q_0(f), E(f) \rangle\right|\\
-& \leq \vnorm{Q_0(f)}_1 \vnorm{E(f)}_\infty\,.
-\end{align*}
-Here we use Parseval's identity in the second to last step and H\"{o}lder's inequality in the last inequality. Then, the result follows by using Lemma~\ref{l1} and \eqref{errbd}.
-\end{proof}
-
-
-We also need the following consequence of the optimality condition of AST from~\cite[Lemma 2]{btr12}:
-\begin{prop}\label{pro:optimality}
-\begin{align}
-\tau \vnorm{\hat{x}}_\A \leq \tau \vnorm{x^\star}_\A + \langle w, \hat{x} - x^\star \rangle
-\end{align}
-\end{prop}
-
-
-\end{subappendices}

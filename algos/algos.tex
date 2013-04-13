@@ -2,15 +2,17 @@
 \chapter{Algorithms}
 \label{chap:algos}
 
-The problems of atomic norm decomposition and regularization have linear and
-quadratic objectives, and can be efficiently be optimized provided there is an
-efficient way to test membership in the constraint sets. The constraint sets of
-the primal and dual problems are the sublevel sets of the atomic and the dual
-atomic norm. Therefore, it is sufficient to develop efficient characterizations
-of the atomic norm ball.
+In the preceding chapters, we concentrated on the theoretical performance of
+regularization using an atomic norm penalty, but never showed how one may
+compute it. The problems of atomic norm decomposition and regularization are
+convex optimization problems with linear and quadratic objectives, and can be
+efficiently solved if we can test membership in the constraint sets efficiently.
+The constraint sets of the primal and dual problems are the sublevel sets of the
+atomic and the dual atomic norm. Therefore, it is sufficient to develop
+efficient characterizations of the the unit ball of the atomic norm.
 
-For the special case of Fourier measurements, the atomic norm ball has
-semidefinite characterizations which we derive in this chapter. The positive
+For the special case of Fourier measurements, the atomic norm ball has an exact
+semidefinite characterization which we will derive in this chapter. The positive
 case is classical and comes from moment theory and the dual theory of positive
 polynomials. We will review the results for the positive case and provide the
 proofs for completeness. We will also derive the semidefinite characterization

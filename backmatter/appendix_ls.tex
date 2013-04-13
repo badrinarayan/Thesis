@@ -1,11 +1,13 @@
-\section{Appendix}
+\chapter{Dual Polynomial Properties}
 \label{apx:collection}
 
-In this section, we collect useful results from previous work which we use in
-our analysis in Chapter~\ref{chap:linespect}. In addition to
-Theorem~\ref{dual-stab}, we recall another result in~\cite{cg_noisy} where the
-authors show the existence of a trigonometric polynomial $Q_1$ that is linear in
-each $N_j$ which is also an essential ingredient in our proof.
+In this section, we collect useful results about the dual polynomial for line
+spectral signals from previous work, which we use in our analysis in
+Chapter~\ref{chap:linespect}. We also derive some corollaries for some of these
+theorems which we use. In addition to Theorem~\ref{dual-stab}, we recall another
+result in~\cite{cg_noisy} where the authors show the existence of a
+trigonometric polynomial $Q_1$ that is linear in each $N_j$ which is also an
+essential ingredient in our proof.
 
 \begin{theorem}[Lemma 2.7 in~\cite{cg_noisy}]
 \label{dual-lin}
@@ -26,10 +28,14 @@ for some $q_1 \in \C^n$ with the following properties:
 \end{enumerate}
 \end{theorem}
 
-We will also need the following straightforward consequence of the constructions of the polynomials in Theorem \ref{dual-stab}, Theorem \ref{dual-lin}, and Section \ref{sec:support}.
+We will also need the following straightforward consequence of the constructions
+of the polynomials in Theorem \ref{dual-stab}, Theorem \ref{dual-lin}, and
+Section \ref{sec:support}.
 \begin{lemma}
 \label{l1}
-There exists a numerical constant $C$ such that the constructed $Q(f)$ in Theorem \ref{dual-stab}, $Q_1(f)$ in Theorem \ref{dual-lin}, and $Q_j^\star(f)$ in Section \ref{sec:support} satisfy respectively
+There exists a numerical constant $C$ such that the constructed $Q(f)$ in
+Theorem \ref{dual-stab}, $Q_1(f)$ in Theorem \ref{dual-lin}, and $Q_j^\star(f)$
+in Section \ref{sec:support} satisfy respectively
 \begin{align}
 \|Q(f)\|_1 &:= \int_0^1{| Q(f)| df} \leq \frac{C k}{n}\label{QL1}\\
 \| Q_1(f)\|_1 &\leq \frac{C k}{n^2}\label{Q1L1}\\
@@ -151,11 +157,11 @@ Let $Q_0 = \langle q_0, a(f) \rangle $ be a general trigonometric polynomial ass
 \end{align*}
 Here we use Parseval's identity in the second to last step and H\"{o}lder's inequality in the last inequality. Then, the result follows by using Lemma~\ref{l1} and \eqref{errbd}.
 \end{proof}
-
-
-We also need the following consequence of the optimality condition of AST from~\cite[Lemma 2]{btr12}:
-\begin{prop}\label{pro:optimality}
-\begin{align}
-\tau \vnorm{\hat{x}}_\A \leq \tau \vnorm{x^\star}_\A + \langle w, \hat{x} - x^\star \rangle
-\end{align}
-\end{prop}
+% 
+% We also need the following consequence of the optimality condition of AST
+% from~\cite[Lemma 2]{btr12}:
+% \begin{prop}\label{pro:optimality}
+% \begin{align}
+% \tau \vnorm{\hat{x}}_\A \leq \tau \vnorm{x^\star}_\A + \langle w, \hat{x} - x^\star \rangle
+% \end{align}
+% \end{prop}

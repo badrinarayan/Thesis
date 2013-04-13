@@ -684,9 +684,10 @@ Since $\hat{x}$ is optimal, we have,
 \tfrac{1}{2}\vnorm{y - \hat{x}}_2^2 + \tau \vnorm{\hat{x}}_\A \leq \tfrac{1}{2}\vnorm{y - x^\star}_2^2 + \tau \vnorm{x^\star}_\A
 \end{equation*}
 Rearranging and using~\eqref{holder} gives
-\begin{equation*}
-\tau\vnorm{\hat{x}}_\A \leq \tau\vnorm{x^\star}_\A + \vnorm{w}_\A^* \vnorm{\hat{x} - x^\star}_\A.
-\end{equation*} 
+\begin{align}
+\label{pro:optimality}\tau \vnorm{\hat{x}}_\A &\leq \tau \vnorm{x^\star}_\A + \langle w, \hat{x} - x^\star \rangle\\
+\implies \tau\vnorm{\hat{x}}_\A &\leq \tau\vnorm{x^\star}_\A + \vnorm{w}_\A^* \vnorm{\hat{x} - x^\star}_\A.
+\end{align} 
 Since $\vnorm{w}_\A^*$ concentrates about its expectation, with
 probability at least $1-\delta(\gamma\tau - \E\vnorm{w}_\A^*)$, we have $\vnorm{w}_\A^* \leq \gamma \tau$ and hence $\hat{x} - x^\star \in
 C_\gamma$.

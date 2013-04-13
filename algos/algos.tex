@@ -14,7 +14,24 @@ semidefinite characterizations which we derive in this chapter. The positive
 case is classical and comes from moment theory and the dual theory of positive
 polynomials. We will review the results for the positive case and provide the
 proofs for completeness. We will also derive the semidefinite characterization
-for the more general complex case using these results.
+for the more general complex case using these results. We provide a reasonably
+fast method for solving this SDP via the Alternating Direction Method of
+Multipliers (ADMM)~\cite{BertsekasParallelBook,admm2011}. Our ADMM
+implementation can solve instances with a thousand observations in a few
+minutes.
+
+While the SDP based AST algorithm can be thought of as solving an infinite
+dimensional Lasso problem, the computational complexity can be prohibitive for
+very large instances. To compensate, we show that solving the Lasso problem on
+an oversampled grid of frequencies approximates the solution of the atomic norm
+minimization problem to a resolution sufficiently high to guarantee excellent
+mean-squared error (MSE). The gridded problem reduces to the Lasso, and by
+leveraging the Fast Fourier Transform (FFT), can be rapidly solved with freely
+available software such as SpaRSA~\cite{wright09}. A Lasso problem with
+thousands of observations can be solved in under a second using Matlab on a
+laptop. The prediction error and the localization accuracy for line spectral
+estimation both increase as the oversampling factor increases, even if the
+actual set of frequencies in the line spectral signal are off the Lasso grid.
 
 For the problem of system identification, there are no tractable semidefinite
 formulations. While it is possible to develop a sequence of semidefinite
@@ -23,6 +40,20 @@ the atomic soft thresholding (AST) problem described in Chapter~\ref{chap:ast}
 and this essentially reduces to solving a Lasso problem on an overcomplete grid.
 Our proofs for discretized atomic soft thresholding (DAST) demonstrate why Lasso
 is often successful even for off-grid data.
+
+In this chapter, we also collect our experimental results using these algorithms
+on Line Spectral Signals. We compare and contrast our algorithms, AST and Lasso,
+with classical line spectral algorithms including MUSIC~\cite{music},and
+Cadzow's ~\cite{cadzow02} and Matrix Pencil~\cite{hua02} methods . Our
+experiments indicate that both AST and the Lasso approximation outperform
+classical methods in low SNR even when we provide the exact model order to the
+classical approaches. Moreover, AST has the same complexity as Cadzow's method,
+alternating between a least-squares step and an eigenvalue thresholding step.
+The discretized Lasso-based algorithm has even lower computational complexity,
+consisting of iterations based upon the FFT and simple linear time
+soft-thresholding.
+
+
 
 \subsection*{Summary and Organization of this chapter} % (fold)
 \label{sub:main_results}
@@ -127,7 +158,9 @@ is the dual characterization which has an optimum value $\vnorm{x}_\A$. For the 
 	&= \setof{q \in \C^n}{\sum_{j=0}^{n-1}{|q_j \exp(i 2\pi j f)|} \leq 1, \text{ for all } f \in \mathbb{T}}
 \end{align}
 corresponds precisely to the set of complex trigonometric polynomials with a
-maximum modulus of $1$ and is characterized by the Bounded Real Lemma.
+maximum modulus of $1$ and is characterized by the Bounded Real Lemma. We
+provide details of applying Alternating Directions Method of Multipliers (ADMM)
+for solving the SDP for the AST problem in section~\ref{sec:admm}.
 
 When there are no efficient characterizations, we may resort to a discretized
 approach which may be thought of as an approximation to the atomic norm defined
@@ -137,6 +170,18 @@ section ~\ref{sec:discretization}, We show convergence rates of this
 approximation for the line spectral estimation problem and the system
 identification problem. In these case, the atomic soft thresholding problem can
 be approximated by solving a Lasso problem on an overcomplete grid.
+
+A number of Prony-like techniques have been devised that are able to achieve
+excellent denoising and frequency localization even in the presence of noise. In
+Section~\ref{sec:ast:experiments}, we turn to comparing our ADMM implementation
+of SDP and DAST by Lasso with these classical algorithms. Our experiments
+demonstrate that our proposed estimation algorithms outperform Matrix Pencil,
+MUSIC and Cadzow's methods. Both AST and the discretized Lasso algorithms obtain
+lower MSE compared to previous approaches, and the discretized algorithm is much
+faster on large problems. We also empirically demonstrate that the semidefinite
+programming approach outperforms MUSIC~\cite{music} and Cadzow's
+technique~\cite{cadzow05}, in terms of the localization metrics defined by parts
+(i), (ii) and (iii) of Theorem~\ref{support}.
 
 % subsection main_results (end)
 
@@ -728,7 +773,10 @@ Now, we can write the approximation for atomic norm. For any $x,$
 (1-\sqrt{n}\epsilon)\vnorm{x}_{\A_\epsilon} \leq \vnorm{x}_\A \leq \vnorm{x}_{\A_\epsilon}.
 \end{equation}
 
-While this method is generic, simpler and sometimes stronger arguments may be possible for specific atomic sets. In succeeding sections, we use techniques similar to what we just outlined and characterize the atomic norm approximation for grids of the atomic set.
+While this method is generic, simpler and sometimes stronger arguments may be
+possible for specific atomic sets. In the succeeding sections, we use techniques
+similar to what we just outlined and characterize the atomic norm approximation
+for the atomic sets for line spectral estimation and system identification.
 
 % subsection approximated_atomic_norms (end)
 
@@ -959,3 +1007,222 @@ Here,~\eq{tri-ineq}  is the triangle inequality.~\eq{nuc-2-l2} follows because t
 \end{proof}
 
 % section discretization (end)
+
+\section{Experiments for Line Spectral Estimation} % (fold)
+\label{sec:ast:experiments}
+We compared the performance of AST, the discretized Lasso approximation, the
+Matrix Pencil, MUSIC and Cadzow's method, both in terms of the mean squared
+estimation error as in Theorem~\ref{main} and frequency localization. For our
+experiments, we generated $k$ normalized frequencies $f_1^\star, \ldots,
+f_k^\star$ uniformly randomly chosen from $\left[0,1\right]$ such that every
+pair of frequencies are separated by at least $1/2n$. The signal $x^\star \in
+\C^n$ is generated according to \eqref{eq:signal} with $k$ random amplitudes
+independently chosen from $\chi^2(1)$ distribution (squared Gaussian). All of
+our sinusoids were then assigned a random phase (equivalent to multiplying
+$c_k^\star$ by a random unit norm complex number). Then, the observation $y$ is
+produced by adding complex white gaussian noise $w$ such that the input signal
+to noise ratio (SNR) is $-10,-5,0,5,10,15$ or $20$ dB. We compare the average
+MSE of the various algorithms in 20 trials for various values of number of
+observations $(n = 64,128,256)$, and number of frequencies $ (k =
+n/4,n/8,n/16)$.
+
+
+AST needs an estimate of the noise variance $\sigma^2$ to pick the
+regularization parameter according to \eq{tau}. In many situations, this
+variance is not known to us \emph{a priori}. However, we can construct a
+reasonable estimate for $\sigma$ when the phases are uniformly random. It is
+known that the autocorrelation matrix of a line spectral signal (see, for
+example Chapter 4 in \cite{StoicaMoses}) can be written as a sum of a low rank
+matrix and $\sigma^2 I$ if we assume that the phases are uniformly random. Since
+the empirical autocorrelation matrix concentrates around the true expectation,
+we can estimate the noise variance by averaging a few smallest eigenvalues of
+the empirical autocorrelation matrix. In the following experiments, we form the
+empirical autocorrelation matrix using the MATLAB routine \texttt{corrmtx} using
+a prediction order $m=n/3$ and averaging the lower $25\%$ of the eigenvalues. We
+used this estimate in equation~\eq{tau} to determine the regularization
+parameter for both our AST and Lasso experiments.
+
+First, we implemented AST using the ADMM method described in detail in
+Chapter~\ref{chap:algos}. We used the stopping criteria described
+in~\cite{admm2011} and set $\rho=2$ for all experiments. We use the dual
+solution $\hat{z}$ to determine the support of the optimal solution $\hat{x}$
+using the procedure described in Section~\ref{sec:frequency-localize}. Once the
+frequencies $\hat{f}_l$ are extracted, we ran the least squares problem
+$\mbox{minimize}_\alpha \|U \alpha - y\|^2$ where $U_{jl} = \exp(i 2\pi j
+\hat{f}_l)$ to obtain a \emph{debiased} solution. After computing the optimal
+solution $\alpha_{\mathrm{opt}}$, we returned the prediction $\hat{x} =
+U\alpha_{\mathrm{opt}}$.
+
+We implemented Lasso, obtaining an estimate $\hat{x}$ of $x^\star$ from $y$ by
+solving the optimization problem \eqref{epsprimal} with debiasing. We use the
+algorithm described in Section \ref{sec:comp-method} with grid of $N=2^{m}$
+points where $m=10,11,12,13,14$ and $15$. Because of the basis mismatch effect,
+the optimal $c_{\mathrm{opt}}$ has significantly more non-zero components than
+the true number of frequencies. However, we observe that the frequencies
+corresponding to the non-zero components of $c_{\mathrm{opt}}$ cluster
+around the true ones. We therefore extract one frequency from each cluster of
+non-zero values by identifying the grid point with the maximum absolute
+$c_{\mathrm{opt}}$ value and zero everything else in that cluster. We then ran
+a debiasing step which solves the least squares problem $\mbox{minimize}_\beta
+\|\Phi_S \beta- y\|^2$ where $\Phi_S$ is the submatrix of $\Phi$ whose columns
+correspond to frequencies identified from $c_{\mathrm{opt}}$. We return the
+estimate $\hat{x} = \Phi_S \beta_{\mathrm{opt}}$. We used the freely
+downloadable implementation of SpaRSA to solve the Lasso problem. We used a
+stopping parameter of $10^{-4}$, but otherwise used the default parameters.
+
+We implemented Cadzow's method as described by the
+pseudocode in~\cite{blu08}, the Matrix Pencil as described in~\cite{hua02} and
+MUSIC~\cite{music} using the MATLAB routine \texttt{rootmusic}. All these
+algorithms need an estimate of the number of sinusoids. Rather
+than implementing a heuristic to estimate $k$, \emph{we fed the true $k$ to our
+solvers}. This provides a huge advantage to these algorithms. Neither AST or the
+Lasso based algorithm are provided the true value of $k$, and the noise 
+variance $\sigma^2$ required in the regularization parameter is estimated from $y$.
+
+Let $\{\hat{c}_l\}$ and $\{\hat{f}_l\}$ denote the amplitudes and frequencies
+estimated by any of the algorithms - AST, MUSIC or Cadzow. We use the following
+error metrics to characterize the frequency localization of various algorithms:
+\begin{enumerate} \item[(i)] Sum of the absolute value of amplitudes in the far
+region $F$, $m_1 = \sum_{l : \hat{f}_l \in F} |\hat{c}_l|$ \item[(ii)] The
+weighted frequency localization error, $m_2 = \sum_{l : \hat{f}_l \in N_j}
+|\hat{c}_l| \{ \min_{f_j \in T} d(f_j,\hat{f}_l) \}^2$ \item[(iii)] Error in
+approximation of amplitudes in the near region, $m_3 = \left| c_j - \sum_{l :
+\hat{f_l} \in N_j} \hat{c}_l \right|$ \end{enumerate} These are precisely the
+quantities that we prove tend to zero in Theorem~\ref{support}.
+
+\begin{figure*}[htbp]
+  \begin{tabular}{c}
+	\includegraphics[width=0.5\textwidth]{figures/mse_snr_128_8_randamp}
+	\includegraphics[width=0.5\textwidth]{figures/mse_snr_128_16_randamp} \\
+	\includegraphics[width=0.5\textwidth]{figures/mse_snr_128_32_randamp}
+\end{tabular}
+\caption{ {\bfseries MSE vs SNR plots:} This graph compares MSE vs SNR for a subset of experiments with $n=128$ samples. From top left, clockwise, the plots are for combinations of $8$, $16$, and $32$ sinusoids with amplitudes and frequencies sampled at random.}
+\label{fig:mse-snr}
+\end{figure*}
+
+In Figure~\ref{fig:mse-snr}, we show MSE vs SNR plots for a subset of
+experiments when $n=128$ time samples are taken to take a closer look at the
+differences. It can be seen from these plots that the performance difference
+between classical algorithms such as MUSIC and Cadzow with respect to the
+convex optimization based AST and Lasso is most pronounced at lower sparsity
+levels. When the noise dominates the signal (SNR $\leq 0$ dB), all the
+algorithms are comparable. However, AST and Lasso outperform the other
+algorithms in almost every regime.
+
+
+\begin{figure}[htbp]
+  \begin{tabular}{cc}
+	\includegraphics[trim=10mm 0mm 5mm 3mm,clip,width=0.37\linewidth]{figures/mse_snr_256_64_lasso_randamp} &
+	\includegraphics[trim=15mm 0mm 20mm 3mm,clip,width=0.45\linewidth]{figures/gridding} \\
+(a)  & (b)
+\end{tabular}
+\caption{ 
+(a) Plot of MSE vs SNR for Lasso at different grid sizes for a subset of experiments with $n=128, k = 16$\newline
+(b) Lasso Frequency localization with $n=32, k = 4,$
+SNR = $10$ dB. Blue represents the true frequencies, while red are given by Lasso. For better visualization, we threshold the Lasso solution by $10^{-6}$.}
+\label{fig:lasso-compare}
+\end{figure}
+
+We note that the denoising performance of Lasso improves with increased grid
+size as shown in the MSE vs SNR plot in Figure~\ref{fig:lasso-compare}(a). The
+figure shows that the performance improvement for larger grid sizes is greater
+at high SNRs. This is because when the noise is small, the discretization error
+is more dominant and finer gridding helps to reduce this error.
+Figures~\ref{fig:lasso-compare}(a) and (b) also indicate that the benefits of
+increasing discretization levels are diminishing with the grid sizes, at a
+higher rate in the low SNR regime, suggesting a tradeoff among grid size,
+accuracy, and computational complexity.
+
+Finally, in Figure \ref{fig:lasso-compare}(b), we provide numerical evidence
+supporting the assertion that frequency localization improves with increasing
+grid size. Lasso identifies more frequencies than the true ones due to basis
+mismatch. However, these frequencies cluster around the true ones, and more
+importantly, finer discretization improves clustering, suggesting
+over-discretization coupled with clustering and peak detection as a means for
+frequency localization for Lasso. This observation does not contradict the
+results of \cite{cpsc} where the authors look at the full Fourier basis ($N=n$)
+and the noise-free case. This is the situation where discretization effect is
+most prominent. We instead look at the scenario where $N \gg n$.
+
+In Figure~\ref{fig:msnr}, we display how the error metrics vary with
+increasing SNR for AST, MUSIC and Cadzow.  We restrict these plots to the experiments with $n =
+256$ samples. These plots demonstrate that AST localizes frequencies
+substantially better than MUSIC and Cadzow even for low signal to noise ratios
+as there is very little energy in the far region of the frequencies ($m_1$) and
+has the smallest weighted mean square frequency deviation ($m_2$). Although we
+have plotted the average value in these plots, we observed spikes in the plots
+for Cadzow's algorithm as the average is dominated by the worst performing
+instances.  These large errors are due to the numerical instability of polynomial root finding. 
+
+\begin{figure}[htbp]
+\begin{tabular}{ccc}
+	\includegraphics[height=35mm]{figures/mSNR1_16.pdf} &
+	\includegraphics[height=35mm]{figures/mSNR2_16.pdf} &
+	\includegraphics[height=35mm]{figures/mSNR3_16.pdf} \\
+	\includegraphics[height=35mm]{figures/mSNR1_32.pdf} &
+	\includegraphics[height=35mm]{figures/mSNR2_32.pdf} &
+	\includegraphics[height=35mm]{figures/mSNR3_32.pdf} \\
+	\includegraphics[height=35mm]{figures/mSNR1_64.pdf} &
+	\includegraphics[height=35mm]{figures/mSNR2_64.pdf} &
+	\includegraphics[height=35mm]{figures/mSNR3_64.pdf}
+\end{tabular}
+\caption{For $n = 256$ samples, the plots from left to right in order measure the average value over 20 random experiments for the error metrics $m_1, m_2$ and $m_3$ respectively. The top, middle and the bottom third of the plots respectively represent the subset of the experiments
+with the number of frequencies $k=16, 32$ and $64$.}
+\label{fig:msnr}
+\end{figure}
+
+
+We use \emph{performance profiles} to summarize the behavior of the various
+algorithms across all of the parameter settings. Performance profiles provide a
+good visual indicator of the relative performance of many algorithms under a
+variety of experimental conditions\cite{dolanmore02}. Let $\mathcal{P}$ be the
+set of experiments and let $\mathrm{MSE}_s(p)$ be the MSE of experiment $p \in
+\mathcal{P}$ using the algorithm $s$. Then the ordinate $P_s(\beta)$ of the
+graph at $\beta$ specifies the fraction of experiments where the ratio of the
+MSE of the algorithm $s$ to the minimum MSE across all algorithms for the given
+experiment is less than $\beta$, i.e.,
+
+\begin{equation*}
+P_s(\beta) = \frac{\mathop{\#}\left\{p \in \mathcal{P} ~:~ \mathrm{MSE}_s(p) \leq \beta \min_s \mathrm{MSE}_s(p)\right\}}{\mathop{\#}(\mathcal{P})}
+\end{equation*}
+
+\begin{figure}[htp]
+\centering
+\begin{tabular}{cc}
+	\includegraphics[height=40mm]{figures/performance_profile_randamp_color} &
+	\includegraphics[trim=0mm 0mm 2mm 5mm,clip,height=40mm]{figures/performance_profile_lasso_randamp_color}\\
+(a) & (b)
+\end{tabular}
+\caption{ (a) Performance Profile  comparing various algorithms and AST. (b) Performance profiles for Lasso with different grid sizes.}
+\label{fig:pp1}
+\end{figure}
+
+
+From the performance profile in Figure~\ref{fig:pp1}(a), we see that AST is the
+best performing algorithm, with Lasso coming in
+second. Cadzow does not perform as well as AST, even though it is fed the true
+number of sinusoids. When Cadzow is fed an incorrect $k$, even off by $1$, the
+performance degrades drastically, and never provides adequate mean-squared
+error. Figure~\ref{fig:pp1}(b) shows that the denoising performance
+improves  with grid size.
+
+\begin{figure}[htp]
+\begin{tabular}{ccc}
+	\includegraphics[height=35mm]{figures/m1_pp.pdf} &
+	\includegraphics[height=35mm]{figures/m2_pp.pdf} &
+	\includegraphics[height=35mm]{figures/m3_pp.pdf}\\
+	(a) $m_1$ & (b) $m_2$ & (c) $m_3$
+\end{tabular}
+\caption{ Performance Profiles for AST, MUSIC and Cadzow.
+(a) Sum of the absolute value of amplitudes in the far region ($m_1$)
+(b) The weighted frequency localization error, $m_2$
+(c) Error in approximation of amplitudes in the near region, $m_3$ }
+\label{fig:pp2}
+\end{figure}
+
+The performance profiles in Figure~\ref{fig:pp2} show that AST is the best
+performing algorithm for all the three metrics for frequency localization. AST
+in fact outperforms MUSIC and Cadzow by a substantial margin for metrics $m_1$
+and $m_2$.
+
+% section ast:experiments (end)

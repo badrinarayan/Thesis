@@ -117,6 +117,7 @@ The sequence $\sigma_i$ are called the \emph{Hankel singular values} of $T$.  Mo
 \end{equation*}
 
 \subsection{The atomic norm is equivalent to the Hankel nuclear norm}
+\label{sub:equivalence-hankel-atomic}
 The rank of the Hankel operator determines the McMillan degree
 of the linear system defined by $G$.  Rank minimization is notoriously computationally challenging (see~\cite{Recht10} for a discussion), and we don't expect to be able to directly penalize the norm of the Hankel operator in implementations.  Thus, as is common, a reasonable heuristic for minimizing the rank of the Hankel operator would be to minimize the sum of the Hankel singular values, i.e., to minimize the Schatten $1$-norm of the Hankel operator.  For rational transfer functions, we can compute the Hankel nuclear norm via a balanced realization~\cite{Zhou95}.  On the other hand, while the maximal Hankel singular value can be written variationally as an LMI, we are not aware of any such semidefinite programming formulations for the Hankel nuclear norm.  
 

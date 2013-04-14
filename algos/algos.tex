@@ -3,7 +3,7 @@
 \label{chap:algos}
 
 In the preceding chapters, we concentrated on the theoretical performance of
-regularization using an atomic norm penalty, but never showed how one may
+regularization using an atomic norm penalty, but did not show how one may
 compute it. The problems of atomic norm decomposition and regularization are
 convex optimization problems with linear and quadratic objectives, and can be
 efficiently solved if we can test membership in the constraint sets efficiently.
@@ -16,9 +16,9 @@ semidefinite characterization which we will derive in this chapter. The positive
 case is classical and comes from moment theory and the dual theory of positive
 polynomials. We will review the results for the positive case and provide the
 proofs for completeness. We will also derive the semidefinite characterization
-for the more general complex case using these results. We provide a reasonably
-fast method for solving this SDP via the Alternating Direction Method of
-Multipliers (ADMM)~\cite{BertsekasParallelBook,admm2011}. Our ADMM
+for the more general complex case using these results. We then provide a
+reasonably fast method for solving this SDP via the Alternating Direction Method
+of Multipliers (ADMM)~\cite{BertsekasParallelBook,admm2011}. Our ADMM
 implementation can solve instances with a thousand observations in a few
 minutes.
 
@@ -35,15 +35,15 @@ laptop. The prediction error and the localization accuracy for line spectral
 estimation both increase as the oversampling factor increases, even if the
 actual set of frequencies in the line spectral signal are off the Lasso grid.
 
-For the problem of system identification, there are no tractable semidefinite
-formulations. While it is possible to develop a sequence of semidefinite
-relaxations, we instead describe how we can use a discretization approach for
-the atomic soft thresholding (AST) problem described in Chapter~\ref{chap:ast}
-and this essentially reduces to solving a Lasso problem on an overcomplete grid.
-Our proofs for discretized atomic soft thresholding (DAST) demonstrate why Lasso
-is often successful even for off-grid data.
+For the problem of system identification, there are no exact semidefinite
+formulations for the atomic set. While it is possible to develop a sequence of
+semidefinite relaxations, we instead describe how we can use a discretization
+approach for the atomic soft thresholding (AST) problem described in
+Chapter~\ref{chap:ast} and this essentially reduces to solving a Lasso problem
+on an overcomplete grid. Our proofs for discretized atomic soft thresholding
+(DAST) demonstrate why Lasso is often successful even for off-grid data.
 
-In this chapter, we also collect our experimental results using these algorithms
+In this chapter, we also report our experimental results using these algorithms
 on Line Spectral Signals. We compare and contrast our algorithms, AST and Lasso,
 with classical line spectral algorithms including MUSIC~\cite{music},and
 Cadzow's ~\cite{cadzow02} and Matrix Pencil~\cite{hua02} methods . Our
@@ -98,7 +98,8 @@ moment curve and the second set $\A$ is the two dimensional manifold
 corresponding to a phase-symmetric trigonometric moment curve. The unit norm
 ball of the atomic sets are precisely the convex hulls of the atomic sets. In
 Section~\ref{sec:preliminaries}, we will look at these sets. We first describe
-the classical characterization of the conical hull of $\A_+$ which is called the moment cone. This corresponds to allowable observations for the the case of line
+the classical characterization of the conical hull of $\A_+$ which is called the
+moment cone. This corresponds to allowable observations for the case of line
 spectral estimation with nonnegative amplitudes, or in other words, valid
 trigonometric moments of a positive measure on the torus $\mathbb{T}$.
 
@@ -451,6 +452,24 @@ factorization theorem.
 \begin{theorem}\label{thm:gram-mtx-positive-poly}
 $q \in \C^n$ is a positive polynomial if and only if there exists $Q \succeq 0$ such that $T^*Q = q.$
 \end{theorem}
+\begin{proof}
+Suppose there exists $Q \succeq 0$ such that $T^* Q = q.$ Then, for any $f \in \mathbb{T},$
+\[
+	\vabs{q}{a(f)} = \vabs{T^* Q}{a(f)} = \vabs{Q}{T a(f)}.
+\]
+Since $a(f)$ is a valid moment sequence $T a(f) \succeq 0.$ Thus, $\vabs{q}{a(f)} \geq 0$ since the inner product between two positive nonnegative matrices is nonnegative.
+
+On the other hand, we can show that $Q$ exists by using the spectral factorization theorem. Define $P(f) = \vabs{q}{a(f)}$. Since $P(f)$ is positive on the unit circle, there exists $\tilde{P}(f) = \sum_{j=0}^{n-1} \tilde{q}_j e^{i 2 \pi f j}$ such that $P(f) = \tilde{P}(f) \tilde{P}(f)^*$. Introduce the notation $\tilde{q} = \begin{pmatrix} \tilde{q}_0 & \dots & \tilde{q}_{n-1}\end{pmatrix}^T \in \C^n$ so that $\tilde{P}(f) = a(f)^*\tilde{q}$. Define $Q = \tilde{q} \tilde{q}^* \succeq 0.$ Now, for any $f \in \mathbb{T},$
+\begin{align*}
+P(f) &= \tilde{P}(f) \tilde{P}(f)^*\\
+& = a(f)^* \tilde{q} \tilde{q}* a(f)\\
+& = \tr(a(f)^* Q a(f))\\
+& = \tr( Q a(f) a(f)^*)\\
+& = \vabs{Q}{ T\left( a(f) \right)}\\
+& = \vabs{T^*Q}{a(f)}.
+\end{align*}
+Comparing coefficients, we conclude that indeed $q = T^* Q.$
+\end{proof}
 
 \subsection{General Trigonometric Polynomials}
 
@@ -489,10 +508,10 @@ component and zeros elsewhere and $v^*$ denotes the Hermitian adjoint
 \label{sec:sdp-ast}
 
 In this section, we present a semidefinite characterization of the atomic norm
-associated with the line spectral atomic set $\mathcal{A} = \{a_{f,\phi} | f
-\in [0, 1], \phi \in [0, 1]\}$. This characterization allows us to rewrite
- {\eqref{AST}} as an equivalent semidefinite programming problem.
-
+associated with the line spectral atomic set $\mathcal{A} = \{a_{f,\phi} | f \in
+[0, 1], \phi \in [0, 1]\}$. This provides an alternative route via the theory of
+positive polynomials to derive the SDP characterization we already derived in
+section~\ref{sub:general_trigonometric_moments}.
 
 
 Using Lemma \ref{lm:brl}, we rewrite the atomic norm $\|x\|_\A =
@@ -704,13 +723,12 @@ Euclidean $\epsilon$ cover of the atomic set $\A$, and the equivalence between
 Euclidean and atomic norms in finite dimensions.
 
 If $\A \in F^n$, there exists $C$, possibly depending on $n$ such that
-$\vnorm{x}_\A \leq C \vnorm{x}_2$ for any choice of atomic set. When the atomic
-set is symmetric, it is often possible to find the optimal choice of $C$ by
-finding the minimum volume ellipsoid that circumscribes $\conv(\A)$, in the
-special case that the ellipsoid is a scaled version of the Euclidean ball. This
-is called the L\"{o}wner-John ellipsoid after Charles L\"{o}wner who discovered
-the uniqueness of the minimum volume circumscribing ellipsoid for any convex
-sets and Fritz John who proved the existence.
+$\vnorm{x}_\A \leq C \vnorm{x}_2$ for any choice of atomic set. The minimum
+volume ellipsoid that circumscribes $\conv(\A)$ is called the L\"{o}wner-John
+ellipsoid after Charles L\"{o}wner who discovered the uniqueness of the minimum
+volume circumscribing ellipsoid for any convex sets and Fritz John who proved
+the existence. This is often a scaled version of the Euclidean ball when the
+atomic set is symmetric and it provides an optimal choice of $C$.
 
 Using the characterization of John, we have the following condition for
 Euclidean ball to be the minimum volume circumscribing ellipsoid of $\conv(\A).$
@@ -784,8 +802,8 @@ for the atomic sets for line spectral estimation and system identification.
 
 \subsection{DAST for Line Spectral Signals}\label{sec:comp-method}
 
-To proceed, pick a uniform grid of $N$ frequencies and form $\A_N = \left\{
-a_{m/N,\phi} ~\middle|~ 0 \leq m \leq N-1 \right\} \subset \A $ and solve
+To proceed, pick a uniform grid of $N$ frequencies and form $$\A_N = \left\{
+a_{m/N,\phi} ~\middle|~ 0 \leq m \leq N-1 \right\} \subset \A $$ and solve
 \eqref{AST} on this grid. i.e., we solve the problem
 \begin{equation}
 	\label{epsprimal} \text{minimize }\frac{1}{2} \vnorm{x - y}_2^2 + \tau \vnorm{x}_{\A_N}. 
@@ -812,13 +830,13 @@ fact, the following section furnishes the proof that the atomic norms induced by
 
 Due to the efficiency of the FFT, the discretized approach has a much lower
 algorithmic complexity than either Cadzow's alternating projections method or
-the ADMM method described in the extended technical report~\cite{btr12}, which
-each require computing an eigenvalue decomposition at each iteration. Indeed,
-fast solvers for~\eqref{sparsa} converge to an $\epsilon$ optimal solution in no
-more than $1/\sqrt{\epsilon}$ iterations. Each iteration requires a
-multiplication by $\Phi$ and a simple ``shrinkage'' step. Multiplication by
-$\Phi$ or $\Phi^*$ requires $O(N\log N)$ time and the shrinkage operation can be
-performed in time $O(N)$.
+the ADMM method described in section~\ref{sec:admm}, which each require
+computing an eigenvalue decomposition at each iteration. Indeed, fast solvers
+for~\eqref{sparsa} converge to an $\epsilon$ optimal solution in no more than
+$1/\sqrt{\epsilon}$ iterations. Each iteration requires a multiplication by
+$\Phi$ and a simple ``shrinkage'' step. Multiplication by $\Phi$ or $\Phi^*$
+requires $O(N\log N)$ time and the shrinkage operation can be performed in time
+$O(N)$.
 
 As we discuss below, this fast form of basis pursuit has been proposed by
 several authors. However, analyzing this method with tools from compressed
@@ -908,7 +926,7 @@ O\left(
 
 \subsection{DAST for System Identification} % (fold)
 \label{sec:dast_for_system_identification}
-The following proposition asserts that we can approximate this finite dimensional atomic norm via a sufficiently fine discretization of the unit disk.
+The following proposition asserts that we can approximate this finite dimensional atomic norm defined the atomic set of measurements of single pole systems via a sufficiently fine discretization of the unit disk.
 
 \begin{prop}\label{prop:algos:grid}
 Let $\D_\rho^{(\epsilon)}$ be a finite subset of the unit disc such that for any $w \in \D_\rho$ there exists a $v \in \D_\rho^{(\epsilon)}$ satisfying $|w-v| \leq \epsilon$.  Define
@@ -920,7 +938,7 @@ Then there exists a constant $C_\epsilon \in [0,1]$ such that
 	C_\epsilon \|x\|_{\cL(\cA_{\epsilon})} \leq \|x\|_{\cL(\cA)} \leq \|x\|_{\cL(\cA_{\epsilon})} \,.
 \]
 \end{prop}
-\noindent The set $\D_\rho^{(\epsilon)}$ is called an $\epsilon$-net for the set $\D_\rho$.  We show in the appendix that when $\mathcal{L}_k(G) = G(e^{i\theta_k})$, $C_{\epsilon}$ is at least $(1-\tfrac{16 \rho \epsilon}{\pi(1-\rho)})$.  Other measurement ensembles can be treated similarly.
+\noindent The set $\D_\rho^{(\epsilon)}$ is called an $\epsilon$-net for the set $\D_\rho$.  We will show that when $\mathcal{L}_k(G) = G(e^{i\theta_k})$, $C_{\epsilon}$ is at least $(1-\tfrac{16 \rho \epsilon}{\pi(1-\rho)})$.  Other measurement ensembles can be treated similarly.
 
 When we replace $\|x\|_{\cL(\cA)}$ with its discretized counterpart $\|x\|_{\cL(\cA)}$ in~\eq{finite-dim-ast}, 
 \[
@@ -937,42 +955,23 @@ where
 and $j$ indexes the set $\D_{\rho}^{(\epsilon)}$. That is $M$ is an $n \times
 |\D_\rho^{(\epsilon)}|$ matrix. Problem~\eq{algos:DAST} is a weighted $\ell_1$
 regularization problem with real or complex data depending on specific problem.
-We call~\eq{algos:DAST} \emph{Discretized Atomic Soft Thresholding} (DAST), as coined in~\cite{btr12}.
+% We call~\eq{algos:DAST} \emph{Discretized Atomic Soft Thresholding} (DAST), as coined in~\cite{btr12}.
 
-The DAST problem can be solved very efficiently with a variety of off-the-shelf
+This DAST problem can be solved very efficiently with a variety of off-the-shelf
 tools including SPARSA~\cite{wright09}, FPC~\cite{Hale08} or even more general
 purpose packages such as YALMIP~\cite{YALMIP} or CVX~\cite{cvx}. DAST yields an
 approximate solution to problem~\eq{atomic-norm-lin-inverse}, and, as we will
 see, yields a statistically consistent estimate provided the parameter
 $\epsilon$ is adjusted to meet the desired numerical accuracy.
 
-\begin{proof}\label{pf:prop-grid}
-First note that for any atomic sets $\cA \subset \cA'$, $\|x\|_{\cA'} \leq \|x\|_{\cA}$.  The harder part of this proposition is the lower bound.  To proceed, we use the dual norm. 
-
-Let $\D_\rho^{(\tau)}$ be a subset of $\D_\rho$ such that for every $a \in \D_\rho$, there exists an $\hat{a}\in \D_\rho^{(\tau)}$ satisfying $|a-\hat{a}|\leq \tau$.  For each $a \in \D_\rho$, we will actually denote $\hat{a}$ as the closest point in $\D_\rho^{(\tau)}$ to $a$.
-
-Now observe that 
-\begin{align*}
-	  \| \cL(\varphi_{\hat{a}}-\varphi_a)\|_{\cL(\cA)} \leq  \| \varphi_{\hat{a}}-\varphi_a\|_{\cA}
-	  \leq \frac{8}{\pi} \|\Gamma_{\varphi_{\hat{a}}}- \Gamma_{\varphi_a}\|_1 \leq \frac{16 \rho \tau}{\pi (1-\rho)}\,.
-\end{align*}
-Here, the first inequality follows from our reasoning in Section~\ref{sec:computation}.  The second inequality is Theorem~\ref{thm:hankel-nuclearity}, and the final inequality is by~\eq{hankel-op-bound}.
-
-We then can compute
-\begin{align*}
-\|z\|_{\cL(\cA)}^* &= \sup_{a \in \D_\rho} \langle \cL(\varphi_a),z \rangle\\
-&= \sup_{a \in \D_\rho} \langle \cL(\varphi_{\hat{a}}), z \rangle + \langle \cL(\varphi_{a}-\varphi_{\hat{a}}), z\rangle \\
-&\leq\sup_{a \in \D_\rho^{(\tau)}} \langle \cL(\varphi_{\hat{a}}), z \rangle +\sup_{a \in \D_\rho}\langle \cL(\varphi_a-\varphi_{\hat{a}}), z\rangle \\
-&= \|z\|_{\cL(\cA_\tau)}^*+ \sup_{a \in \D_\rho}\langle \cL(\varphi_a-\varphi_{\hat{a}}), z\rangle \\
-&\leq \|z\|_{\cL(\cA_\tau)}^*+ \sup_{a \in \D_\rho}  \| \cL(\varphi_{\hat{a}}-\varphi_a)\|_{\cL(\cA)} \|z\|_{\cL(\cA)}^*\\
-&\leq \|z\|_{\cL(\cA_\tau)}^*+ \frac{16\rho\tau}{\pi(1-\rho)} \|z\|_{\cL(\cA)}^*\,.
-\end{align*}
-Rearranging both sides of this inequality gives
-\[
-	\|z\|_{\cL(\cA)}^* \leq C_\tau^{-1} \|z\|_{\cL(\cA_\tau)}^*
-\]
-with $C_\tau =  1-\tfrac{16\rho\tau}{\pi(1-\rho)}$, completing the proof.
-\end{proof}
+As in section~\ref{sub:approximated_atomic_norms}, our proof of
+proposition~\ref{prop:algos:grid} depends upon connecting the Euclidean distance
+between the atoms indexed by the discretization of the unit disc to the
+distances induced by the atomic norm. We already know from
+theorem~\ref{thm:hankel-nuclearity} in Chapter~\ref{chap:sysid} that the Hankel
+nuclear norm and the atomic norm are equivalent. So, we will need the following
+lemma that connects the Hankel nuclear norm of the atomic functions
+$\set{\varphi_a}$ to the distances in the complex planes for poles $a \in \C.$
 
 \begin{lemma} For any $a,b \in \D_\rho$,
 \begin{equation}\label{eq:hankel-op-bound}
@@ -1007,6 +1006,39 @@ Then we have
 \end{subequations}
 Here,~\eq{tri-ineq}  is the triangle inequality.~\eq{nuc-2-l2} follows because the nuclear norm of a rank one operator is equal to the product of the $\ell_2$ norm of the factors.~\eq{l2-dist-formula} follows from~\eq{zeta-dot}.  The final inequality follows from analyzing the taylor series of the preceding expression.
 \end{proof}
+
+Now, we are ready to prove our main proposition.
+
+\subsubsection{Proof of Proposition~\ref{prop:algos:grid}} % (fold)
+First note that for any atomic sets $\cA \subset \cA'$, $\|x\|_{\cA'} \leq \|x\|_{\cA}$.  The harder part of this proposition is the lower bound.  To proceed, we use the dual norm. 
+
+Let $\D_\rho^{(\tau)}$ be a subset of $\D_\rho$ such that for every $a \in \D_\rho$, there exists an $\hat{a}\in \D_\rho^{(\tau)}$ satisfying $|a-\hat{a}|\leq \tau$.  For each $a \in \D_\rho$, we will actually denote $\hat{a}$ as the closest point in $\D_\rho^{(\tau)}$ to $a$.
+
+Now observe that 
+\begin{align*}
+	  \| \cL(\varphi_{\hat{a}}-\varphi_a)\|_{\cL(\cA)} \leq  \| \varphi_{\hat{a}}-\varphi_a\|_{\cA}
+	  \leq \frac{8}{\pi} \|\Gamma_{\varphi_{\hat{a}}}- \Gamma_{\varphi_a}\|_1 \leq \frac{16 \rho \tau}{\pi (1-\rho)}\,.
+\end{align*}
+Here, the first inequality follows from our reasoning in Section~\ref{sec:computation}.  The second inequality is Theorem~\ref{thm:hankel-nuclearity}, and the final inequality is by~\eq{hankel-op-bound}.
+
+We then can compute
+\begin{align*}
+\|z\|_{\cL(\cA)}^* &= \sup_{a \in \D_\rho} \langle \cL(\varphi_a),z \rangle\\
+&= \sup_{a \in \D_\rho} \langle \cL(\varphi_{\hat{a}}), z \rangle + \langle \cL(\varphi_{a}-\varphi_{\hat{a}}), z\rangle \\
+&\leq\sup_{a \in \D_\rho^{(\tau)}} \langle \cL(\varphi_{\hat{a}}), z \rangle +\sup_{a \in \D_\rho}\langle \cL(\varphi_a-\varphi_{\hat{a}}), z\rangle \\
+&= \|z\|_{\cL(\cA_\tau)}^*+ \sup_{a \in \D_\rho}\langle \cL(\varphi_a-\varphi_{\hat{a}}), z\rangle \\
+&\leq \|z\|_{\cL(\cA_\tau)}^*+ \sup_{a \in \D_\rho}  \| \cL(\varphi_{\hat{a}}-\varphi_a)\|_{\cL(\cA)} \|z\|_{\cL(\cA)}^*\\
+&\leq \|z\|_{\cL(\cA_\tau)}^*+ \frac{16\rho\tau}{\pi(1-\rho)} \|z\|_{\cL(\cA)}^*\,.
+\end{align*}
+Rearranging both sides of this inequality gives
+\[
+	\|z\|_{\cL(\cA)}^* \leq C_\tau^{-1} \|z\|_{\cL(\cA_\tau)}^*
+\]
+with $C_\tau =  1-\tfrac{16\rho\tau}{\pi(1-\rho)}$, completing the proof.
+	
+% subssubection (end)
+
+
 
 % section discretization (end)
 
@@ -1228,3 +1260,5 @@ in fact outperforms MUSIC and Cadzow by a substantial margin for metrics $m_1$
 and $m_2$.
 
 % section ast:experiments (end)
+
+

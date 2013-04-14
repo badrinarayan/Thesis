@@ -1,0 +1,58 @@
+\chapter{Conclusion and Future Work} %(fold)
+\label{chap:conclusion}
+
+The convex optimization perspective on problems in signal processing and systems
+holds a lot of promise. Our work forms the rudiments of continuous sparse
+recovery which underlies a number of estimation problems in parametric signal
+processing, systems theory and machine learning. In fact, using the atomic norm
+framework introduced by~\cite{crpw}, we were able to revisit classical problems
+and empirically and theoretically demonstrate performance favorable to and
+comparable to the state-of-art.
+
+The primary contribution of the thesis is a novel way to analyze regularization
+with convex penalties for the case of continuous dictionaries that occur
+naturally in several problems. In fact, we show that the recovery performance is
+more tied to the target we wish to estimate and not the arbitrary coherence of
+the atomic set. This turns the attention away from global properties of
+dictionaries which answer the question ``Which dictionaries enable sparse
+recovery using relaxations?'' to properties of signals. We employ a local
+coherence condition characterized by minimum separation between frequencies for
+line spectral signals which answers the question ``Which target signals are
+recoverable using convex relaxations?''.
+
+However, we have only scratched the surface of what is possible by continuing
+this line of inquiry. In~\cite{cs_otg}, the authors extended our work to show
+that using the atomic norm framework, we could achieve continuous compressed
+sensing using Fourier measurements. Our theoretical analysis of the optimal
+performance for continuous sparse recovery is heavily tied to Fourier
+measurements and properties of trigonometric polynomials derived in
+~\cite{CandesGranda,cg_noisy}. Future work should explore abstract conditions
+when we can guarantee similarly optimal rates.
+
+Algorithmically, the success of the method depends on whether we can efficiently
+compute atomic norms. We showed that we can sometimes get exact semidefinite
+characterizations and provided scalable algorithms. We also show that
+discretization approximates the solution while it does not yield as sparse a
+solution as the exact approach. An interesting line of work is showing how to
+bootstrap an approximate solution from a fast discretization algorithm and
+incrementally increase the accuracy of the solution. 
+
+Analysis of the convergence of greedy algorithms provides yet another fruitful
+direction for scaling the performance of atomic norm regularization. While there
+is already some interesting work on employing greedy methods for atomic
+norms~\cite{tewari2011greedy,raogreedy}, the proof of convergence depends upon
+global restricted smoothness property. It would be interesting to pursue
+improvements to this assumption, using arguments similar to our thesis.
+
+% \section{Publications}
+% 
+% This dissertation is a result of a collaboration with Prof. Benjamin Recht, and
+% postdoctoral students, Dr. Gongguo Tang and Dr. Parikshit Shah at the Wisconsin
+% Institute of Discovery. Below, we provide a list of publications that composes
+% much of this work.
+% 
+
+
+
+
+% chapter conclusion (end)

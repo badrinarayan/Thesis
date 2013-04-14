@@ -1,11 +1,23 @@
-%\textbf{FIXME:  basically a placeholder; do not believe}
+Many high dimensional structures can be thought of as being composed of a number
+of building blocks or atoms. Often, the number of composing atoms is relatively
+small and it becomes possible to estimate high dimensional phenomena optimally
+from a limited number of measurements, even when corrupted by noise. Such
+estimation problems can be posed as combinatorial optimization problems and we
+study the use of atomic norms which form a natural convex penalty for
+efficiently solving such problems in a large number of cases.
 
-\svnidlong{$LastChangedBy$}{$LastChangedRevision$}{$LastChangedDate$}{$HeadURL: http://freevariable.com/dissertation/branches/diss-template/frontmatter/abstract.tex $}
-\vcinfo{}
+We provide a general approach to regularization using an atomic norm penalty and
+show how it unifies previous literature on high dimensional statistics. We
+revisit two fundamental problems in signal processing and systems theory - line
+spectral estimation and system identification, which are classically treated as
+nonlinear parameter estimation problems. We show that our convex approach can
+provide a principled way of tackling these problems and provide optimal
+theoretical guarantees in the presence of noise. In contrast parametric
+approaches often need to estimate the number of atoms or the model order and
+need heuristics to robustify nonlinear estimation.
 
-%I did some research, read a bunch of papers, published a couple myself, (pick one):
-%\begin{enumerate}
-%	\item ran some experiments and made some graphs,
-%	\item proved some theorems
-%\end{enumerate}
-%and now I have a job.  I've assembled this document in the last couple of months so you will let me leave.  Thanks!
+Our technique can be thought of as a continuous sparse recovery problem, or a
+generalization of Lasso to infinite dimensions. We provide efficient algorithms
+based on semidefinite characterization and also show that discretization
+provides a scalable alternative to approximate the solution to our problems.
+

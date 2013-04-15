@@ -1105,7 +1105,7 @@ Theorem~\ref{support}, but use a worst case $L_2$ bound on the noise samples.
 Here, we improve these recent results in our proof of Theorem~\ref{support},
 providing tighter guarantees under the Gaussian noise model.
 
-\section{Conclusion and Future Work}\label{sec:conclusions}
+\section{Conclusion}\label{sec:conclusions}
 
 The Atomic norm formulation of line spectral estimation provides several
 advantages over prior approaches. By performing the analysis in the continuous
@@ -1115,9 +1115,9 @@ analysis and determine the loss incurred from discretization. This approach
 allowed us to circumvent some of the more complicated theoretical arguments that
 arise when using concepts from compressed sensing or random matrix theory.
 
-In this paper, we demonstrated stability of atomic norm regularization by
+This chapter demonstrated stability of atomic norm regularization by
 analysis of specific properties of the atomic set of moments and the associated
-dual space of trigonometric polynomials. The key to our analysis is the
+dual space of trigonometric polynomials. The key to this analysis is the
 existence and properties of various trigonometric polynomials associated with
 signals with well separated frequencies. This work provides several interesting
 possible future directions, both in line spectral estimation and in signal
@@ -1125,7 +1125,7 @@ processing in general. We conclude with a short outline of some of the
 possibilities.
 
 Though we have made significant progress at understanding the theoretical
-limits of line-spectral estimation and superresolution, our bounds could still
+limits of line-spectral estimation and superresolution, the bounds could still
 be improved. For instance, it remains open as to whether the logarithmic term
 in Theorem~\ref{main} can be improved to $\log(n/k)$. Deriving such an upper
 bound or improving our minimax lower bound would provide an interesting
@@ -1133,11 +1133,10 @@ direction for future work.
 
 Additionally, it is not clear if our localization bounds in
 Theorem~\ref{support} have the optimal dependence on the number of sinusoids
-$k$. For instance, we expect that the condition on signal amplitudes for
+$k$. For instance, one expects that the condition on signal amplitudes for
 approximate support recovery should not depend on $k$, by comparison with
-similar guarantees that have been established for Lasso~\cite{coherence}. We
-additionally conjecture that for a large enough regularization parameter, there
-will be no spurious recovered frequencies in the solution. That is, there
+similar guarantees that have been established for Lasso~\cite{coherence}. It is reasonable to conjecture that for a large enough regularization parameter, there
+should will be no spurious recovered frequencies in the solution. That is, there
 should be no non-zero coefficients in the ``far region'' $F$ in
 Theorem~\ref{support}. Future work should investigate whether better guarantees
 on frequency localization are possible.

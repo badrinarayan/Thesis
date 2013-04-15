@@ -16,7 +16,7 @@ semidefinite characterization which we will derive in this chapter. The positive
 case is classical and comes from moment theory and the dual theory of positive
 polynomials. We will review the results for the positive case and provide the
 proofs for completeness. We will also derive the semidefinite characterization
-for the more general complex case using these results. We then provide a
+for the more general complex case using these results. I then provide a
 reasonably fast method for solving this SDP via the Alternating Direction Method
 of Multipliers (ADMM)~\cite{BertsekasParallelBook,admm2011}. Our ADMM
 implementation can solve instances with a thousand observations in a few
@@ -24,12 +24,12 @@ minutes.
 
 While the SDP based AST algorithm can be thought of as solving an infinite
 dimensional Lasso problem, the computational complexity can be prohibitive for
-very large instances. To compensate, we show that solving the Lasso problem on
-an oversampled grid of frequencies approximates the solution of the atomic norm
-minimization problem to a resolution sufficiently high to guarantee excellent
-mean-squared error (MSE). The gridded problem reduces to the Lasso, and by
-leveraging the Fast Fourier Transform (FFT), can be rapidly solved with freely
-available software such as SpaRSA~\cite{wright09}. A Lasso problem with
+very large instances. To compensate, I will show that solving the Lasso problem
+on an oversampled grid of frequencies approximates the solution of the atomic
+norm minimization problem to a resolution sufficiently high to guarantee
+excellent mean-squared error (MSE). The gridded problem reduces to the Lasso,
+and by leveraging the Fast Fourier Transform (FFT), can be rapidly solved with
+freely available software such as SpaRSA~\cite{wright09}. A Lasso problem with
 thousands of observations can be solved in under a second using Matlab on a
 laptop. The prediction error and the localization accuracy for line spectral
 estimation both increase as the oversampling factor increases, even if the
@@ -37,7 +37,7 @@ actual set of frequencies in the line spectral signal are off the Lasso grid.
 
 For the problem of system identification, there are no exact semidefinite
 formulations for the atomic set. While it is possible to develop a sequence of
-semidefinite relaxations, we instead describe how we can use a discretization
+semidefinite relaxations, I will describe how we can use a discretization
 approach for the atomic soft thresholding (AST) problem described in
 Chapter~\ref{chap:ast} and this essentially reduces to solving a Lasso problem
 on an overcomplete grid. Our proofs for discretized atomic soft thresholding
@@ -106,7 +106,7 @@ trigonometric moments of a positive measure on the torus $\mathbb{T}$.
 Based on these classical results, we derive semidefinite characterizations of
 the atomic sets in Section~\ref{sec:sdp_for_trigonometric_moments}. As a
 straightforward consequence, we can write down a semidefinite characterization
-of $\conv(\A_+)$. Before we state our results, we will need a bit of notation.
+of $\conv(\A_+)$. Before stating the result, we will need a bit of notation.
 Define the map $T_n:\mathbb{C}^n \rightarrow \mathbb{C}^{n\times n}$ which
 creates a Hermitian Toeplitz matrix out of its input, that is
 \[
@@ -117,7 +117,10 @@ x^*_2 & x_1  & \ldots & x_{n-1}\\
  x^*_n & x^*_{n-1}  & \ldots & x_1
  \end{array}\right]
 \]
-In the following, we sometimes suppress the subscript in $T_n$ unless we wish to explicitly characterize the dependence on $n$ and write it as $T(x)$ or $T x$. 
+In the following, we sometimes suppress the subscript in $T_n$ unless we wish to
+explicitly characterize the dependence on $n$ and write it as $T(x)$ or $T x$.
+Also, denote the corresponding adjoint map by $T^*.$
+ 
 \begin{theorem}[SDP for Positive Trigonometric Moments]
 \label{thm:positive-linespect-sdp}
 Suppose $x = (x_0 \cdots x_{n-1})^T \in \C^n.$ Then, 
@@ -128,10 +131,12 @@ Suppose $x = (x_0 \cdots x_{n-1})^T \in \C^n.$ Then,
 		\end{cases}
 	\]
 \end{theorem}
-In contrast to $\conv(\A_+)$, the semidefinite characterization of $\conv(\A)$
-requires some computation.The characterization of moment cone allows us to
-describe the convex hull of the general atomic moments~$\conv(\A)$ and we will
-derive the following semidefinite characterization:
+Note that this is an example when atomic norm is not really a norm on $F^n$, but
+is nevertheless useful. In contrast to $\conv(\A_+)$, the semidefinite
+characterization of $\conv(\A)$ requires some calculation. The characterization
+of moment cone allows us to describe the convex hull of the general atomic
+moments~$\conv(\A)$ and we will derive the following semidefinite
+characterization:
 \begin{theorem}[SDP for General Trigonometric Moments]\label{thm:sdp-char}
 	For $x\in \C^n$,
 	\begin{equation}
@@ -158,7 +163,7 @@ is the dual characterization which has an optimum value $\vnorm{x}_\A$. For the 
 \begin{align}
 	\setof{q \in \C^n}{\vnorm{q}_\A^* \leq 1} &
 	= \setof{q \in \C^n}{\sup_{a \in \A}\vabs{q}{a} \leq 1} \\
-	&= \setof{q \in \C^n}{\sum_{j=0}^{n-1}{|q_j \exp(i 2\pi j f)|} \leq 1, \text{ for all } f \in \mathbb{T}}
+	&= \setof{q \in \C^n}{\left|\sum_{j=0}^{n-1}{q_j \exp(i 2\pi j f)}\right|\leq 1, \text{ for all } f \in \mathbb{T}}
 \end{align}
 corresponds precisely to the set of complex trigonometric polynomials with a
 maximum modulus of $1$ and is characterized by the Bounded Real Lemma. We
@@ -200,7 +205,7 @@ Given a measure $\mu$ defined on the torus $\mathbb{T}$, the $m$th
 trigonometric moment is defined by
 \begin{equation}
 	\label{eq:trig-moment-measure}
-	x_m = \int_\mathbb{T} e^{i 2 \pi k f} \mu ( d f)
+	x_m = \int_\mathbb{T} e^{i 2 \pi m f} \mu ( d f)
 \end{equation}
 \end{definition}
 
@@ -219,7 +224,7 @@ only if the sequence $\{x_m\}_{m=-\infty}^{\infty}$ is positive definite.
 \begin{proof}
 
 A sequence $\set{x_m}$ is positive definite if for every $n \in \N$, and every
-sequence $(c_1, \ldots, c_n)$ of $n$ complex numbers, $\sum_{k,l=1}^n x_{k-1}
+sequence $(c_1, \ldots, c_n)$ of $n$ complex numbers, $\sum_{k,l=1}^n x_{k-l}
 c_k c_l^* \geq 0.$ Using our notation for the Toeplitz map, we can simply write
 this condition as $T_n x \succeq 0$ for every $n \in \N.$
 
@@ -234,7 +239,7 @@ corresponding to some measure $\mu > 0$ on $\mathbb{T}.$ Then, for any $n \in
 
 Conversely, if the sequence $\set{x_m}$ is positive semidefinite, then for any $t \in \R,$  we have
 \[
-X_n(t) = \sum_{k,l=1}^n x_{k-l} e^{i 2 \pi (k-l) t} \geq 0
+X_n(t) = \frac{1}{n}\sum_{k,l=1}^n x_{k-l} e^{i 2 \pi (k-l) t} \geq 0
 \]
 But, we have
 \[
@@ -249,7 +254,7 @@ By Fourier Series theory, we have that for every $|k| \leq n,$
 
 Define a sequence of measures $\mu_n$ given by
 \[
-	\mu_n(B) = \int_0^1 X_n(t) d t
+	\mu_n(B) = \int_B X_n(t) d t
 \]
 
 for every Borel subset $B \subset [0,1].$ The sequence of measures $\set{\mu_n}$
@@ -260,7 +265,7 @@ $\mu_{n_k}$ which converges weakly to a measure $\mu$ on $\mathbb{T}.$ Finally, 
 Herglotz theorem characterizes arbitrary positive measures on the torus.
 However, for line spectral estimation, we are interested in \emph{discrete}
 positive measures, i.e., measures composed of a finite number of atoms at $f_1,
-\ldots, f_l$, so we can write
+\ldots, f_k$, so we can write
 \[
 \mu(f) = \sum_{l=1}^k c_l \xi_{f_l}
 \]
@@ -270,11 +275,11 @@ corresponds to a $k$ simple combination of atomic moment sequences $a(f).$ In
 fact,
 
 \begin{align*}
-	x_m &= \int_\mathbb{T} e^{i 2 \pi k f} \sum_{l=1}^k c_l \xi_{f_l}(d f)\\
+	x_m &= \int_\mathbb{T} e^{i 2 \pi m f} \sum_{l=1}^k c_l \xi_{f_l}(d f)\\
 	&= \sum_{l=1}^k c_l e^{i 2 \pi f_l m}.
 \end{align*}
 So, the corresponding moment vector
-$x = \begin{pmatrix}x_0 & \cdots & x_{n-1}\end{pmatrix} \in \C^n$ is given by
+$x = \left(x_0 ~ \cdots ~ x_{n-1}\right) \in \C^n$ given by
 \[
 x = \sum_{l=1}^k c_l a(f_l)
 \]
@@ -363,7 +368,7 @@ a(f_l)$ by Caratheodory-Toeplitz theorem since it is in the conical hull of the
 atomic set $\A_+$. Since we have an invariant $x_0 = \sum_l c_l$ for any such
 decomposition, we have that
 \[
-\vnorm{x}_{\A_{+}}  = \inf\setof{\sum_l{c_l}}{x = \sum_l c_l} = x_0.
+\vnorm{x}_{\A_{+}}  = \inf\setof{\sum_l{c_l}}{x = \sum_l c_l a(f_l)} = x_0.
 \]
 On the other hand, if $Tx \not\succeq 0$, $x \not\in \cone(\A_+)$ and thus
 $\vnorm{x}_{\A_{+}} = +\infty$. In other words, whenever $x$ is a valid
@@ -443,7 +448,11 @@ The dual problem to AST involves trigonometric polynomials instead of moments.
 
 \begin{definition}
 A vector $q \in \C^n$ is a positive trigonometric polynomial if
-for every $f \in \mathbb{T},~ \Re\sum_{j=1}^{n} q_{j-1} \exp(i2\pi j f) \geq 0.$
+for every $f \in \mathbb{T},$
+\[
+\vabs{q}{a(f)} = \Re\left(\sum_{j=0}^{n-1} q_{j} \exp(i2\pi j f)\right) \geq 0.
+\]
+
 \end{definition}
 
 Such polynomials have a simple characterization due to spectral
@@ -481,15 +490,11 @@ a bound on the magnitude of $V(f)$:
 \begin{align*}
 \|v\|_\A^* \leq \tau \Leftrightarrow |V(f)|^2 \leq \tau^2, \forall f \in [0, 1].
 \end{align*}
-The function $q(f) = \tau^2-|V(f)|^2$ is a trigonometric polynomial (that is, a
-polynomial in the variables $z$ and $z^*$ with $|z|=1$). A necessary and
-sufficient condition for $q(f)$ to be nonnegative is that it can be written as
-a sum of squares of trigonometric polynomials~\cite{Megretski03}. 
-Testing if $q$ is a sum of squares can be achieved
-via semidefinite programming. Let $T^*$ denote the adjoint of the map $T$. Then we have the following
-succinct characterization
+Equivalently, function $q(f) = \tau^2-|V(f)|^2$ is thus a positive trigonometric
+polynomial. Using the characterization given by
+Theorem~\ref{thm:gram-mtx-positive-poly}, one can derive the following result called the Bounded Real Lemma. (See for example, Theorem 4.24 in~\cite{brl2007}.)
 
-\begin{lemma}\cite[Theorem 4.24]{brl2007}\label{lm:brl} For any given causal trigonometric polynomial $V(f) = \sum_{l=0}^{n-1} v_l
+\begin{lemma}[Bounded Real Lemma]\label{lm:brl} For any given causal trigonometric polynomial $V(f) = \sum_{l=0}^{n-1} v_l
 e^{-2\pi i l f}$, $|V(f)| \leq \tau $ if and only if there exists complex
 Hermitian matrix $Q$ such that
 \begin{align*}
@@ -503,16 +508,28 @@ Here, ${e}_1$ is the first canonical basis vector with a one at the first
 component and zeros elsewhere and $v^*$ denotes the Hermitian adjoint
 (conjugate transpose) of $v$.
 \end{lemma}
+\begin{proof}
+The polynomial $|V(f)|^2$ can be written as
+\begin{align*}
+|V(f)|^2 &= \left|\vabs{v}{a(f)}\right|^2\\
+&= a(f)^* v v^* a(f)\\
+&= \tr\left(a(f)^* v v^* a(f)\right)\\
+&= \vabs{v v^*}{T a(f)}\\
+&=\vabs{T^*(v v^*)}{a(f)}.
+\end{align*}
+Thus, $|q(f)|^2 = \tau^2 - |V(f)|^2 = \vabs{\tau^2 e_1 - T^*(v v^*)}{a(f)}$. Now,Theorem~\ref{thm:gram-mtx-positive-poly} promises the existence of $P \succeq 0$ such that $\tau^2 e_1 - T^* (v v^*) = T^* P.$ Equivalently, there exists $Q \succeq v v^*$ (equal to $P + v v^*$) such that $\tau^2 e_1 = T^* Q.$ Using Schur complements, we can rewrite $Q \succeq v v^*$ as $\begin{bmatrix}
+  Q & v \\
+  v^* & 1
+ \end{bmatrix} \succeq 0
+$, and this completes the proof.
+\end{proof} 
 
 \subsection{Deriving the primal characterization from dual}
 \label{sec:sdp-ast}
 
-In this section, we present a semidefinite characterization of the atomic norm
-associated with the line spectral atomic set $\mathcal{A} = \{a_{f,\phi} | f \in
-[0, 1], \phi \in [0, 1]\}$. This provides an alternative route via the theory of
-positive polynomials to derive the SDP characterization we already derived in
-section~\ref{sub:general_trigonometric_moments}.
-
+The dual characterization in the previous section via the theory of positive
+polynomials provides an alternative route to rederive the SDP characterization
+of the atomic norm derived in section~\ref{sub:general_trigonometric_moments}.
 
 Using Lemma \ref{lm:brl}, we rewrite the atomic norm $\|x\|_\A =
 \sup_{\|v\|_\A^*\leq 1} \left<x, v\right> $ as the following semidefinite
@@ -527,6 +544,7 @@ program:
  \end{bmatrix} \succeq 0, \qquad  T^*(Q) = {e}_1 .
 \end{array}
 \end{equation}
+
 The dual problem of \eq{sdpprimal} (after a trivial rescaling) is then equal to
 the atomic norm of $x$:
 \begin{align*}
@@ -537,7 +555,16 @@ the atomic norm of $x$:
   x^* & t
  \end{bmatrix} \succeq 0.\end{array}
 \end{align*}
-Therefore, the atomic denoising problem \eqref{AST} for the set of trigonometric atoms is equivalent to
+
+Thus, we have another proof of the characterization in
+Theorem~\ref{thm:sdp-char}.
+% section sdp_for_trigonometric_polynomials (end)
+
+\section{AST using Alternating Direction Method of Multipliers}
+\label{sec:admm}
+
+Using the characterization of the atomic norm given by Lemma~\ref{lm:brl}, we can see that the atomic denoising problem \eqref{AST} for the set of trigonometric atoms is equivalent to
+
 \begin{equation}\label{eq:sdpdenoising}
 \begin{array}{ll}
 \operatorname*{minimize}_{t, u, x} & \frac{1}{2} \|x - y\|_2^2 + \frac{\tau}{2}(t + u_1) \\
@@ -548,16 +575,11 @@ Therefore, the atomic denoising problem \eqref{AST} for the set of trigonometric
  \end{bmatrix} \succeq 0.\end{array} 
 \end{equation}
 
-The semidefinite program \eq{sdpdenoising} can be solved by off-the-shelf
+This semidefinite program \eq{sdpdenoising} can be solved by off-the-shelf
 solvers such as SeDuMi~\cite{sedumi} and SDPT3~\cite{SDPT3}. However, these
-solvers tend to be slow for large problems. In the next section, we provide a
+solvers tend to be slow for large problems. So, I provide a
 reasonably efficient algorithm based upon the Alternating Direction Method of
 Multipliers.
-
-% section sdp_for_trigonometric_polynomials (end)
-
-\section{Alternating Direction Method of Multipliers}
-\label{sec:admm}
 
 A thorough survey of the ADMM algorithm is given in~\cite{admm2011}. We only
 present the details essential to the implementation of atomic norm soft

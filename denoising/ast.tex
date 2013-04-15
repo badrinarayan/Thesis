@@ -2,36 +2,35 @@
 \chapter{Simple Models and Atomic Norms}
 \label{chap:ast}
 
-The foundation of our technique consists of extending work on \emph{atomic
-norms} in linear inverse problems in \cite{crpw}. In this work, the authors
-describe how to reconstruct models that can be expressed as sparse linear
-combinations of \emph{atoms} from some basic set $\A.$ The set $\A$ can be very
-general and is not assumed to be finite. For example, if the signal is known to
-be a low rank matrix, $\A$ could be the set of all unit norm rank-$1$ matrices,
-since a low rank matrix can indeed be written as a sparse combination of such
-rank-$1$ atoms.
+The foundation that underlies the techniques discussed in this chapter is the
+work on \emph{atomic norms} for linear inverse problems in \cite{crpw}. In this
+work, the authors describe how to reconstruct models that can be expressed as
+sparse linear combinations of \emph{atoms} from some basic set $\A.$ The set
+$\A$ can be very general and is not assumed to be finite. For example, if the
+signal is known to be a low rank matrix, $\A$ could be the set of all unit norm
+rank-$1$ matrices, since a low rank matrix can indeed be written as a sparse
+combination of such rank-$1$ atoms.
 
-We will first review the notion of simple models defined in~\cite{crpw} and
-describe how this generalizes various notions of sparsity and structure. We will
-also show how to use an atomic norm penalty to denoise a signal known to be a
-sparse nonnegative combination of atoms from a set $\A$. Atomic norms provide a
-natural convex penalty function for discouraging specialized notions of
+I will first review the notion of simple models defined in~\cite{crpw} and
+describe how this generalizes various notions of sparsity and structure. Then, we will see how to use an atomic norm penalty to denoise a signal known to be
+a sparse nonnegative combination of atoms from a set $\A$. Atomic norms provide
+a natural convex penalty function for discouraging specialized notions of
 complexity. These norms generalize the $\ell_1$ norm for sparse vector
 estimation~\cite{candes06} and the nuclear norm for low-rank matrix
 reconstruction~\cite{Recht10,CandesRecht09}.
 
-Our first contribution is an abstract theory of denoising with atomic norms. We
-show a unified approach to denoising with the atomic norm that provides a
-standard approach to computing low mean-squared-error (MSE) estimates. We show
-how certain Gaussian statistics and geometrical quantities of particular atomic
-norms are sufficient to bound estimation rates with these penalty functions. Our
-approach is essentially a generalization of the Lasso~\cite{tibshirani96,chen98}
-to infinite dictionaries.
+The first contribution described in this chapter, is an abstract theory of
+denoising with atomic norms. I show a unified approach to denoising with the
+atomic norm that provides a standard approach to computing low
+mean-squared-error (MSE) estimates. We will see how certain Gaussian statistics
+and geometrical quantities of particular atomic norms are sufficient to bound
+estimation rates with these penalty functions. This approach is essentially a
+generalization of the Lasso~\cite{tibshirani96,chen98} to infinite dictionaries.
 
 \subsection*{Organization of this chapter}
 
 The denoising problem is obtaining an estimate $\hat{x}$ of the signal $x^\star$
-from $y = x^\star + w$, where $w$ is additive noise. We make the structural
+from $y = x^\star + w$, where $w$ is additive noise. Let us make the structural
 assumption that $x^\star$ is a sparse non-negative combination of points from an
 arbitrary, possibly infinite set $\A \subset \C^n$. This assumption is very
 expressive and generalizes many notions of sparsity~\cite{crpw}. The atomic norm
@@ -43,27 +42,26 @@ Section~\ref{sec:ast:preliminaries}, and is defined as:
 \vnorm{x}_\A = \inf\left\{t > 0 ~\middle|~x \in t \conv(\A) \right\}.
 \end{equation}
  where $\conv(\A)$ is the convex hull
-of points in $\A.$ We analyze the denoising performance of an estimate that uses
-the atomic norm to encourage sparsity in $\A$.
+of points in $\A.$ Then, we will look at the denoising performance of an
+estimate that uses the atomic norm to encourage sparsity in $\A$.
 
-\paragraph*{Decomposition.} In Section~\ref{sec:decomposition}, we start with
+\paragraph*{Decomposition.} Section~\ref{sec:decomposition} considers
 vectors $x^\star$ that may be written as a sparse nonnegative combination of
-elements from the atomic set $\A$ and ask how one might certify that $x^\star$
+elements from the atomic set $\A$ and asks how one might certify that $x^\star$
 has a unique sparsest decomposition in terms of the atoms. We will see how the
 existence of certain vectors in the dual space can reveal the composing atoms
 and certify uniqueness of the sparsest decomposition under some mild technical
 conditions.
 
-\paragraph*{Denoising.} In Section \ref{sec:abstract-denoising},
-we will characterize the performance of the estimate $\hat{x}$ that solves
+\paragraph*{Denoising.} Section \ref{sec:abstract-denoising} characterizes the performance of the estimate $\hat{x}$ that solves
 
 \begin{equation}
 \label{AST}\mathop{\textrm{minimize}}_x \frac{1}{2} \vnorm{x - y}_2^2 + \tau \vnorm{x}_\A.
 \end{equation}
 where $\tau$ is an appropriately chosen regularization parameter, and $y =
-x^\star + w$ is a a vector of noisy measurements. We provide an upper bound on
-the MSE of the estimate when the noise statistics are known. Before we state the
-theorem, we note that the dual norm $\vnorm{\cdot}_\A^*$, corresponding to the
+x^\star + w$ is a a vector of noisy measurements. I will show an upper bound on
+the MSE of the estimate when the noise statistics are known. Before stating the
+theorem, note that the dual norm $\vnorm{\cdot}_\A^*$, corresponding to the
 atomic norm, is given by
 \[
  \vnorm{z}_{\A}^* = \sup_{a \in \A}{\vabs{z}{a}},
@@ -87,9 +85,10 @@ MSE
 This theorem implies that when $\E \vnorm{w}_\A^*$ is $o(n)$, the estimate
 $\hat{x}$ is consistent.
 
-\paragraph*{Choosing the regularization parameter.} In 
-Section~\ref{sec:dual-atomic-bounds}, we discuss the choice of regularization
-parameter $\tau$. Our lower bound on $\tau$ is in terms of the expected dual norm of the noise process $w$, equal to
+\paragraph*{Choosing the regularization parameter.} In
+Section~\ref{sec:dual-atomic-bounds}, I will discuss the choice of
+regularization parameter $\tau$. The lower bound on $\tau$ is in terms of the
+expected dual norm of the noise process $w$, equal to
  \[
  	\E \vnorm{w}_\A^* = \mathbb{E}[\sup_{a\in \A} {\vabs{w}{a}}].
  \]
@@ -98,12 +97,11 @@ by studying the extremal values of the stochastic process indexed by the atomic
 set $\A$.
 
 \paragraph*{Accelerated Convergence Rates} The MSE rates given by
-Theorem~\ref{cor:expected-mse} are not the best possible. In
-Section~\ref{sec:convergence-rate}, we describe a condition on the atomic sets
+Theorem~\ref{cor:expected-mse} are not the best possible. Section~\ref{sec:convergence-rate}, we will see a condition on the atomic sets
 that enables accelerate convergence rates. This is a generalization of the weak
 compatibility criterion~\cite{degeer} and unifies the condition for fast rates
-for several atomic sets. In particular, under this assumption, we show that we
-can recover fast convergence rates published in literature for sparse vectors
+for several atomic sets. In particular, under this assumption, I will show that
+we can recover fast convergence rates published in literature for sparse vectors
 and low rank matrices.
 
 % \paragraph*{Local Rates}
@@ -117,21 +115,21 @@ several structures in high dimensional geometry, including sparse
 vectors, low rank matrices, discrete measures, linear systems of small order.
 The authors also define a notion of an \emph{atomic norm} as a natural convex
 penalties for encouraging simplicity with respect to these structures. In this
-section, we review these preliminaries.
+section, we shall review these preliminaries.
 
-Let $F$ be $\C$ or $\R$. Consider a possibly infinite set $\A \subset F^n$ which
-we shall dub the \emph{atomic set}. Every signal we shall consider is composed
-of a combination of \emph{atoms} from this dictionary. We say a target signal
-$x^\star \in F^n$ is \emph{simple}, if it can be written as a nonnegative
-combination of small subset $T \subset \A$ of atoms. We call $T$, a
-\emph{support} of $x^\star$. If the number of elements $k = |T|$ in the support
-is small relative to the dimension $n$ of the signal, we say $x^\star$ is a
-($k$) \emph{simple} combination of atoms.
+Let $F$ be $\C$ or $\R$. The \emph{atomic set} $\A$ is a possibly infinite
+subset of $F^n$ and every signal we shall consider is composed of a combination
+of \emph{atoms} from this dictionary. A target signal $x^\star \in F^n$ is
+\emph{simple}, if it can be written as a nonnegative combination of small subset
+$T \subset \A$ of atoms. Call such a $T$, a \emph{support} of $x^\star$. If the
+number of elements $k = |T|$ in the support is small relative to the dimension
+$n$ of the signal, call such an $x^\star$  a ($k$) \emph{simple} combination of
+atoms.
 
 Allowing the dictionary of atomic set to be infinite offers tremendous
 flexibility in the kind of high dimensional structures that can be modeled. To
 see this, we shall see specific instances of the setup, that will serve as a
-motivation for our framework. In subsequent chapters, we will revisit some of
+motivation for this framework. In subsequent chapters, we will revisit some of
 these examples.
 
 \subsection{Examples}
@@ -143,22 +141,22 @@ from the noisy observations $y = x^\star + w$ with the assumption that $x^\star$
 is nearly black --- i.e., most of its entries are zero. This problem was
 considered in \cite{DonohoNearlyBlack92,JohnstoneSparse94}, in order to shed
 light on the superresolution properties of the maximum entropy estimator for
-nearly black MRI images. In our framework, such an $x^\star$ is a sparse
+nearly black MRI images. In this framework, such an $x^\star$ is a sparse
 combination of $\A = \{ \pm e_1, \dots, \pm e_n\}$ where $e_i$ is the $i$th
 canonical unit vector.
 
 \paragraph{Compressed Sensing and Sparse Recovery}
 
 Many phenomena observed in high dimension are sparse in a suitable dictionary.
-For instance, natural images expanded in a wavelet basis are well approximated
-by a sparse combination of wavelet coefficients. This means the data is highly
-redundant but it is actually sparse when suitably transformed. Compression
-techniques exploit this redundancy and represent the same high dimensional
-vector with fewer bits with no loss of accuracy. However, it is wasteful to
-acquire several linear measurements of the data only to compress them and throw
-away many bits. Compressed Sensing exploits the ability of the sparse recovery
-algorithms to directly estimate the $p$ dimensional sparse vector from $n$
-limited random linear measurements where $n \ll p$.
+For instance, natural images can be well approximated by a small combination of
+basis functions of a suitable wavelet transform. This means the actual data is
+highly redundant and it is actually sparse when suitably transformed.
+Compression techniques can exploit this sparse representation and represent the
+same high dimensional vector with fewer bits with no loss of accuracy and thus
+reduce storage costs. The idea of compressed sensing also reduces acquisition
+costs by only taking a few random linear measurements of the high dimensional
+vector. When the representation is sparse, a high $p$ dimensional vector can be
+recovered from a small number $n \ll p$ of linear measurements.
 
 Let $\theta^\star \in \R^p$ be sparse in a known orthogonal basis $\Phi \in
 \R^{p \times p}$. Suppose we make $n$ observations $x^\star_i =
@@ -184,16 +182,16 @@ finite dictionary.
 \paragraph{Line Spectral Estimation} Line Spectral Estimation concerns with the
 recovery of signals whose spectrum consists only of a finite number of
 frequencies. In other words, line spectral signals are simply a finite mixture
-of complex exponentials. An important signal processing task is the ability to
-recover the frequencies and amplitudes of the complex exponentials from a
-limited number of time samples. For each frequency $f$ in $[-W,W]$, let $a(f)$
-denote the vector of observed time samples. Then the set $\A$ of different
-observations $a(f) \in \C^m$ due to each frequency $f$ comprises the atomic set
-for samples of line spectral signals.
+of complex exponentials. An important signal processing task is to recover the
+frequencies and amplitudes of the complex exponentials from a limited number of
+time samples. For each frequency $f$ in $[-W,W]$, let $a(f)$ denote the vector
+of observed time samples of a complex exponential with a frequency $f$. Then the
+set $\A$ of different observations $a(f)$ due to each frequency $f$
+comprises the atomic set for samples of line spectral signals.
 
 \paragraph{System Identification} An important task in modeling is the
 identification of a linear system with the minimum number of states from its
-input and output. Let $\A$ denote the set of transfer function corresponding to
+input and output. Let $\A$ denote the set of transfer functions corresponding to
 single pole systems. Then an LTI system with small order has a transfer function
 which is a sparse combination of atoms from $\A$. Therefore the task of system
 identification reduces to finding the comprising atoms given linear
@@ -206,22 +204,23 @@ previous literature, authors have advocated a discretization approach which
 amounts to working with a finite set $\tilde{\A}$ instead of the infinite atomic
 set $\A$. However, a finer gridding of the atomic set results in a more coherent
 dictionary and the usual compressed sensing theoretical guarantees degrade with
-the grid size. We bypass this by directly analyzing the continuous case using a
-different approach. We also show that the coherence of the dictionary is not a
-fundamental limitation and that we can get increasingly accurate results by
-finer and finer discretizations. 
+the grid size. We will see that we can bypass this by directly analyzing the
+continuous case using a different approach. It turns out that the coherence of
+the dictionary is not a fundamental limitation and that we can get increasingly
+accurate results by finer and finer discretizations.
 
-In succeeding chapters, we will concentrate on the application of the atomic
-norm framework to these examples. It is not our goal to provide an exhaustive
-catalogue of examples of the framework and we refer the interested reader
-to~\cite{crpw}, which contains several more interesting applications.
+In succeeding chapters, I will concentrate on the application of the atomic norm
+framework to these examples. It is not the goal of this section to provide an
+exhaustive catalogue of examples of the framework and I would refer the
+interested reader to~\cite{crpw}, which contains several more interesting
+applications.
 
 \subsection{Atomic Norm}
 
 \begin{definition}[Atomic Norm]
-The atomic norm $\vnorm{\cdot}_\A$ of $\A \subset F^n$ is the Minkowski
-functional (also called the gauge function) associated with $\conv(\A)$ (the
-convex hull of $\A$):
+The atomic norm $\vnorm{\cdot}_\A$ corresponding to $\A \subset F^n$ is the
+Minkowski functional (also called the gauge function) associated with
+$\conv(\A)$ (the convex hull of $\A$):
 \begin{equation}
 	\label{defatnorm} \vnorm{x}_\A = \inf\left\{t > 0 ~\middle|~ x \in t \conv(\A) \right\}. 
 \end{equation}
@@ -258,12 +257,14 @@ given by
   \label{defdualatnorm}
   \vnorm{z}_{\A}^* = \sup_{\vnorm{x}_\A \leq 1}{\vabs{x}{z}},
 \end{equation}
-which implies
+implying
 \begin{equation}
   \label{holder}
   \vabs{x}{z} \leq \vnorm{x}_\A \vnorm{z}_\A^*.
 \end{equation}
 
+We shall assume throughout the thesis that $\vabs{x}{y}$ always stands for the
+real inner product $\Re{x^* y}$ even if $x,y \in \C^n$, unless otherwise noted.
 The supremum in \eqref{defdualatnorm} is achievable, namely, for any $x$, there
 is a $z$ that achieves equality. Since $\A$ contains all extremal points of
 $\{x: \|x\|_\A \leq 1\}$, we are guaranteed that the optimal solution will
@@ -288,10 +289,11 @@ an $x^\star.$
 
 The goal of atomic norm decomposition is to write $x^\star$ in terms of
 composing atoms such that the sum of the coefficients is the atomic norm. We
-call such a decomposition as an atomic norm achieving decomposition. While not
-always true, the decomposition that achieves the atomic norm is often the
-sparsest and in this section provide some geometric insight to when this is
-true. We also describe a procedure to find such a decomposition using the dual.
+will call such a decomposition as an atomic norm achieving decomposition. While
+not always true, the decomposition that achieves the atomic norm is often the
+sparsest and this section will provide some geometric insight to when this is
+true. This section also describes a procedure to find such a decomposition using
+the dual.
 
 \subsection{Dual Certificate}
 
@@ -316,13 +318,14 @@ A vector $q$ is a dual certificate for the support $T \subset \A$ if
 $\vabs{q}{a} = 1$ for every $a \in T$ and $\vabs{q}{a} \leq 1$ whenever $a \not\in T$. Furthermore, the vector $q$ is called a strict dual certificate if $\vabs{q}{a} < 1$ for every $a \not\in T.$
 \end{definition}
 
-This has a pleasing geometric interpretation. By definition of the dual
-certificate, for every non-empty set $T$, $\vnorm{q}_\A^* = \sup_{a \in \A}
-\vabs{q}{a} = 1$, which guarantees that all the atoms (and hence $\conv(\A)$)
-lie on one side of a half plane determined by $q$, and also that atoms in $T$
-(and hence $\conv(T)$) intersect this hyperplane. Geometrically, this says that
-$q$ is a supporting hyperplane for the exposed face $\conv(T)$ of the convex set
-$\conv(\A).$ The following proposition indicates why this is important.
+This has an intuitive geometric interpretation, when all the vectors are real.
+By definition of the dual certificate, for every non-empty set $T$,
+$\vnorm{q}_\A^* = \sup_{a \in \A} \vabs{q}{a} = 1$, which guarantees that all
+the atoms (and hence $\conv(\A)$) lie on one side of a half plane determined by
+$q$, and also that atoms in $T$ (and hence $\conv(T)$) intersect this
+hyperplane. Geometrically, this says that $q$ is a supporting hyperplane for the
+exposed face $\conv(T)$ of the convex set $\conv(\A).$ The following proposition
+indicates why this is important.
 
 \begin{prop}
 \label{prop:dual-certificate-is-subgrad}
@@ -366,15 +369,17 @@ have a rich theory now that this is indeed true for many interesting
 cases\cite{donoho2006most,candes06,candes2005decoding}.
 
 Returning to our geometric interpretation, the existence of a dual certificate
-guarantees that $x^\star/\vnorm{x}_\A$ is in an exposed face of $\conv(\A)$. Due
-to our assumptions on $\A$, the faces are simplicial and there is a unique way
-of writing $x^\star$ as a combination of vertices in the face. When the face is
-also low dimensional, the decomposition of $x^\star$ is unique. So, we can
-always recover the support of a sparse vector provided all sparse combinations
-lie on low dimensional exposed simplicial faces. Again, while this may not
-always be true, it is indeed true with large probability for random
-constructions of the atomic set and we refer the interested reader
-to~\cite{neighborliness} for this geometric interpretation of sparse recovery.
+guarantees that $x^\star/\vnorm{x}_\A$ is in an exposed face of $\conv(\A)$.
+Recall that a face in convex geometry is considered simplicial if every element
+in the face can be written as a unique convex combination. Due to our
+assumptions on $\A$, the faces are indeed simplicial and there is a unique way
+of writing $x^\star$ as a combination of vertices in the face. Furthermore, When
+the face is also low dimensional, the decomposition of $x^\star$ is unique. So,
+we can always recover the support of a sparse vector provided all sparse
+combinations lie on low dimensional exposed simplicial faces. Again, while this
+may not always be true, it holds with large probability for random constructions
+of the atomic set and we refer the interested reader to~\cite{neighborliness}
+for this geometric interpretation of sparse recovery.
 
 In practice, it may be hard to find a \emph{strict} dual certificate by
 optimization. However, if $\A$ has full spark like we assumed, any dual
@@ -532,8 +537,11 @@ f(\hat{x}) = \frac{1}{2}\vnorm{y - \hat{x}}_2^2 + \vabs{\hat{z}}{\hat{x}}
 \]
 \end{proof}
 
-A straightforward corollary of this Lemma is a certificate of the support of the
-solution to \eqref{AST}.
+Conclusions (ii) and (iii) of the lemma say that $\tau^{-1}\hat{z}$ is a
+subgradient of the atomic norm at $x^\star$, where $\hat{z}$ is the solution to
+the dual problem~\eqref{eq:dual-ast}. So, a straightforward corollary of
+Proposition~\ref{prop:certificate-support} is a certificate of the support of
+the solution to \eqref{AST}:
 
 \begin{corollary}[Dual Certificate of Support]
 \label{cor:dual-cert-support}
@@ -545,7 +553,6 @@ Suppose for some $S \subset \A$,  $\hat{z}$ is a solution to the dual problem \e
 \end{enumerate}
 Then, any solution $\hat{x}$ of \eqref{AST} admits a decomposition $\hat{x} =
 \sum_{a \in S}{c_a a}$ with $\vnorm{\hat{x}}_\A = \sum_{a \in S}{c_a}.$
-
 \end{corollary}
 
 Thus the dual solution $\hat{z}$ provides a way to determine a decomposition of
@@ -555,7 +562,6 @@ a\right>$ and identify the atoms where the absolute value of the inner product
 is $\tau$. When the signal-to-noise-ratio (SNR) is high, we expect that the
 decomposition identified in this manner should be close to the original
 decomposition of $x^\star$ under certain assumptions.
-
 
 We are now ready to state a proposition which gives an upper bound on the MSE
 with the optimal choice of the regularization parameter.
@@ -816,9 +822,10 @@ the minimax optimal MSE
 \label{sec:ast:conclusion}
 In this chapter, we defined atomic norms and the use of atomic norm penalty to
 denoise using AST~\eqref{AST} which may be thought of as a infinite dimensional
-version of Lasso. We discussed how the regularization parameter may be chosen
-for AST. We established a universal convergence rate which holds for all atomic
-sets and all signals and saw general conditions under which a fast rate is
-possible. In the following chapters, we will use this framework and apply to the
-problems of line spectral estimation and system identification.
+version of Lasso. The chapter showed how the regularization parameter may be
+chosen for AST, and also a procedure to determine the composing atoms in the
+solution to AST. We also saw a universal convergence rate which holds for all
+atomic sets and all signals and saw general conditions under which a fast rate
+is possible. In the following chapters, we will use this framework and apply to
+the problems of line spectral estimation and system identification.
 % section ast:conclusion (end)

@@ -30,20 +30,56 @@ tied to Fourier measurements and properties of trigonometric polynomials derived
 in ~\cite{CandesGranda,cg_noisy}. Future work should explore abstract conditions
 when we can guarantee similarly optimal rates.
 
+Though chapter~\ref{chap:linespect} makes significant progress at understanding
+the theoretical limits of line-spectral estimation and superresolution, the
+bounds could still be improved. For instance, it remains open as to whether the
+logarithmic term in Theorem~\ref{main} can be improved to $\log(n/k)$. Deriving
+such an upper bound or improving our minimax lower bound would provide an
+interesting direction for future work. Additionally, it is not clear if our
+localization bounds in Theorem~\ref{support} have the optimal dependence on the
+number of sinusoids $k$. For instance, one expects that the condition on signal
+amplitudes for approximate support recovery should not depend on $k$, by
+comparison with similar guarantees that have been established for
+Lasso~\cite{coherence}. It is reasonable to conjecture that for a large enough
+regularization parameter, there should will be no spurious recovered frequencies
+in the solution. That is, there should be no non-zero coefficients in the ``far
+region'' $F$ in Theorem~\ref{support}. Future work should investigate whether
+better guarantees on frequency localization are possible.
+
+The analysis in chapter~\ref{chap:sysid} also focused on the particular case of
+sampling the frequency response at regular intervals. While this example
+contains the critical ingredients to computing convergence rate, it is not
+straightforward to extend to the other sampling models described in
+Section~\ref{sec:computation}. A useful line of study would extend this analysis
+to estimating transfer functions from pairs of input-output time series. The
+rates derived demonstrate that the DAST algorithm is asymptotically consistent,
+but is quite crude. It may be possible to improve the rates by leveraging more
+of the geometry of the set of single-pole transfer functions. It would be
+interesting to find reasonable lower-bounds on the reconstruction error from
+limited measurements, and to see how close we can match these worst-case
+estimates via a new analysis.
+
 Algorithmically, the success of the method depends on whether we can efficiently
 compute atomic norms. We saw that we can sometimes get exact semidefinite
 characterizations and provided scalable algorithms. We also saw that
 discretization approximates the solution although it does not yield as sparse a
 solution as the exact approach. An interesting line of work is showing how to
 bootstrap an approximate solution from a fast discretization algorithm and
-incrementally increase the accuracy of the solution. 
+incrementally increase the accuracy of the solution. While gridding enables us
+to quickly solve atomic norm problems, a main drawback is that we can never
+exactly localize the true composing atoms without an extremely fine grid. One
+recent proposal to enable such a localization uses a linearization technique to
+simultaneously fit a model on the grid points and at the derivatives of the
+transfer functions at these grid points~\cite{Simoncelli11}. It would be
+interesting to see whether this argument can give rigorous guarantees of
+localization for general atomic sets.
 
 Analysis of the convergence of greedy algorithms provides yet another fruitful
 direction for scaling the performance of atomic norm regularization. While there
 is already some interesting work on employing greedy methods for atomic
 norms~\cite{tewari2011greedy,raogreedy}, the proof of convergence depends upon
 global restricted smoothness property. It would be interesting to pursue
-improvements to this assumption, using arguments similar to this thesis.
+improvements to this assumption.
 
 % \section{Publications}
 % 
@@ -52,6 +88,7 @@ improvements to this assumption, using arguments similar to this thesis.
 % Institute of Discovery. Below, we provide a list of publications that composes
 % much of this work.
 % 
+
 
 
 

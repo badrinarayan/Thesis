@@ -12,54 +12,46 @@ atomic and the dual atomic norm. Therefore, it is sufficient to develop
 efficient characterizations of the the unit ball of the atomic norm.
 
 For the special case of Fourier measurements, the atomic norm ball has an exact
-semidefinite characterization which we will derive in this chapter. The positive
+semidefinite characterization which I will derive in this chapter. The positive
 case is classical and comes from moment theory and the dual theory of positive
-polynomials. We will review the results for the positive case and provide the
-proofs for completeness. We will also derive the semidefinite characterization
-for the more general complex case using these results. I then provide a
-reasonably fast method for solving this SDP via the Alternating Direction Method
-of Multipliers (ADMM)~\cite{BertsekasParallelBook,admm2011}. Our ADMM
-implementation can solve instances with a thousand observations in a few
-minutes.
+polynomials. I will review the results for the positive case and provide the
+proofs for completeness. We will also see a semidefinite characterization for
+the more general complex case using these results. I then provide a reasonably
+fast method for solving this SDP via the Alternating Direction Method of
+Multipliers (ADMM)~\cite{BertsekasParallelBook,admm2011}. The ADMM
+implementation given in this chapter can solve instances with a thousand
+observations in a few minutes.
 
-While the SDP based AST algorithm can be thought of as solving an infinite
-dimensional Lasso problem, the computational complexity can be prohibitive for
-very large instances. To compensate, I will show that solving the Lasso problem
-on an oversampled grid of frequencies approximates the solution of the atomic
-norm minimization problem to a resolution sufficiently high to guarantee
-excellent mean-squared error (MSE). The gridded problem reduces to the Lasso,
-and by leveraging the Fast Fourier Transform (FFT), can be rapidly solved with
-freely available software such as SpaRSA~\cite{wright09}. A Lasso problem with
-thousands of observations can be solved in under a second using Matlab on a
-laptop. The prediction error and the localization accuracy for line spectral
-estimation both increase as the oversampling factor increases, even if the
-actual set of frequencies in the line spectral signal are off the Lasso grid.
+Discretization essentially reduces to solving a Lasso problem on an overcomplete
+grid. The proofs for discretized atomic soft thresholding (DAST) demonstrate why
+Lasso is often successful even for off-grid data. In fact, we will see that
+solving the Lasso problem on an oversampled grid of frequencies approximates the
+solution of the atomic norm minimization problem to a resolution sufficiently
+high to guarantee excellent mean-squared error (MSE). For line spectral
+estimation, the gridded problem reduces to the Lasso, and by leveraging the Fast
+Fourier Transform (FFT), can be rapidly solved with freely available software
+such as SpaRSA~\cite{wright09}. A Lasso problem with thousands of observations
+can be solved in under a second using Matlab on a laptop. The prediction error
+and the localization accuracy for line spectral estimation both increase as the
+oversampling factor increases, even if the actual set of frequencies in the line
+spectral signal are off the Lasso grid.
 
-For the problem of system identification, there are no exact semidefinite
-formulations for the atomic set. While it is possible to develop a sequence of
-semidefinite relaxations, I will describe how we can use a discretization
-approach for the atomic soft thresholding (AST) problem described in
-Chapter~\ref{chap:ast} and this essentially reduces to solving a Lasso problem
-on an overcomplete grid. Our proofs for discretized atomic soft thresholding
-(DAST) demonstrate why Lasso is often successful even for off-grid data.
-
-In this chapter, we also report our experimental results using these algorithms
-on Line Spectral Signals. We compare and contrast our algorithms, AST and Lasso,
-with classical line spectral algorithms including MUSIC~\cite{music},and
-Cadzow's ~\cite{cadzow02} and Matrix Pencil~\cite{hua02} methods . Our
-experiments indicate that both AST and the Lasso approximation outperform
-classical methods in low SNR even when we provide the exact model order to the
-classical approaches. Moreover, AST has the same complexity as Cadzow's method,
-alternating between a least-squares step and an eigenvalue thresholding step.
-The discretized Lasso-based algorithm has even lower computational complexity,
-consisting of iterations based upon the FFT and simple linear time
-soft-thresholding.
-
+In this chapter, we will also see the experimental results using these
+algorithms on Line Spectral Signals. Section~\ref{sec:ast:experiments} compares
+and contrasts AST and Lasso, with classical line spectral algorithms including
+MUSIC~\cite{music},and Cadzow's ~\cite{cadzow02} and Matrix Pencil~\cite{hua02}
+methods. The experiments indicate that both AST and the Lasso approximation
+outperform classical methods in low SNR even when we provide the exact model
+order to the classical approaches. Moreover, AST has the same complexity as
+Cadzow's method, alternating between a least-squares step and an eigenvalue
+thresholding step. The discretized Lasso-based algorithm has even lower
+computational complexity, consisting of iterations based upon the FFT and simple
+linear time soft-thresholding.
 
 
 \subsection*{Summary and Organization of this chapter} % (fold)
 \label{sub:main_results}
-Our goal in this chapter is to develop an algorithm to solve the Atomic Soft
+The goal in this chapter is to develop an algorithm to solve the Atomic Soft
 Thresholding (AST) problem, defined in Chapter~\ref{chap:ast}:
 \begin{align}
 \begin{split}
@@ -96,14 +88,14 @@ The first part of this chapter gives a computable algebraic characterization of 
 The first set $\A_+$ is a one dimensional manifold called the trigonometric
 moment curve and the second set $\A$ is the two dimensional manifold
 corresponding to a phase-symmetric trigonometric moment curve. The unit norm
-ball of the atomic sets are precisely the convex hulls of the atomic sets. In
-Section~\ref{sec:preliminaries}, we will look at these sets. We first describe
+ball of the atomic sets are precisely the convex hulls of the atomic sets.
+Section~\ref{sec:preliminaries} examines these atomic sets and describes 
 the classical characterization of the conical hull of $\A_+$ which is called the
 moment cone. This corresponds to allowable observations for the case of line
 spectral estimation with nonnegative amplitudes, or in other words, valid
 trigonometric moments of a positive measure on the torus $\mathbb{T}$.
 
-Based on these classical results, we derive semidefinite characterizations of
+Based on these classical results, I derive semidefinite characterizations of
 the atomic sets in Section~\ref{sec:sdp_for_trigonometric_moments}. As a
 straightforward consequence, we can write down a semidefinite characterization
 of $\conv(\A_+)$. Before stating the result, we will need a bit of notation.
@@ -117,9 +109,9 @@ x^*_2 & x_1  & \ldots & x_{n-1}\\
  x^*_n & x^*_{n-1}  & \ldots & x_1
  \end{array}\right]
 \]
-In the following, we sometimes suppress the subscript in $T_n$ unless we wish to
-explicitly characterize the dependence on $n$ and write it as $T(x)$ or $T x$.
-Also, denote the corresponding adjoint map by $T^*.$
+In the following, the subscript in $T_n$ may be supressed unless the idea is to
+explicitly characterize the dependence on $n.$ So we will write it as $T(x)$ or
+$T x$. Also, denote the corresponding adjoint map by $T^*.$
  
 \begin{theorem}[SDP for Positive Trigonometric Moments]
 \label{thm:positive-linespect-sdp}
@@ -149,7 +141,7 @@ x^* & t
 \end{theorem}
 
 The characterization of atomic norm ball of $\A$ can also be derived by working
-on the dual problem, as we shall show in
+on the dual problem, as we shall see in
 Section~\ref{sec:sdp_for_trigonometric_polynomials}. In fact, for any $x,$ the
 optimization problem
 \begin{equation}
@@ -174,20 +166,20 @@ When there are no efficient characterizations, we may resort to a discretized
 approach which may be thought of as an approximation to the atomic norm defined
 by equation~\eqref{eq:dual-form-atomic-norm} by relaxing the infinite linear
 constraints in the semi-infinite program to a finite set of inequalities. In
-section ~\ref{sec:discretization}, We show convergence rates of this
+section ~\ref{sec:discretization}, we will look at convergence rates of this
 approximation for the line spectral estimation problem and the system
-identification problem. In these case, the atomic soft thresholding problem can
+identification problem. In this case, the atomic soft thresholding problem can
 be approximated by solving a Lasso problem on an overcomplete grid.
 
 A number of Prony-like techniques have been devised that are able to achieve
 excellent denoising and frequency localization even in the presence of noise. In
-Section~\ref{sec:ast:experiments}, we turn to comparing our ADMM implementation
-of SDP and DAST by Lasso with these classical algorithms. Our experiments
-demonstrate that our proposed estimation algorithms outperform Matrix Pencil,
-MUSIC and Cadzow's methods. Both AST and the discretized Lasso algorithms obtain
-lower MSE compared to previous approaches, and the discretized algorithm is much
-faster on large problems. We also empirically demonstrate that the semidefinite
-programming approach outperforms MUSIC~\cite{music} and Cadzow's
+Section~\ref{sec:ast:experiments}, we will turn to comparing our ADMM
+implementation of SDP and DAST by Lasso with these classical algorithms. The
+experiments in this section demonstrate that the proposed estimation algorithms
+outperform Matrix Pencil, MUSIC and Cadzow's methods. Both AST and the
+discretized Lasso algorithms obtain lower MSE compared to previous approaches,
+and the discretized algorithm is much faster on large problems. Furthermore, the
+semidefinite programming approach outperforms MUSIC~\cite{music} and Cadzow's
 technique~\cite{cadzow05}, in terms of the localization metrics defined by parts
 (i), (ii) and (iii) of Theorem~\ref{support}.
 
@@ -211,11 +203,12 @@ trigonometric moment is defined by
 
 By a simple reparametrization, the $m$th trigonometric moment may also be
 described as complex moments $\int_\mathbb{T} z^m \mu(dz)$ when we regard $\mu$
-as a measure supported on the unit circle in the complex plane. In this section,
-we will review two classical results, for trigonometric moments due to \emph{positive measures}.
+as a measure supported on the unit circle in the complex plane. This section
+will review two classical results for trigonometric moments due to
+\emph{positive measures}.
 
 The first theorem, due to Herglotz gives a complete characterization of the
-infinite sequence of Trigonometric moments for positive measures. Since the proof is not too long, we provide it here.
+infinite sequence of Trigonometric moments for positive measures. Since the proof is not too long, I will provide it here.
 \begin{theorem}[Herglotz Theorem]\label{thm:herglotz}
 	The sequence of complex numbers $\{x_m\}_{m=-\infty}^{\infty}$ are
 trigonometric moments of a positive Borel measure $\mu$ on $\mathbb{T}$ if and
@@ -225,8 +218,8 @@ only if the sequence $\{x_m\}_{m=-\infty}^{\infty}$ is positive definite.
 
 A sequence $\set{x_m}$ is positive definite if for every $n \in \N$, and every
 sequence $(c_1, \ldots, c_n)$ of $n$ complex numbers, $\sum_{k,l=1}^n x_{k-l}
-c_k c_l^* \geq 0.$ Using our notation for the Toeplitz map, we can simply write
-this condition as $T_n x \succeq 0$ for every $n \in \N.$
+c_k c_l^* \geq 0.$ Alternatively, we may write this condition as $T_n x \succeq
+0$ for every $n \in \N.$
 
 Suppose indeed the set $\set{x_m}$ is a sequence of trigonometric moments
 corresponding to some measure $\mu > 0$ on $\mathbb{T}.$ Then, for any $n \in
@@ -303,14 +296,14 @@ Finally, when $k < n,$ there is a unique extension of $x$ to an infinite positiv
 \end{theorem}
 
 This theorem can be proved using Herglotz theorem~\cite{herglotz} and the
-theorems on flat extensions of moment sequences studied in~\cite{Curto97}. We
-refer the interested reader to~\cite{grenander01} for an algebraic proof of this
-theorem. This theorem guarantees the existence of a unique discrete measure
-under easily verifiable conditions. Due to this guarantee, it is possible to
-write a set of recurrence relations connecting the moments and algebraically
-solve for the atoms of this measure, as demonstrated by Prony~\cite{prony1795}.
-A straightforward corollary of Caratheodory's theorem is the following
-Vandermonde Decomposition for positive definite Toeplitz matrices, which we will use in our proofs.
+theorems on flat extensions of moment sequences studied in~\cite{Curto97}. See
+~\cite{grenander01} for an algebraic proof of this theorem. This theorem
+guarantees the existence of a unique discrete measure under easily verifiable
+conditions. Due to this guarantee, it is possible to write a set of recurrence
+relations connecting the moments and algebraically solve for the atoms of this
+measure, as demonstrated by Prony~\cite{prony1795}. A straightforward corollary
+of Caratheodory's theorem is the following Vandermonde Decomposition for
+positive definite Toeplitz matrices.
 
 \begin{corollary}[Vandermonde Decomposition]\label{lm:vand} Any positive semidefinite Toeplitz matrix $P \in \C^{n \times n}$ can be represented as
   follows
@@ -577,13 +570,13 @@ Using the characterization of the atomic norm given by Lemma~\ref{lm:brl}, we ca
 
 This semidefinite program \eq{sdpdenoising} can be solved by off-the-shelf
 solvers such as SeDuMi~\cite{sedumi} and SDPT3~\cite{SDPT3}. However, these
-solvers tend to be slow for large problems. So, I provide a
+solvers tend to be slow for large problems. So, we will look at a
 reasonably efficient algorithm based upon the Alternating Direction Method of
 Multipliers.
 
-A thorough survey of the ADMM algorithm is given in~\cite{admm2011}. We only
+A thorough survey of the ADMM algorithm is given in~\cite{admm2011}. I only
 present the details essential to the implementation of atomic norm soft
-thresholding. To put our problem in an appropriate form for ADMM,
+thresholding. To put the problem in an appropriate form for ADMM,
 rewrite~\eq{sdpdenoising} as
 \begin{equation*}
 \begin{array}{ll}
@@ -662,11 +655,11 @@ Lemma~\ref{lem:dual-problem}.
 In general the atomic sets may not have a computable characterization. Even if
 there is an SDP characterization and an efficient implementation using
 techniques like ADMM, when the number of samples is larger than a few hundred,
-the running time of our ADMM method is dominated by the cost of computing
+the running time of the ADMM method is dominated by the cost of computing
 eigenvalues and is usually expensive. This is not avoidable as there is no cheap
 way to find projections on the positive definite cone. For very large problems,
-we now propose using discretization and hence Lasso as an alternative to the
-semidefinite program~\eq{sdpdenoising}.
+we will see that we can use discretization and hence Lasso as an alternative to
+the semidefinite program~\eq{sdpdenoising}.
 
 \subsection{Discretized Atomic Soft Thresholding} % (fold)
 \label{sub:discretized_atomic_soft_thresholding}
@@ -738,9 +731,9 @@ Theorem \ref{cor:expected-mse}, and using \eqref{pni}, we get
 \subsection{Approximated Atomic Norms} % (fold)
 \label{sub:approximated_atomic_norms}
 
-In this section, we will show that atomic norms can be approximated by choosing
-a large $\epsilon$-net of atoms instead of the original set of atoms. Our proof
-of approximation and characterization of the convergence depends upon using an
+In this section, we will see that atomic norms can be approximated by choosing a
+large $\epsilon$-net of atoms instead of the original set of atoms. The proof of
+approximation and the characterization of the convergence depends upon using an
 Euclidean $\epsilon$ cover of the atomic set $\A$, and the equivalence between
 Euclidean and atomic norms in finite dimensions.
 
@@ -797,7 +790,7 @@ ${\vnorm{z}_{\A}^* \leq M\vnorm{z}_{\widetilde{\A}}^*}$ for every $z$ iff
 ${M^{-1}\vnorm{x}_{\widetilde{\A}} \leq \vnorm{x}_{\A}}$ for every $z$.
 \end{lemma}
 \begin{proof}\belowdisplayskip=-12pt
-We will show the forward implication -- the converse will follow since the dual
+Let us show the forward implication -- the converse will follow since the dual
 of the dual norm is again the primal norm. By \eqref{holder}, for any $x$, 
 there exists a $z$ with
 $\vnorm{z}_{\widetilde{\A}}^* \leq 1$ and ${\vabs{x}{z} =
@@ -860,16 +853,16 @@ $\Phi$ and a simple ``shrinkage'' step. Multiplication by $\Phi$ or $\Phi^*$
 requires $O(N\log N)$ time and the shrinkage operation can be performed in time
 $O(N)$.
 
-As we discuss below, this fast form of basis pursuit has been proposed by
-several authors. However, analyzing this method with tools from compressed
-sensing has proven daunting because the matrix $\Phi$ is nowhere near a
-restricted isometry. Indeed, as $N$ tends to infinity, the columns become more
-and more coherent. However, common sense says that a larger grid should give
-better performance, for both denoising and frequency localization! Indeed, by
-appealing to the atomic norm framework, we are able to show exactly this point:
-the larger one makes $N$, the closer one approximates the desired atomic norm
-soft thresholding problem. Moreover, we do not have to choose $N$ to be too
-large in order to achieve nearly the same performance as the AST.
+This fast form of basis pursuit has been proposed by several authors. However,
+analyzing this method with tools from compressed sensing has proven daunting
+because the matrix $\Phi$ is nowhere near a restricted isometry. Indeed, as $N$
+tends to infinity, the columns become more and more coherent. However, common
+sense says that a larger grid should give better performance, for both denoising
+and frequency localization! Indeed, by appealing to the atomic norm framework,
+makes it possible to show exactly this point: the larger one makes $N$, the
+closer one approximates the desired atomic norm soft thresholding problem.
+Moreover, we do not have to choose $N$ to be too large in order to achieve
+nearly the same performance as the AST.
 
 \subsubsection{Approximation of the Dual Atomic Norm}
 \label{proof:dual-norm-approximation}
@@ -887,10 +880,10 @@ Treating $W_n$ as a function of $f$,  with a slight abuse of  notation, define
 \begin{equation*}
 \vnorm{W_n}_\infty := \sup_{f \in [0,1]} \left| W_n(e^{i2\pi f}) \right|.
 \end{equation*}
-We show that we can approximate the maximum modulus by evaluating $W_n$ in a
-uniform grid of $N$ points on the unit circle. To show that as $N$ becomes large,
-the approximation is close to the true value, we bound the derivative of $W_n$ 
-using Bernstein's inequality for polynomials.
+We will see that we can approximate the maximum modulus by evaluating $W_n$ in a
+uniform grid of $N$ points on the unit circle. To show that as $N$ becomes
+large, the approximation is close to the true value, let us bound the derivative
+of $W_n$ using Bernstein's inequality for polynomials.
 
 \begin{theorem}[Bernstein, See, for example ~\cite{schaeffer41}]
 Let $p_n$ be any polynomial of degree $n$ with complex coefficients. Then,
@@ -948,7 +941,10 @@ O\left(
 
 \subsection{DAST for System Identification} % (fold)
 \label{sec:dast_for_system_identification}
-The following proposition asserts that we can approximate this finite dimensional atomic norm defined the atomic set of measurements of single pole systems via a sufficiently fine discretization of the unit disk.
+
+The following proposition asserts that we can approximate this finite
+dimensional atomic norm defined the atomic set of measurements of single pole
+systems via a sufficiently fine discretization of the unit disk.
 
 \begin{prop}\label{prop:algos:grid}
 Let $\D_\rho^{(\epsilon)}$ be a finite subset of the unit disc such that for any $w \in \D_\rho$ there exists a $v \in \D_\rho^{(\epsilon)}$ satisfying $|w-v| \leq \epsilon$.  Define
@@ -960,7 +956,7 @@ Then there exists a constant $C_\epsilon \in [0,1]$ such that
 	C_\epsilon \|x\|_{\cL(\cA_{\epsilon})} \leq \|x\|_{\cL(\cA)} \leq \|x\|_{\cL(\cA_{\epsilon})} \,.
 \]
 \end{prop}
-\noindent The set $\D_\rho^{(\epsilon)}$ is called an $\epsilon$-net for the set $\D_\rho$.  We will show that when $\mathcal{L}_k(G) = G(e^{i\theta_k})$, $C_{\epsilon}$ is at least $(1-\tfrac{16 \rho \epsilon}{\pi(1-\rho)})$.  Other measurement ensembles can be treated similarly.
+\noindent The set $\D_\rho^{(\epsilon)}$ is called an $\epsilon$-net for the set $\D_\rho$.  We will see that when $\mathcal{L}_k(G) = G(e^{i\theta_k})$, $C_{\epsilon}$ is at least $(1-\tfrac{16 \rho \epsilon}{\pi(1-\rho)})$.  Other measurement ensembles can be treated similarly.
 
 When we replace $\|x\|_{\cL(\cA)}$ with its discretized counterpart $\|x\|_{\cL(\cA)}$ in~\eq{finite-dim-ast}, 
 \[
@@ -986,7 +982,7 @@ approximate solution to problem~\eq{atomic-norm-lin-inverse}, and, as we will
 see, yields a statistically consistent estimate provided the parameter
 $\epsilon$ is adjusted to meet the desired numerical accuracy.
 
-As in section~\ref{sub:approximated_atomic_norms}, our proof of
+As in section~\ref{sub:approximated_atomic_norms}, the proof of
 proposition~\ref{prop:algos:grid} depends upon connecting the Euclidean distance
 between the atoms indexed by the discretization of the unit disc to the
 distances induced by the atomic norm. We already know from
@@ -1032,18 +1028,18 @@ Here,~\eq{tri-ineq}  is the triangle inequality.~\eq{nuc-2-l2} follows because t
 Now, we are ready to prove our main proposition.
 
 \subsubsection{Proof of Proposition~\ref{prop:algos:grid}} % (fold)
-First note that for any atomic sets $\cA \subset \cA'$, $\|x\|_{\cA'} \leq \|x\|_{\cA}$.  The harder part of this proposition is the lower bound.  To proceed, we use the dual norm. 
+First note that for any atomic sets $\cA \subset \cA'$, $\|x\|_{\cA'} \leq \|x\|_{\cA}$.  The harder part of this proposition is the lower bound.  To proceed, let us use the dual norm. 
 
-Let $\D_\rho^{(\tau)}$ be a subset of $\D_\rho$ such that for every $a \in \D_\rho$, there exists an $\hat{a}\in \D_\rho^{(\tau)}$ satisfying $|a-\hat{a}|\leq \tau$.  For each $a \in \D_\rho$, we will actually denote $\hat{a}$ as the closest point in $\D_\rho^{(\tau)}$ to $a$.
+Let $\D_\rho^{(\tau)}$ be a subset of $\D_\rho$ such that for every $a \in \D_\rho$, there exists an $\hat{a}\in \D_\rho^{(\tau)}$ satisfying $|a-\hat{a}|\leq \tau$.  For each $a \in \D_\rho$, denote $\hat{a}$ as the closest point in $\D_\rho^{(\tau)}$ to $a$.
 
 Now observe that 
 \begin{align*}
 	  \| \cL(\varphi_{\hat{a}}-\varphi_a)\|_{\cL(\cA)} \leq  \| \varphi_{\hat{a}}-\varphi_a\|_{\cA}
 	  \leq \frac{8}{\pi} \|\Gamma_{\varphi_{\hat{a}}}- \Gamma_{\varphi_a}\|_1 \leq \frac{16 \rho \tau}{\pi (1-\rho)}\,.
 \end{align*}
-Here, the first inequality follows from our reasoning in Section~\ref{sec:computation}.  The second inequality is Theorem~\ref{thm:hankel-nuclearity}, and the final inequality is by~\eq{hankel-op-bound}.
+Here, the first inequality follows from the reasoning in Section~\ref{sec:computation}.  The second inequality is Theorem~\ref{thm:hankel-nuclearity}, and the final inequality is by~\eq{hankel-op-bound}.
 
-We then can compute
+We can then compute
 \begin{align*}
 \|z\|_{\cL(\cA)}^* &= \sup_{a \in \D_\rho} \langle \cL(\varphi_a),z \rangle\\
 &= \sup_{a \in \D_\rho} \langle \cL(\varphi_{\hat{a}}), z \rangle + \langle \cL(\varphi_{a}-\varphi_{\hat{a}}), z\rangle \\
@@ -1066,10 +1062,10 @@ with $C_\tau =  1-\tfrac{16\rho\tau}{\pi(1-\rho)}$, completing the proof.
 
 \section{Experiments for Line Spectral Estimation} % (fold)
 \label{sec:ast:experiments}
-We compared the performance of AST, the discretized Lasso approximation, the
+I compared the performance of AST, the discretized Lasso approximation, the
 Matrix Pencil, MUSIC and Cadzow's method, both in terms of the mean squared
-estimation error as in Theorem~\ref{main} and frequency localization. For our
-experiments, we generated $k$ normalized frequencies $f_1^\star, \ldots,
+estimation error as in Theorem~\ref{main} and frequency localization. For my
+experiments, I generated $k$ normalized frequencies $f_1^\star, \ldots,
 f_k^\star$ uniformly randomly chosen from $\left[0,1\right]$ such that every
 pair of frequencies are separated by at least $1/2n$. The signal $x^\star \in
 \C^n$ is generated according to \eqref{eq:signal} with $k$ random amplitudes
@@ -1092,51 +1088,50 @@ example Chapter 4 in \cite{StoicaMoses}) can be written as a sum of a low rank
 matrix and $\sigma^2 I$ if we assume that the phases are uniformly random. Since
 the empirical autocorrelation matrix concentrates around the true expectation,
 we can estimate the noise variance by averaging a few smallest eigenvalues of
-the empirical autocorrelation matrix. In the following experiments, we form the
-empirical autocorrelation matrix using the MATLAB routine \texttt{corrmtx} using
-a prediction order $m=n/3$ and averaging the lower $25\%$ of the eigenvalues. We
-used this estimate in equation~\eq{tau} to determine the regularization
-parameter for both our AST and Lasso experiments.
+the empirical autocorrelation matrix. For the following experiments, I formed
+the empirical autocorrelation matrix using the MATLAB routine \texttt{corrmtx}
+using a prediction order $m=n/3$ and averaging the lower $25\%$ of the
+eigenvalues, and used this estimate in equation~\eq{tau} to determine the
+regularization parameter for both the AST and Lasso experiments.
 
-First, we implemented AST using the ADMM method described in detail in
-Chapter~\ref{chap:algos}. We used the stopping criteria described
-in~\cite{admm2011} and set $\rho=2$ for all experiments. We use the dual
-solution $\hat{z}$ to determine the support of the optimal solution $\hat{x}$
-using the procedure described in Section~\ref{sec:frequency-localize}. Once the
-frequencies $\hat{f}_l$ are extracted, we ran the least squares problem
+First, I implemented AST using the ADMM method and used the stopping criteria
+described in~\cite{admm2011} and set $\rho=2$ for all experiments, and used the
+dual solution $\hat{z}$ to determine the support of the optimal solution
+$\hat{x}$ using the procedure described in Section~\ref{sec:frequency-localize}.
+Once the frequencies $\hat{f}_l$ are extracted, I ran the least squares problem
 $\mbox{minimize}_\alpha \|U \alpha - y\|^2$ where $U_{jl} = \exp(i 2\pi j
 \hat{f}_l)$ to obtain a \emph{debiased} solution. After computing the optimal
-solution $\alpha_{\mathrm{opt}}$, we returned the prediction $\hat{x} =
+solution $\alpha_{\mathrm{opt}}$, one can compute the prediction $\hat{x} =
 U\alpha_{\mathrm{opt}}$.
 
-We implemented Lasso, obtaining an estimate $\hat{x}$ of $x^\star$ from $y$ by
-solving the optimization problem \eqref{epsprimal} with debiasing. We use the
+After implementing Lasso, I obtained an estimate $\hat{x}$ of $x^\star$ from $y$
+by solving the optimization problem \eqref{epsprimal} with debiasing. I used the
 algorithm described in Section \ref{sec:comp-method} with grid of $N=2^{m}$
 points where $m=10,11,12,13,14$ and $15$. Because of the basis mismatch effect,
 the optimal $c_{\mathrm{opt}}$ has significantly more non-zero components than
-the true number of frequencies. However, we observe that the frequencies
-corresponding to the non-zero components of $c_{\mathrm{opt}}$ cluster
-around the true ones. We therefore extract one frequency from each cluster of
-non-zero values by identifying the grid point with the maximum absolute
-$c_{\mathrm{opt}}$ value and zero everything else in that cluster. We then ran
-a debiasing step which solves the least squares problem $\mbox{minimize}_\beta
+the true number of frequencies. However, we can observe that the frequencies
+corresponding to the non-zero components of $c_{\mathrm{opt}}$ cluster around
+the true ones. We therefore extract one frequency from each cluster of non-zero
+values by identifying the grid point with the maximum absolute
+$c_{\mathrm{opt}}$ value and zero everything else in that cluster. I then ran a
+debiasing step which solves the least squares problem $\mbox{minimize}_\beta
 \|\Phi_S \beta- y\|^2$ where $\Phi_S$ is the submatrix of $\Phi$ whose columns
-correspond to frequencies identified from $c_{\mathrm{opt}}$. We return the
-estimate $\hat{x} = \Phi_S \beta_{\mathrm{opt}}$. We used the freely
-downloadable implementation of SpaRSA to solve the Lasso problem. We used a
+correspond to frequencies identified from $c_{\mathrm{opt}}$. This gave the
+estimate $\hat{x} = \Phi_S \beta_{\mathrm{opt}}$. I used the freely
+downloadable implementation of SpaRSA to solve the Lasso problem. A
 stopping parameter of $10^{-4}$, but otherwise used the default parameters.
 
-We implemented Cadzow's method as described by the
-pseudocode in~\cite{blu08}, the Matrix Pencil as described in~\cite{hua02} and
-MUSIC~\cite{music} using the MATLAB routine \texttt{rootmusic}. All these
-algorithms need an estimate of the number of sinusoids. Rather
-than implementing a heuristic to estimate $k$, \emph{we fed the true $k$ to our
-solvers}. This provides a huge advantage to these algorithms. Neither AST or the
-Lasso based algorithm are provided the true value of $k$, and the noise 
-variance $\sigma^2$ required in the regularization parameter is estimated from $y$.
+I implemented Cadzow's method as described by the pseudocode in~\cite{blu08},
+the Matrix Pencil as described in~\cite{hua02} and MUSIC~\cite{music} using the
+MATLAB routine \texttt{rootmusic}. All these algorithms need an estimate of the
+number of sinusoids. Rather than implementing a heuristic to estimate $k$,
+\emph{I fed the true $k$ to our solvers}. This provides a huge advantage to
+these algorithms. Neither AST or the Lasso based algorithm are provided the true
+value of $k$, and the noise variance $\sigma^2$ required in the regularization
+parameter is estimated from $y$.
 
 Let $\{\hat{c}_l\}$ and $\{\hat{f}_l\}$ denote the amplitudes and frequencies
-estimated by any of the algorithms - AST, MUSIC or Cadzow. We use the following
+estimated by any of the algorithms - AST, MUSIC or Cadzow. I used the following
 error metrics to characterize the frequency localization of various algorithms:
 \begin{enumerate} \item[(i)] Sum of the absolute value of amplitudes in the far
 region $F$, $m_1 = \sum_{l : \hat{f}_l \in F} |\hat{c}_l|$ \item[(ii)] The
@@ -1156,7 +1151,7 @@ quantities that we prove tend to zero in Theorem~\ref{support}.
 \label{fig:mse-snr}
 \end{figure*}
 
-In Figure~\ref{fig:mse-snr}, we show MSE vs SNR plots for a subset of
+Figure~\ref{fig:mse-snr} shows MSE vs SNR plots for a subset of
 experiments when $n=128$ time samples are taken to take a closer look at the
 differences. It can be seen from these plots that the performance difference
 between classical algorithms such as MUSIC and Cadzow with respect to the
@@ -1179,7 +1174,7 @@ SNR = $10$ dB. Blue represents the true frequencies, while red are given by Lass
 \label{fig:lasso-compare}
 \end{figure}
 
-We note that the denoising performance of Lasso improves with increased grid
+Note that the denoising performance of Lasso improves with increased grid
 size as shown in the MSE vs SNR plot in Figure~\ref{fig:lasso-compare}(a). The
 figure shows that the performance improvement for larger grid sizes is greater
 at high SNRs. This is because when the noise is small, the discretization error
@@ -1189,7 +1184,7 @@ increasing discretization levels are diminishing with the grid sizes, at a
 higher rate in the low SNR regime, suggesting a tradeoff among grid size,
 accuracy, and computational complexity.
 
-Finally, in Figure \ref{fig:lasso-compare}(b), we provide numerical evidence
+Finally, Figure \ref{fig:lasso-compare}(b) provides numerical evidence
 supporting the assertion that frequency localization improves with increasing
 grid size. Lasso identifies more frequencies than the true ones due to basis
 mismatch. However, these frequencies cluster around the true ones, and more
@@ -1200,15 +1195,16 @@ results of \cite{cpsc} where the authors look at the full Fourier basis ($N=n$)
 and the noise-free case. This is the situation where discretization effect is
 most prominent. We instead look at the scenario where $N \gg n$.
 
-In Figure~\ref{fig:msnr}, we display how the error metrics vary with
-increasing SNR for AST, MUSIC and Cadzow.  We restrict these plots to the experiments with $n =
-256$ samples. These plots demonstrate that AST localizes frequencies
+Figure~\ref{fig:msnr} shows how the error metrics vary with increasing
+SNR for AST, MUSIC and Cadzow. The plots only show experiments with
+$n = 256$ samples. These plots demonstrate that AST localizes frequencies
 substantially better than MUSIC and Cadzow even for low signal to noise ratios
 as there is very little energy in the far region of the frequencies ($m_1$) and
 has the smallest weighted mean square frequency deviation ($m_2$). Although we
 have plotted the average value in these plots, we observed spikes in the plots
 for Cadzow's algorithm as the average is dominated by the worst performing
-instances.  These large errors are due to the numerical instability of polynomial root finding. 
+instances. These large errors are due to the numerical instability of polynomial
+root finding.
 
 \begin{figure}[htbp]
 \begin{tabular}{ccc}
@@ -1228,7 +1224,7 @@ with the number of frequencies $k=16, 32$ and $64$.}
 \end{figure}
 
 
-We use \emph{performance profiles} to summarize the behavior of the various
+I use \emph{performance profiles} to summarize the behavior of the various
 algorithms across all of the parameter settings. Performance profiles provide a
 good visual indicator of the relative performance of many algorithms under a
 variety of experimental conditions\cite{dolanmore02}. Let $\mathcal{P}$ be the
@@ -1255,12 +1251,11 @@ P_s(\beta) = \frac{\mathop{\#}\left\{p \in \mathcal{P} ~:~ \mathrm{MSE}_s(p) \le
 
 
 From the performance profile in Figure~\ref{fig:pp1}(a), we see that AST is the
-best performing algorithm, with Lasso coming in
-second. Cadzow does not perform as well as AST, even though it is fed the true
-number of sinusoids. When Cadzow is fed an incorrect $k$, even off by $1$, the
-performance degrades drastically, and never provides adequate mean-squared
-error. Figure~\ref{fig:pp1}(b) shows that the denoising performance
-improves  with grid size.
+best performing algorithm, with Lasso coming in second. Cadzow does not perform
+as well as AST, even though it is fed the true number of sinusoids. When Cadzow
+is fed an incorrect $k$, even off by $1$, the performance degrades drastically,
+and never provides adequate mean-squared error. Figure~\ref{fig:pp1}(b) shows
+that the denoising performance improves with grid size.
 
 \begin{figure}[htp]
 \begin{tabular}{ccc}

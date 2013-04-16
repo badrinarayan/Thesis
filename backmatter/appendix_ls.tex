@@ -1,13 +1,16 @@
-\section{Dual Polynomial Properties}
+%!TEX root = ../dissertation.tex
+\chapter{Appendix}
 \label{apx:collection}
 
+% \section{Dual Polynomial Properties}
+
 In this section, I collect useful results about the dual polynomial for line
-spectral signals from previous work, which is used in the following analysis.
-For some of these theorems, I also derive some useful corollaries for some of
-these theorems which we use. In addition to Theorem~\ref{dual-stab}, we will
-need another result in~\cite{cg_noisy} where the authors show the existence of a
-trigonometric polynomial $Q_1$ that is linear in each $N_j$ which is also an
-essential ingredient in the proofs.
+spectral signals from previous work, which is used in the analysis in
+Chapter~\ref{chap:linespect}. For some of these theorems, I also derive some
+useful corollaries for some of these theorems which we used. In addition to
+Theorem~\ref{dual-stab}, we will need another result in~\cite{cg_noisy} where
+the authors show the existence of a trigonometric polynomial $Q_1$ that is
+linear in each $N_j$ which is also an essential ingredient in the proofs.
 
 \begin{theorem}[Lemma 2.7 in~\cite{cg_noisy}]
 \label{dual-lin}
@@ -43,7 +46,7 @@ in Section \ref{sec:support} satisfy respectively
 \end{align}
 \end{lemma}
 \begin{proof}
-We will give a detailed proof of \eqref{QL1}, and list the necessary modifications for proving \eqref{Q1L1} and \eqref{QjL1}. The dual polynomial $Q(f)$ constructed in \cite{cg_exact12} is of the
+I will give a detailed proof of \eqref{QL1}, and list the necessary modifications for proving \eqref{Q1L1} and \eqref{QjL1}. The dual polynomial $Q(f)$ constructed in \cite{cg_exact12} is of the
 form
 \begin{eqnarray}
   Q \left( f \right) & = & \sum_{f_j \in T} \alpha_j K \left( f - f_j \right)
@@ -98,8 +101,7 @@ f) | d  f$. Since $K ( f) = G ( f)^2$, we have
    f
    \leq  2\| G ( f) \|_2 \| G' ( f) \|_2\label{eq:holder-int}
 \end{eqnarray}
-We have already established that $\| G ( f) \|_2^2 \leq C / {n}$ and we
-will now show that $\| G' ( f) \|_2^2 \leq C' {n}$. Differentiating the
+We have already established that $\| G ( f) \|_2^2 \leq C / {n}.$ Let us now show that $\| G' ( f) \|_2^2 \leq C' {n}$. Differentiating the
 expression for $G(f)$ in \eqref{expressionG}, we get
 \begin{eqnarray*}
   G' ( f) & = & -2 \pi i \sum_{l = - m / 2}^{m / 2} l g_l e^{- i 2 \pi f l}
@@ -155,7 +157,9 @@ Let $Q_0 = \langle q_0, a(f) \rangle $ be a general trigonometric polynomial ass
 & = \left|\langle Q_0(f), E(f) \rangle\right|\\
 & \leq \vnorm{Q_0(f)}_1 \vnorm{E(f)}_\infty\,.
 \end{align*}
-Here we use Parseval's identity in the second to last step and H\"{o}lder's inequality in the last inequality. Then, the result follows by using Lemma~\ref{l1} and \eqref{errbd}.
+The penultimate equality follows from Parseval's theorem and the last inequality
+is an application of H\"{o}lder's inequality. Then, the result follows by using
+Lemma~\ref{l1} and \eqref{errbd}.
 \end{proof}
 % 
 % We also need the following consequence of the optimality condition of AST

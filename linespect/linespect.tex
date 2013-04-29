@@ -65,7 +65,7 @@ the signal model \eqref{eq:signal} also serves as a proper model for
 superresolution imaging where we aim to localize temporal events or spatial
 targets from noisy, low-frequency measurements~\cite{cg_exact12,cg_noisy}. So,
 the vector $x^\star = [x^\star_0 ~ \cdots ~ x^\star_{n-1}]^T \in \C^n$ can be
-written as a non-negative linear combination of $k$ points from the set of atoms
+written as a nonnegative linear combination of $k$ points from the set of atoms
 \[
 \A = \left\{e^{i 2\pi \phi}[1 ~ e^{i2\pi f} ~ \cdots ~ e^{i2\pi (n-1) f}]^T,\, f \in [0,1], \phi \in [0,1] \right\}.
 \] 
@@ -241,7 +241,7 @@ the advantages and shortcomings of prior art.
 \section{Denoising Line Spectral Signals}
 \label{sec:denoise-trig-moments} 
 
-Suppose we wish toestimate the amplitudes and frequencies of a signal $x(t), t
+Suppose we wish to estimate the amplitudes and frequencies of a signal $x(t), t
 \in \R$ given as a mixture of $k$ complex sinusoids:
 \begin{equation*}
   x ( t) =  \sum_{l = 1}^k c_l \exp ( i 2 \pi f_l t)
@@ -346,7 +346,7 @@ lower bound whenever $n \geq 5$ is
 Using standard results on the extreme value statistics of Gaussian distribution,
 we can also obtain a non-asymptotic upper bound on the expected dual norm of
 noise for $n > 3$:
-\[\sigma\left(1  + \frac{1}{\log(n)}\right)\sqrt{\log(n) + \log(16 \pi^3/2 \log(n))}\nonumber
+\[\sigma\left(1  + \frac{1}{\log(n)}\right)\sqrt{n\log(n) + n\log(16 \pi^3/2 \log(n))}\nonumber
 \]
 
 We will examine these computations in detail in the following section.

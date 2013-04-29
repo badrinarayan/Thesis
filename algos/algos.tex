@@ -61,7 +61,7 @@ Thresholding (AST) problem, defined in Chapter~\ref{chap:ast}:
 and its corresponding dual problem:
 \begin{align}
 \begin{split}
-\maximize_x & \frac{1}{2}\left(\vnorm{y}_2^2 - \vnorm{y-\tau q}_2^2\right)\\
+\maximize_q & \frac{1}{2}\left(\vnorm{y}_2^2 - \vnorm{y-\tau q}_2^2\right)\\
 \text{subject to } & \vnorm{q}_\A^* \leq 1. 
 \end{split}
 \end{align}
@@ -77,13 +77,13 @@ a(f) = \begin{pmatrix}
 	e^{i 2\pi f}\\
 	\vdots\\
 	e^{i2\pi f (n-1)}
-\end{pmatrix}
+\end{pmatrix}.
 \]
 }
 The first part of this chapter gives a computable algebraic characterization of the atomic norm balls of the following atomic sets derived from these atoms:
 \begin{align}
 \A_+ &= \setof{a(f)}{f \in \mathbb{T}}\\
-\A   &= \setof{a(f) \exp(i 2\pi \phi)}{f, \phi \in \mathbb{T}}
+\A   &= \setof{a(f) \exp(i 2\pi \phi)}{f, \phi \in \mathbb{T}}.
 \end{align}
 The first set $\A_+$ is a one dimensional manifold called the trigonometric
 moment curve and the second set $\A$ is the two dimensional manifold
@@ -126,7 +126,7 @@ Suppose $x = (x_0 \cdots x_{n-1})^T \in \C^n.$ Then,
 Note that this is an example when atomic norm is not really a norm on $F^n$, but
 is nevertheless useful. In contrast to $\conv(\A_+)$, the semidefinite
 characterization of $\conv(\A)$ requires some calculation. The characterization
-of moment cone allows us to describe the convex hull of the general atomic
+of the moment cone allows us to describe the convex hull of the general atomic
 moments~$\conv(\A)$ and we will derive the following semidefinite
 characterization:
 \begin{theorem}[SDP for General Trigonometric Moments]\label{thm:sdp-char}
@@ -160,13 +160,13 @@ is the dual characterization which has an optimum value $\vnorm{x}_\A$. For the 
 corresponds precisely to the set of complex trigonometric polynomials with a
 maximum modulus of $1$ and is characterized by the Bounded Real Lemma. We
 provide details of applying Alternating Directions Method of Multipliers (ADMM)
-for solving the SDP for the AST problem in section~\ref{sec:admm}.
+for solving the SDP for the AST problem in Section~\ref{sec:admm}.
 
 When there are no efficient characterizations, we may resort to a discretized
 approach which may be thought of as an approximation to the atomic norm defined
 by equation~\eqref{eq:dual-form-atomic-norm} by relaxing the infinite linear
 constraints in the semi-infinite program to a finite set of inequalities. In
-section ~\ref{sec:discretization}, we will look at convergence rates of this
+Section ~\ref{sec:discretization}, we will look at convergence rates of this
 approximation for the line spectral estimation problem and the system
 identification problem. In this case, the atomic soft thresholding problem can
 be approximated by solving a Lasso problem on an overcomplete grid.
@@ -251,11 +251,12 @@ Define a sequence of measures $\mu_n$ given by
 \]
 
 for every Borel subset $B \subset [0,1].$ The sequence of measures $\set{\mu_n}$
-are tight and therefore by Helly selection theorem, there exists a subsequence
-$\mu_{n_k}$ which converges weakly to a measure $\mu$ on $\mathbb{T}.$ Finally, using~\ref{eq:moment-sequence-limit} we conclude that $\set{x_k}$ is the sequence of moments for the measure $\mu.$
-\end{proof}
+are tight and therefore by the Helly selection theorem, there exists a
+subsequence $\mu_{n_k}$ which converges weakly to a measure $\mu$ on
+$\mathbb{T}.$ Finally, using~\ref{eq:moment-sequence-limit} we conclude that
+$\set{x_k}$ is the sequence of moments for the measure $\mu.$ \end{proof}
 
-Herglotz theorem characterizes arbitrary positive measures on the torus.
+The Herglotz theorem characterizes arbitrary positive measures on the torus.
 However, for line spectral estimation, we are interested in \emph{discrete}
 positive measures, i.e., measures composed of a finite number of atoms at $f_1,
 \ldots, f_k$, so we can write
@@ -733,7 +734,7 @@ Theorem \ref{cor:expected-mse}, and using \eqref{pni}, we get
 
 In this section, we will see that atomic norms can be approximated by choosing a
 large $\epsilon$-net of atoms instead of the original set of atoms. The proof of
-approximation and the characterization of the convergence depends upon using an
+approximation and the characterization of the convergence depends upon using a
 Euclidean $\epsilon$ cover of the atomic set $\A$, and the equivalence between
 Euclidean and atomic norms in finite dimensions.
 

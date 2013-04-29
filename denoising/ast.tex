@@ -31,7 +31,7 @@ generalization of the Lasso~\cite{tibshirani96,chen98} to infinite dictionaries.
 
 The denoising problem is obtaining an estimate $\hat{x}$ of the signal $x^\star$
 from $y = x^\star + w$, where $w$ is additive noise. Let us make the structural
-assumption that $x^\star$ is a sparse non-negative combination of points from an
+assumption that $x^\star$ is a sparse nonnegative combination of points from an
 arbitrary, possibly infinite set $\A \subset \C^n$. This assumption is very
 expressive and generalizes many notions of sparsity~\cite{crpw}. The atomic norm
 $\vnorm{\cdot}_\A$, introduced in \cite{crpw}, is a penalty function specially
@@ -77,7 +77,7 @@ $x^\star$ given by the solution of the atomic soft thresholding problem
 \eqref{AST} with $\tau \geq \E \vnorm{w}_\A^*$ has the expected (per-element)
 MSE
 \[ 
-\frac{1}{n}\E \vnorm{\hat{x} - x^\star}_2^2 \leq \frac{\tau}{n}\vnorm{x^\star}_\A
+\frac{1}{n}\E \vnorm{\hat{x} - x^\star}_2^2 \leq \frac{\tau}{n}\vnorm{x^\star}_\A.
 \]
 
 \end{theorem}
@@ -114,7 +114,7 @@ The notion of atomic sets and simple models introduced in~\cite{crpw} subsumes
 several structures in high dimensional geometry, including sparse
 vectors, low rank matrices, discrete measures, linear systems of small order.
 The authors also define a notion of an \emph{atomic norm} as a natural convex
-penalties for encouraging simplicity with respect to these structures. In this
+penalty for encouraging simplicity with respect to these structures. In this
 section, we shall review these preliminaries.
 
 Let $F$ be $\C$ or $\R$. The \emph{atomic set} $\A$ is a possibly infinite
@@ -126,9 +126,9 @@ number of elements $k = |T|$ in the support is small relative to the dimension
 $n$ of the signal, call such an $x^\star$  a ($k$) \emph{simple} combination of
 atoms.
 
-Allowing the dictionary of atomic set to be infinite offers tremendous
+Allowing the dictionary or atomic set to be infinite offers tremendous
 flexibility in the kind of high dimensional structures that can be modeled. To
-see this, we shall see specific instances of the setup, that will serve as a
+see this, we consider specific instances of the setup, that will serve as
 motivation for this framework. In subsequent chapters, we will revisit some of
 these examples.
 
@@ -136,7 +136,7 @@ these examples.
 
 \paragraph{Estimating Nearly Black Objects}
 
-Consider the estimation of the \emph{non-negative} vector $x^\star \in \R^m$
+Consider the estimation of the \emph{nonnegative} vector $x^\star \in \R^m$
 from the noisy observations $y = x^\star + w$ with the assumption that $x^\star$
 is nearly black --- i.e., most of its entries are zero. This problem was
 considered in \cite{DonohoNearlyBlack92,JohnstoneSparse94}, in order to shed
@@ -147,7 +147,7 @@ canonical unit vector.
 
 \paragraph{Compressed Sensing and Sparse Recovery}
 
-Many phenomena observed in high dimension are sparse in a suitable dictionary.
+Many phenomena observed in high dimensions are sparse in a suitable dictionary.
 For instance, natural images can be well approximated by a small combination of
 basis functions of a suitable wavelet transform. This means the actual data is
 highly redundant and it is actually sparse when suitably transformed.
@@ -242,9 +242,9 @@ weak regularity conditions in the rest of the thesis. These are satisfied for a
 number of examples and they allow us to phrase our theorems without restating
 assumptions explicitly each time. We will assume that the atomic set $\A$ satisfies the following properties:
 \begin{enumerate}
-	\item No atom can be written as a conical combination of other atoms in 		$\A$. In other words, we assume that $ a \not\in \conv{\A \backslash \set{a}}$ for every $a \in \A$. This guarantees that elements in $\A$ are the extreme points of the set $\conv(\A)$.
+	\item No atom can be written as a conical combination of other atoms in 		$\A$. In other words, we assume that $ a \not\in \conv(\A \backslash \set{a})$ for every $a \in \A$. This guarantees that elements in $\A$ are the extreme points of the set $\conv(\A)$.
 	\item The set $\A$ is a closed subset of $F^n$. This assumption is always true for finite sets.
-	\item The spark of a set of vectors $\A \subset F_n$ is defined as the smallest number $\sigma$ such that there exists a subcollection of $\sigma$ elements of $\A$ which are linearly dependent. We will assume that the spark of $\A$ is $n$. As a consequence, any decomposition of a vector $x^\star$ into $<n/2$ atoms is necessarily unique.~\cite{spark}
+	\item The spark of a set of vectors $\A \subset F^n$ is defined as the smallest number $\sigma$ such that there exists a subcollection of $\sigma$ elements of $\A$ which are linearly dependent. We will assume that the spark of $\A$ is $n$. As a consequence, any decomposition of a vector $x^\star$ into $<n/2$ atoms is necessarily unique~\cite{spark}.
 	\item We will assume that $\conv(\A)$ has a non-empty interior to avoid degenerate cases.
 \end{enumerate}
 
@@ -268,7 +268,7 @@ real inner product $\Re{x^* y}$ even if $x,y \in \C^n$, unless otherwise noted.
 The supremum in \eqref{defdualatnorm} is achievable, namely, for any $x$, there
 is a $z$ that achieves equality. Since $\A$ contains all extremal points of
 $\{x: \|x\|_\A \leq 1\}$, we are guaranteed that the optimal solution will
-actually lie in the set $\A$ (See~\cite{bonsall} for a proof). So, we can write
+actually lie in the set $\A$ (see~\cite{bonsall} for a proof). So, we can write
 
 \begin{equation}
 \vnorm{z}_{\A}^* = \sup_{a \in \A}{\vabs{a}{z}}.\label{bonsall}
@@ -282,14 +282,14 @@ atomic norm also appears in the dual problem of \eqref{AST}.
 
 A natural question is whether it is always possible to recover the composing
 atoms of a simple $x^\star$. As stated, the problem is ill-posed, for there
-could many decompositions. However, under our assumption, there is a unique
+could many decompositions. However, under our assumptions, there is a unique
 sparsest decomposition of $x^\star$ provided there is a decomposition that is at
 most $n/2$ sparse. So, the question is well posed as long as we start with such
 an $x^\star.$
 
 The goal of atomic norm decomposition is to write $x^\star$ in terms of
 composing atoms such that the sum of the coefficients is the atomic norm. We
-will call such a decomposition as an atomic norm achieving decomposition. While
+will call such a decomposition an atomic norm achieving decomposition. While
 not always true, the decomposition that achieves the atomic norm is often the
 sparsest and this section will provide some geometric insight to when this is
 true. This section also describes a procedure to find such a decomposition using
@@ -369,13 +369,13 @@ have a rich theory now that this is indeed true for many interesting
 cases\cite{donoho2006most,candes06,candes2005decoding}.
 
 Returning to our geometric interpretation, the existence of a dual certificate
-guarantees that $x^\star/\vnorm{x}_\A$ is in an exposed face of $\conv(\A)$.
-Recall that a face in convex geometry is considered simplicial if every element
-in the face can be written as a unique convex combination. Due to our
-assumptions on $\A$, the faces are indeed simplicial and there is a unique way
-of writing $x^\star$ as a combination of vertices in the face. Furthermore, When
-the face is also low dimensional, the decomposition of $x^\star$ is unique. So,
-we can always recover the support of a sparse vector provided all sparse
+guarantees that $x^\star/\vnorm{x^\star}_\A$ is in an exposed face of
+$\conv(\A)$. Recall that a face in convex geometry is considered simplicial if
+every element in the face can be written as a unique convex combination. Due to
+our assumptions on $\A$, the faces are indeed simplicial and there is a unique
+way of writing $x^\star$ as a combination of vertices in the face. Furthermore,
+When the face is also low dimensional, the decomposition of $x^\star$ is unique.
+So, we can always recover the support of a sparse vector provided all sparse
 combinations lie on low dimensional exposed simplicial faces. Again, while this
 may not always be true, it holds with large probability for random constructions
 of the atomic set and we refer the interested reader to~\cite{neighborliness}

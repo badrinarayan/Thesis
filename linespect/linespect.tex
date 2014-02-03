@@ -168,7 +168,7 @@ polynomial interpolation for localizing the constituent frequencies.
 
 Indeed, when there is no noise, Cand\'es and Fernandez-Granda showed the dual
 solution recovers these frequencies exactly under mild technical
-conditions~\cite{CandesGranda}. This frequency localization technique is later
+conditions~\cite{cg_exact12}. This frequency localization technique is later
 extended in ~\cite{offgrid2012} to the random undersampling case to yield a
 compressive sensing scheme that is robust to basis mismatch. When there is
 noise, numerical simulations show that the atomic norm minimization problem
@@ -484,7 +484,7 @@ This choice of $\tau$ then yields the asymptotic result in Theorem \ref{thm:expm
 \label{eq:tau2}
 \sup_{f \in \mathbb{T}} \left|\vabs{w}{a(f)}\right| \leq 2\eta^{-1}\tau.
 \end{equation}
-A recent result by Candes and Fernandez-Granda~\cite{CandesGranda} establishes
+A recent result by Candes and Fernandez-Granda~\cite{cg_exact12} establishes
 that in the noiseless case, the frequencies localized by the dual polynomial are
 exact provided the minimum separation between the frequencies is at least $4/n$
 where $n$ is the number of samples in the line spectral signal. Under similar
@@ -1032,7 +1032,7 @@ such notions as coherence, focusing on the geometry of the atomic set as the
 critical feature. By showing that the continuous approach is the limiting case
 of the Lasso based methods using the convergence of the corresponding atomic
 norms, we could justify denoising line spectral signals using Lasso on a large
-grid. Furthemore, Cand\`es and Fernandez-Granda~\cite{CandesGranda} showed that
+grid. Furthemore, Cand\`es and Fernandez-Granda~\cite{cg_exact12} showed that
 our SDP formulation exactly recovers the correct frequencies in the noiseless
 case.
 
